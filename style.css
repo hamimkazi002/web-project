@@ -1,1271 +1,1306 @@
-/* =========================================================
+/* =====================================================
    CINEMA MELLA / CINEMA HUB
-   PREMIUM LANDING PAGE CSS  —  FIXED to match actual HTML
-========================================================= */
+   MAIN SCRIPT
+===================================================== */
 
-/* =========================================================
-   RESET
-========================================================= */
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+/* =====================================================
+   DOM ELEMENTS
+===================================================== */
+
+const changingLogo = document.querySelector(".logo-changing");
+
+const heroBackground = document.querySelector(".hero-background");
+
+const heroDots = document.querySelectorAll(".hero-dot");
+
+const searchIconButton =
+    document.querySelector(".search-icon-button");
+
+const searchBox =
+    document.querySelector(".search-box");
+
+const searchInput =
+    document.querySelector(".search-box input");
+
+const searchClose =
+    document.querySelector(".search-input-wrapper button");
+
+const searchResults =
+    document.querySelector(".search-results");
+
+const mobileMenuButton =
+    document.querySelector(".mobile-menu-button");
+
+const mobileNav =
+    document.querySelector(".mobile-nav");
+
+
+/* =====================================================
+   LOGO TEXT
+   Cinema → Mella → Hub
+===================================================== */
+
+const logoWords = [
+    "Mella",
+    "Hub"
+];
+
+let logoIndex = 0;
+
+
+function changeLogoText() {
+
+    if (!changingLogo) return;
+
+    changingLogo.style.opacity = "0";
+    changingLogo.style.transform =
+        "translateY(-5px)";
+
+    setTimeout(() => {
+
+        changingLogo.textContent =
+            logoWords[logoIndex];
+
+        changingLogo.style.opacity = "1";
+        changingLogo.style.transform =
+            "translateY(0)";
+
+        logoIndex++;
+
+        if (logoIndex >= logoWords.length) {
+            logoIndex = 0;
+        }
+
+    }, 250);
 }
 
-html {
-    scroll-behavior: smooth;
+
+/*
+   Logo change every 2.5 seconds
+*/
+
+setInterval(changeLogoText, 2500);
+
+
+/* =====================================================
+   HERO BACKGROUND SLIDER
+   Cycles through Movie / Natok / Series themed looks
+   (same gradients used on the poster cards, so the hero
+   visually ties in with those sections below).
+
+   NOTE: swap any of these for a real poster/banner image
+   any time by replacing the string with url("path.jpg").
+===================================================== */
+
+const heroImages = [
+
+    // Movie
+    "linear-gradient(120deg, #1a0033 0%, #3a0ca3 45%, #7209b7 100%)",
+
+    // Natok
+    "linear-gradient(120deg, #2c0703 0%, #6a040f 45%, #9d0208 100%)",
+
+    // Web Series
+    "linear-gradient(120deg, #03071e 0%, #10002b 45%, #3c096c 100%)",
+
+    // Movie (variant, keeps the cycle at 4 like the dots)
+    "linear-gradient(120deg, #0f3057 0%, #00587a 45%, #14213d 100%)"
+];
+
+
+let currentHeroIndex = 0;
+
+
+/* =====================================================
+   SHOW HERO IMAGE
+===================================================== */
+
+function showHeroImage(index) {
+
+    if (!heroBackground) return;
+
+    /*
+       Fade out
+    */
+
+    heroBackground.style.opacity = "0";
+
+
+    setTimeout(() => {
+
+        /*
+           Change background
+        */
+
+        heroBackground.style.backgroundImage =
+            heroImages[index];
+
+
+        /*
+           IMPORTANT FIX:
+           Turn off the transform transition and snap the
+           scale back to 1 INSTANTLY (no animation). Without
+           this, removing "zoom" starts a slow 4s transition
+           back toward scale(1), and re-adding "zoom" a few
+           milliseconds later just nudges it slightly instead
+           of replaying the full zoom - which is why only the
+           very first image ever visibly zoomed.
+        */
+
+        heroBackground.style.transition = "opacity 0.65s ease";
+
+        heroBackground.classList.remove("zoom");
+
+        heroBackground.style.opacity = "1";
+
+
+        /*
+           Force the browser to apply the instant reset above
+           before we re-enable the transform transition.
+        */
+
+        void heroBackground.offsetWidth;
+
+
+        /*
+           Re-enable the full transition (opacity + transform)
+           so the next zoom actually animates over 4s.
+        */
+
+        heroBackground.style.transition =
+            "opacity 0.65s ease, transform 4s cubic-bezier(0.2, 0.5, 0.3, 1)";
+
+
+        /*
+           Start soft zoom
+        */
+
+        requestAnimationFrame(() => {
+
+            requestAnimationFrame(() => {
+
+                heroBackground.classList.add("zoom");
+
+            });
+
+        });
+
+
+        /*
+           Update dots
+        */
+
+        updateHeroDots(index);
+
+    }, 450);
 }
 
-body {
-    font-family: 'Inter', Arial, Helvetica, sans-serif;
-    background: #07080c;
-    color: #ffffff;
-    overflow-x: hidden;
+
+/* =====================================================
+   HERO DOTS
+===================================================== */
+
+function updateHeroDots(index) {
+
+    heroDots.forEach((dot, dotIndex) => {
+
+        if (dotIndex === index) {
+
+            dot.classList.add("active");
+
+        } else {
+
+            dot.classList.remove("active");
+
+        }
+
+    });
 }
 
-a {
-    color: inherit;
-    text-decoration: none;
+
+/* =====================================================
+   INITIAL HERO IMAGE
+===================================================== */
+
+if (heroBackground) {
+
+    heroBackground.style.backgroundImage =
+        heroImages[0];
+
+    heroBackground.style.opacity = "1";
+
+    /*
+       Start first zoom
+    */
+
+    setTimeout(() => {
+
+        heroBackground.classList.add("zoom");
+
+    }, 300);
 }
 
-button {
-    font-family: inherit;
+
+/* =====================================================
+   AUTO HERO SLIDER
+===================================================== */
+
+/*
+   Change image every 4 seconds
+*/
+
+let heroTimer =
+    setInterval(() => {
+
+        currentHeroIndex++;
+
+        if (
+            currentHeroIndex >=
+            heroImages.length
+        ) {
+
+            currentHeroIndex = 0;
+
+        }
+
+        showHeroImage(currentHeroIndex);
+
+    }, 4000);
+
+
+/* =====================================================
+   DOT CLICK
+===================================================== */
+
+heroDots.forEach((dot, index) => {
+
+    dot.addEventListener("click", () => {
+
+        currentHeroIndex = index;
+
+        showHeroImage(currentHeroIndex);
+
+
+        /*
+           Restart timer
+        */
+
+        clearInterval(heroTimer);
+
+        heroTimer =
+            setInterval(() => {
+
+                currentHeroIndex++;
+
+                if (
+                    currentHeroIndex >=
+                    heroImages.length
+                ) {
+
+                    currentHeroIndex = 0;
+
+                }
+
+                showHeroImage(
+                    currentHeroIndex
+                );
+
+            }, 4000);
+
+    });
+
+});
+
+
+/* =====================================================
+   SEARCH OPEN / CLOSE
+===================================================== */
+
+function openSearch() {
+
+    if (!searchBox) return;
+
+    searchBox.classList.add("active");
+
+    setTimeout(() => {
+
+        if (searchInput) {
+
+            searchInput.focus();
+
+        }
+
+    }, 150);
+
 }
 
-img {
-    max-width: 100%;
-    display: block;
+
+function closeSearch() {
+
+    if (!searchBox) return;
+
+    searchBox.classList.remove("active");
+
+    if (searchInput) {
+
+        searchInput.value = "";
+
+    }
+
+    if (searchResults) {
+
+        searchResults.innerHTML = "";
+
+    }
+
 }
 
-ul, li {
-    list-style: none;
-}
 
-/* =========================================================
-   HEADER / NAV  (header.navbar > .nav-container)
-========================================================= */
+/* =====================================================
+   SEARCH BUTTON
+===================================================== */
 
-header.navbar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    z-index: 9999;
+if (searchIconButton) {
 
-    background: rgba(5, 6, 10, 0.82);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-}
+    searchIconButton.addEventListener(
+        "click",
+        (event) => {
 
-.nav-container {
-    width: min(1180px, 92%);
-    height: 78px;
-    margin: auto;
+            event.stopPropagation();
 
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 30px;
-}
+            if (
+                searchBox &&
+                searchBox.classList.contains("active")
+            ) {
 
-/* LOGO */
+                closeSearch();
 
-.logo {
-    display: flex;
-    align-items: center;
-    font-size: 25px;
-    font-weight: 900;
-    letter-spacing: -1px;
-    white-space: nowrap;
-}
+            } else {
 
-.logo-cinema {
-    color: #ffffff;
-}
+                openSearch();
 
-.logo-changing {
-    color: #ff1b2d;
-    display: inline-block;
-    min-width: 55px;
-    margin-left: 2px;
-    transition: opacity 0.3s ease, transform 0.3s ease;
-}
+            }
 
-/* DESKTOP NAV */
-
-.nav-menu {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 30px;
-    margin-left: auto;
-    margin-right: 20px;
-}
-
-.nav-link {
-    position: relative;
-    color: rgba(255, 255, 255, 0.78);
-    font-size: 15px;
-    font-weight: 500;
-    padding: 10px 0;
-    transition: color 0.25s ease;
-}
-
-.nav-link:hover,
-.nav-link.active {
-    color: #ffffff;
-}
-
-.nav-link::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    bottom: 2px;
-    width: 0;
-    height: 2px;
-    background: #ff1529;
-    border-radius: 10px;
-    transition: width 0.25s ease;
-}
-
-.nav-link:hover::after,
-.nav-link.active::after {
-    width: 100%;
-}
-
-/* SEARCH */
-
-.nav-search-wrapper {
-    position: relative;
-    display: flex;
-    align-items: center;
-    flex-shrink: 0;
-}
-
-.search-icon-button {
-    width: 42px;
-    height: 42px;
-    border: none;
-    background: transparent;
-    color: #ffffff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    border-radius: 50%;
-    font-size: 16px;
-    transition: background 0.25s ease, transform 0.25s ease;
-}
-
-.search-icon-button:hover {
-    background: rgba(255, 255, 255, 0.08);
-    transform: scale(1.05);
-}
-
-.search-box {
-    position: absolute;
-    top: 58px;
-    right: 0;
-    width: 330px;
-    padding: 10px;
-
-    background: rgba(15, 16, 22, 0.96);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 16px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(-10px) scale(0.97);
-    transition: opacity 0.25s ease, visibility 0.25s ease, transform 0.25s ease;
-    z-index: 10000;
-}
-
-.search-box.active {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0) scale(1);
-}
-
-.search-input-wrapper {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 11px;
-    padding-left: 13px;
-    overflow: hidden;
-}
-
-.search-input-wrapper i {
-    color: #ff1b2d;
-    font-size: 15px;
-}
-
-.search-input-wrapper input {
-    flex: 1;
-    min-width: 0;
-    border: none;
-    outline: none;
-    background: transparent;
-    color: #ffffff;
-    padding: 13px 10px;
-    font-size: 14px;
-}
-
-.search-input-wrapper input::placeholder {
-    color: rgba(255, 255, 255, 0.4);
-}
-
-.search-input-wrapper button {
-    width: 38px;
-    height: 38px;
-    border: none;
-    background: transparent;
-    color: rgba(255, 255, 255, 0.5);
-    cursor: pointer;
-    font-size: 16px;
-}
-
-.search-input-wrapper button:hover {
-    color: #ffffff;
-}
-
-.search-results {
-    max-height: 300px;
-    overflow-y: auto;
-    margin-top: 8px;
-}
-
-.search-result-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 11px;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: background 0.2s ease, transform 0.2s ease;
-}
-
-.search-result-item:hover {
-    background: rgba(255, 255, 255, 0.07);
-    transform: translateX(3px);
-}
-
-.search-result-icon {
-    width: 38px;
-    height: 38px;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(255, 20, 40, 0.12);
-    border-radius: 9px;
-    color: #ff1b2d;
-}
-
-.search-result-item h4 {
-    font-size: 13px;
-    margin-bottom: 4px;
-}
-
-.search-result-item p {
-    color: rgba(255, 255, 255, 0.45);
-    font-size: 11px;
-}
-
-/* MOBILE MENU BUTTON */
-
-.mobile-menu-button {
-    display: none;
-    width: 42px;
-    height: 42px;
-    border: none;
-    background: transparent;
-    color: #ffffff;
-    border-radius: 50%;
-    cursor: pointer;
-    font-size: 19px;
-}
-
-.mobile-menu-button:hover {
-    background: rgba(255, 255, 255, 0.08);
-}
-
-/* MOBILE NAV */
-
-.mobile-nav {
-    display: none;
-    position: fixed;
-    top: 78px;
-    right: 4%;
-    width: 230px;
-    padding: 12px;
-
-    background: rgba(12, 13, 18, 0.98);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 15px;
-    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
-    z-index: 9998;
-}
-
-.mobile-nav.active {
-    display: block;
-}
-
-.mobile-nav a {
-    display: block;
-    padding: 13px 14px;
-    border-radius: 9px;
-    color: rgba(255, 255, 255, 0.75);
-    font-size: 14px;
-    transition: background 0.2s ease, color 0.2s ease;
-}
-
-.mobile-nav a:hover,
-.mobile-nav a:active {
-    background: rgba(255, 20, 40, 0.12);
-    color: #ffffff;
-}
-
-/* =========================================================
-   HERO
-========================================================= */
-
-.hero {
-    position: relative;
-    min-height: 720px;
-    display: flex;
-    align-items: center;
-    overflow: hidden;
-    isolation: isolate;
-    padding-top: 78px;
-}
-
-.hero-background {
-    position: absolute;
-    inset: -5%;
-    z-index: -3;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    opacity: 1;
-    transform: scale(1);
-    transition: opacity 0.65s ease, transform 4s cubic-bezier(0.2, 0.5, 0.3, 1);
-    will-change: transform, opacity;
-}
-
-/* THIS IS THE SOFT ZOOM — already correct, just needed the rest of the page fixed */
-.hero-background.zoom {
-    transform: scale(1.09);
-}
-
-/* Dark gradient overlay (kept as pseudo-element; the empty
-   .hero-overlay div in the HTML does nothing and is safe to
-   delete — but is harmless if left in, since it has no content) */
-.hero::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: -2;
-    background: linear-gradient(
-        90deg,
-        rgba(3, 4, 8, 0.97) 0%,
-        rgba(3, 4, 8, 0.88) 35%,
-        rgba(3, 4, 8, 0.58) 62%,
-        rgba(3, 4, 8, 0.72) 100%
+        }
     );
-}
-
-.hero::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 180px;
-    z-index: -1;
-    background: linear-gradient(to bottom, transparent, #07080c);
-}
-
-.hero-overlay {
-    display: none; /* handled by .hero::before / ::after instead */
-}
-
-.hero-container {
-    position: relative;
-    width: min(1180px, 92%);
-    margin: auto;
-}
-
-.hero-content {
-    padding-top: 60px;
-}
-
-.hero-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 9px 14px;
-    background: #ef1024;
-    color: #ffffff;
-    border-radius: 6px;
-    font-size: 11px;
-    font-weight: 800;
-    letter-spacing: 0.6px;
-    text-transform: uppercase;
-    margin-bottom: 22px;
-    box-shadow: 0 8px 25px rgba(239, 16, 36, 0.25);
-}
-
-.hero h1 {
-    max-width: 780px;
-    font-size: clamp(48px, 6.2vw, 86px);
-    line-height: 0.99;
-    letter-spacing: -3px;
-    font-weight: 900;
-    color: #ffffff;
-    margin-bottom: 25px;
-}
-
-.hero p {
-    max-width: 650px;
-    color: rgba(255, 255, 255, 0.68);
-    font-size: 16px;
-    line-height: 1.8;
-    margin-bottom: 30px;
-}
-
-.hero-buttons {
-    display: flex;
-    align-items: center;
-    gap: 13px;
-    flex-wrap: wrap;
-}
-
-.hero-primary-button,
-.hero-secondary-button {
-    min-height: 52px;
-    padding: 0 24px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 9px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: transform 0.25s ease, background 0.25s ease, border-color 0.25s ease;
-}
-
-.hero-primary-button {
-    background: #ef1024;
-    color: #ffffff;
-    border: 1px solid #ef1024;
-    box-shadow: 0 10px 30px rgba(239, 16, 36, 0.2);
-}
-
-.hero-primary-button:hover {
-    background: #ff2437;
-    transform: translateY(-2px);
-}
-
-.hero-secondary-button {
-    background: rgba(255, 255, 255, 0.04);
-    color: #ffffff;
-    border: 1px solid rgba(255, 255, 255, 0.25);
-}
-
-.hero-secondary-button:hover {
-    background: rgba(255, 255, 255, 0.09);
-    border-color: rgba(255, 255, 255, 0.45);
-    transform: translateY(-2px);
-}
-
-.hero-dots {
-    position: absolute;
-    right: 5%;
-    bottom: 35px;
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    z-index: 5;
-}
-
-.hero-dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    border: none;
-    padding: 0;
-    background: rgba(255, 255, 255, 0.3);
-    cursor: pointer;
-    transition: width 0.25s ease, background 0.25s ease;
-}
-
-.hero-dot.active {
-    width: 25px;
-    border-radius: 10px;
-    background: #ff1b2d;
-}
-
-/* =========================================================
-   GENERIC SECTION
-========================================================= */
-
-section {
-    position: relative;
-    padding: 90px 0;
-}
-
-.section-heading {
-    width: min(1180px, 92%);
-    margin: 0 auto 35px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 20px;
-}
-
-.heading-left {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-}
-
-.heading-line {
-    display: block;
-    width: 4px;
-    height: 34px;
-    border-radius: 4px;
-    background: #ff1b2d;
-    flex-shrink: 0;
-}
-
-.heading-left h2 {
-    font-size: clamp(24px, 3.4vw, 34px);
-    font-weight: 800;
-    letter-spacing: -0.5px;
-}
-
-.heading-left p {
-    margin-top: 4px;
-    color: rgba(255, 255, 255, 0.5);
-    font-size: 14px;
-}
-
-.view-all-button {
-    border: none;
-    background: transparent;
-    color: #ff1b2d;
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 700;
-    white-space: nowrap;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.view-all-button:hover {
-    text-decoration: underline;
-}
-
-/* =========================================================
-   CARD GRIDS
-========================================================= */
-
-.content-grid,
-.stories-grid,
-.books-grid,
-.upcoming-grid {
-    width: min(1180px, 92%);
-    margin: auto;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 20px;
-}
-
-/* =========================================================
-   CARDS (shared shell)
-========================================================= */
-
-.movie-card,
-.story-card,
-.book-card,
-.upcoming-card {
-    position: relative;
-    background: #101116;
-    border: 1px solid rgba(255, 255, 255, 0.07);
-    border-radius: 14px;
-    overflow: hidden;
-    transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
-    cursor: pointer;
-}
-
-.movie-card:hover,
-.story-card:hover,
-.book-card:hover,
-.upcoming-card:hover {
-    transform: translateY(-7px);
-    border-color: rgba(255, 27, 45, 0.45);
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
-}
-
-/* MOVIE / NATOK / SERIES poster */
-
-.movie-poster {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 2 / 3;
-    overflow: hidden;
-    background: #15161c;
-    background-size: cover;
-    background-position: center;
-    transition: transform 0.5s ease;
-}
-
-.movie-card:hover .movie-poster {
-    transform: scale(1.04);
-}
-
-.movie-poster::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.75), transparent 45%);
-    pointer-events: none;
-}
-
-/* placeholder gradients — swap these for real posters via background-image */
-.poster-1  { background-image: linear-gradient(135deg, #3a0ca3, #7209b7); }
-.poster-2  { background-image: linear-gradient(135deg, #7d0e1a, #d90429); }
-.poster-3  { background-image: linear-gradient(135deg, #0f3057, #00587a); }
-.poster-4  { background-image: linear-gradient(135deg, #231942, #5e548e); }
-
-.natok-1   { background-image: linear-gradient(135deg, #6a040f, #9d0208); }
-.natok-2   { background-image: linear-gradient(135deg, #370617, #6a040f); }
-.natok-3   { background-image: linear-gradient(135deg, #4a0e0e, #8d0801); }
-.natok-4   { background-image: linear-gradient(135deg, #5f0f40, #9a031e); }
-
-.series-1  { background-image: linear-gradient(135deg, #14213d, #1b263b); }
-.series-2  { background-image: linear-gradient(135deg, #03045e, #023e8a); }
-.series-3  { background-image: linear-gradient(135deg, #10002b, #3c096c); }
-.series-4  { background-image: linear-gradient(135deg, #001219, #005f73); }
-
-/* content badge (HD / NEW / 4K / SERIES / TOP) */
-
-.content-badge {
-    position: absolute;
-    top: 12px;
-    left: 12px;
-    z-index: 2;
-
-    padding: 4px 10px;
-    background: rgba(0, 0, 0, 0.55);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 6px;
-
-    font-size: 10px;
-    font-weight: 800;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-    backdrop-filter: blur(6px);
-}
-
-/* play button */
-
-.poster-play {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%) scale(0.9);
-    z-index: 2;
-
-    width: 52px;
-    height: 52px;
-    border-radius: 50%;
-    border: 1px solid rgba(255, 255, 255, 0.35);
-    background: rgba(239, 16, 36, 0.9);
-    color: #ffffff;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-
-    opacity: 0;
-    transition: opacity 0.25s ease, transform 0.25s ease;
-}
-
-.movie-card:hover .poster-play,
-.poster-play:focus {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
-}
-
-/* card text info */
-
-.card-info {
-    padding: 16px;
-}
-
-.card-category {
-    display: inline-block;
-    margin-bottom: 6px;
-    color: #ff1b2d;
-    font-size: 11px;
-    font-weight: 800;
-    letter-spacing: 0.5px;
-}
-
-.card-info h3 {
-    font-size: 16px;
-    margin-bottom: 6px;
-}
-
-.card-info p {
-    color: rgba(255, 255, 255, 0.48);
-    font-size: 12px;
-    line-height: 1.6;
-    margin-bottom: 12px;
-}
-
-.card-meta {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    color: rgba(255, 255, 255, 0.55);
-    font-size: 12px;
-}
-
-.card-meta i {
-    color: #ff1b2d;
-    margin-right: 4px;
-}
 
-/* =========================================================
-   UPCOMING SECTION
-========================================================= */
-
-.upcoming-section {
-    background: linear-gradient(180deg, #07080c, #0a0b10);
-}
-
-.upcoming-card {
-    min-height: 300px;
-}
-
-.upcoming-poster {
-    position: relative;
-    aspect-ratio: 16 / 9;
-    background-size: cover;
-    background-position: center;
-}
-
-.upcoming-poster::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent 55%);
-}
-
-.upcoming-1 { background-image: linear-gradient(135deg, #240046, #5a189a); }
-.upcoming-2 { background-image: linear-gradient(135deg, #641220, #a4133c); }
-.upcoming-3 { background-image: linear-gradient(135deg, #03071e, #370617); }
-.upcoming-4 { background-image: linear-gradient(135deg, #14213d, #ef1024); }
-
-.coming-badge {
-    position: absolute;
-    top: 12px;
-    left: 12px;
-    z-index: 2;
-
-    padding: 5px 11px;
-    background: #ef1024;
-    border-radius: 6px;
-
-    font-size: 10px;
-    font-weight: 800;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-}
-
-.upcoming-info {
-    padding: 16px;
-}
-
-.upcoming-info > span {
-    color: #ff1b2d;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-}
-
-.upcoming-info h3 {
-    margin: 6px 0;
-    font-size: 18px;
-}
-
-.upcoming-info p {
-    color: rgba(255, 255, 255, 0.48);
-    font-size: 12px;
-    line-height: 1.6;
-}
-
-/* =========================================================
-   STORIES SECTION
-========================================================= */
-
-.stories-section {
-    background: #08090d;
-}
-
-.story-card {
-    padding-bottom: 4px;
-}
-
-.story-image {
-    position: relative;
-    aspect-ratio: 16 / 10;
-    background-size: cover;
-    background-position: center;
-}
-
-.story-image-1 { background-image: linear-gradient(135deg, #3a1c71, #6a0dad); }
-.story-image-2 { background-image: linear-gradient(135deg, #1b1b3a, #4b1248); }
-.story-image-3 { background-image: linear-gradient(135deg, #2c0703, #6a040f); }
-.story-image-4 { background-image: linear-gradient(135deg, #032b30, #05668d); }
-
-.story-badge {
-    position: absolute;
-    top: 12px;
-    left: 12px;
-    padding: 4px 10px;
-    background: rgba(0, 0, 0, 0.55);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 6px;
-    font-size: 10px;
-    font-weight: 800;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-}
-
-.story-info {
-    padding: 16px;
-}
-
-.story-date {
-    color: #ff1b2d;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-}
-
-.story-info h3 {
-    margin: 8px 0 8px;
-    font-size: 17px;
-}
-
-.story-info p {
-    color: rgba(255, 255, 255, 0.5);
-    font-size: 13px;
-    line-height: 1.75;
-    margin-bottom: 14px;
-}
-
-.story-button,
-.book-button {
-    padding: 9px 14px;
-    border-radius: 7px;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    background: rgba(255, 255, 255, 0.04);
-    color: #ffffff;
-    cursor: pointer;
-    font-size: 12px;
-    font-weight: 600;
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    transition: background 0.2s ease, border-color 0.2s ease;
-}
-
-.story-button:hover,
-.book-button:hover {
-    background: #ef1024;
-    border-color: #ef1024;
-}
-
-/* =========================================================
-   BOOKS SECTION
-========================================================= */
-
-.books-section {
-    background: linear-gradient(180deg, #0a0b10, #07080c);
 }
 
-.book-cover {
-    position: relative;
-    aspect-ratio: 2 / 2.7;
-    background-size: cover;
-    background-position: center;
-}
-
-.book-cover-1 { background-image: linear-gradient(160deg, #1d3557, #457b9d); }
-.book-cover-2 { background-image: linear-gradient(160deg, #3d0000, #7d0d0d); }
-.book-cover-3 { background-image: linear-gradient(160deg, #240046, #7209b7); }
-.book-cover-4 { background-image: linear-gradient(160deg, #6a0212, #ef1024); }
-
-.book-badge {
-    position: absolute;
-    top: 12px;
-    left: 12px;
-    padding: 4px 10px;
-    background: rgba(0, 0, 0, 0.55);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 6px;
-    font-size: 10px;
-    font-weight: 800;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-}
-
-.book-info {
-    padding: 16px;
-}
-
-.book-category {
-    color: #ff1b2d;
-    font-size: 11px;
-    font-weight: 800;
-    letter-spacing: 0.5px;
-}
-
-.book-info h3 {
-    margin: 6px 0 8px;
-    font-size: 16px;
-}
-
-.book-info p {
-    color: rgba(255, 255, 255, 0.48);
-    font-size: 12px;
-    line-height: 1.7;
-    margin-bottom: 14px;
-}
-
-/* =========================================================
-   FOOTER
-========================================================= */
-
-.footer {
-    padding: 60px 0 30px;
-    border-top: 1px solid rgba(255, 255, 255, 0.07);
-    background: #050609;
-}
-
-.footer-container {
-    width: min(1180px, 92%);
-    margin: auto;
-    display: grid;
-    grid-template-columns: 1.5fr 1fr 1fr;
-    gap: 40px;
-}
-
-.footer-brand p {
-    max-width: 340px;
-    color: rgba(255, 255, 255, 0.45);
-    font-size: 13px;
-    line-height: 1.8;
-    margin: 14px 0 18px;
-}
-
-.footer-logo {
-    margin-bottom: 4px;
-}
-
-.social-links {
-    display: flex;
-    gap: 9px;
-}
-
-.social-links a {
-    width: 38px;
-    height: 38px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.06);
-    color: rgba(255, 255, 255, 0.7);
-    transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
-}
-
-.social-links a:hover {
-    background: #ef1024;
-    color: #ffffff;
-    transform: translateY(-2px);
-}
-
-.footer-column h3 {
-    margin-bottom: 14px;
-    font-size: 16px;
-}
-
-.footer-column a {
-    display: block;
-    margin-bottom: 10px;
-    color: rgba(255, 255, 255, 0.55);
-    font-size: 13px;
-    transition: color 0.2s ease;
-}
-
-.footer-column a:hover {
-    color: #ff1b2d;
-}
-
-.footer-column p {
-    color: rgba(255, 255, 255, 0.45);
-    font-size: 13px;
-    line-height: 1.8;
-}
-
-.footer-bottom {
-    width: min(1180px, 92%);
-    margin: 35px auto 0;
-    padding-top: 20px;
-    border-top: 1px solid rgba(255, 255, 255, 0.06);
-    text-align: center;
-    color: rgba(255, 255, 255, 0.35);
-    font-size: 12px;
-}
 
-/* =========================================================
-   SCROLLBAR
-========================================================= */
+/* =====================================================
+   SEARCH CLOSE BUTTON
+===================================================== */
 
-::-webkit-scrollbar {
-    width: 7px;
-}
-
-::-webkit-scrollbar-track {
-    background: #07080c;
-}
+if (searchClose) {
 
-::-webkit-scrollbar-thumb {
-    background: #252630;
-    border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: #ff1b2d;
-}
+    searchClose.addEventListener(
+        "click",
+        (event) => {
+
+            event.stopPropagation();
 
-/* =========================================================
-   TABLET
-========================================================= */
+            closeSearch();
+
+        }
+    );
 
-@media (max-width: 900px) {
-    .nav-menu {
-        gap: 18px;
+}
+
+
+/* =====================================================
+   MOVIE DATABASE FOR SEARCH
+===================================================== */
+
+const searchableItems = [
+
+    {
+        title: "The Last Horizon",
+        category: "Movie",
+        section: "movies"
+    },
+
+    {
+        title: "Midnight Story",
+        category: "Movie",
+        section: "movies"
+    },
+
+    {
+        title: "Lost City",
+        category: "Movie",
+        section: "movies"
+    },
+
+    {
+        title: "Shadow Night",
+        category: "Movie",
+        section: "movies"
+    },
+
+    {
+        title: "Moner Golpo",
+        category: "Natok",
+        section: "natok"
+    },
+
+    {
+        title: "Eka Manush",
+        category: "Natok",
+        section: "natok"
+    },
+
+    {
+        title: "Shesh Chithi",
+        category: "Natok",
+        section: "natok"
+    },
+
+    {
+        title: "Tomar Jonno",
+        category: "Natok",
+        section: "natok"
+    },
+
+    {
+        title: "Dark Dimension",
+        category: "Web Series",
+        section: "series"
+    },
+
+    {
+        title: "The Unknown",
+        category: "Web Series",
+        section: "series"
+    },
+
+    {
+        title: "Cyber City",
+        category: "Web Series",
+        section: "series"
+    },
+
+    {
+        title: "Hidden Truth",
+        category: "Web Series",
+        section: "series"
+    },
+
+    {
+        title: "A Story of Life",
+        category: "Story",
+        section: "stories"
+    },
+
+    {
+        title: "The Last Letter",
+        category: "Story",
+        section: "stories"
+    },
+
+    {
+        title: "Winter Night",
+        category: "Story",
+        section: "stories"
+    },
+
+    {
+        title: "Unknown Journey",
+        category: "Story",
+        section: "stories"
+    },
+
+    {
+        title: "The Silent Book",
+        category: "Book",
+        section: "books"
+    },
+
+    {
+        title: "History of Cinema",
+        category: "Book",
+        section: "books"
+    },
+
+    {
+        title: "Modern Stories",
+        category: "Book",
+        section: "books"
+    },
+
+    {
+        title: "The Great Journey",
+        category: "Book",
+        section: "books"
     }
 
-    .nav-link {
-        font-size: 13px;
+];
+
+
+/* =====================================================
+   SEARCH FUNCTION
+===================================================== */
+
+function performSearch(keyword) {
+
+    if (!searchResults) return;
+
+    const searchText =
+        keyword.trim().toLowerCase();
+
+
+    /*
+       Empty search
+    */
+
+    if (!searchText) {
+
+        searchResults.innerHTML = "";
+
+        return;
+
     }
 
-    .content-grid,
-    .stories-grid,
-    .books-grid,
-    .upcoming-grid {
-        grid-template-columns: repeat(3, 1fr);
+
+    /*
+       Find matching items
+    */
+
+    const results =
+        searchableItems.filter((item) => {
+
+            return (
+
+                item.title
+                    .toLowerCase()
+                    .includes(searchText)
+
+                ||
+
+                item.category
+                    .toLowerCase()
+                    .includes(searchText)
+
+            );
+
+        });
+
+
+    /*
+       No result
+    */
+
+    if (results.length === 0) {
+
+        searchResults.innerHTML = `
+
+            <div class="search-result-item">
+
+                <div class="search-result-icon">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </div>
+
+                <div>
+
+                    <h4>No result found</h4>
+
+                    <p>
+                        Try another movie, natok or series name
+                    </p>
+
+                </div>
+
+            </div>
+
+        `;
+
+        return;
+
     }
 
-    .hero h1 {
-        max-width: 650px;
-    }
 
-    .footer-container {
-        grid-template-columns: 1fr 1fr;
-    }
+    /*
+       Show results
+    */
+
+    searchResults.innerHTML =
+        results
+            .slice(0, 8)
+            .map((item) => {
+
+                return `
+
+                    <div
+                        class="search-result-item"
+                        data-section="${item.section}"
+                    >
+
+                        <div class="search-result-icon">
+
+                            <i class="fa-solid fa-film"></i>
+
+                        </div>
+
+                        <div>
+
+                            <h4>
+                                ${item.title}
+                            </h4>
+
+                            <p>
+                                ${item.category}
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                `;
+
+            })
+            .join("");
+
+
+    /*
+       Add click to results
+    */
+
+    const resultItems =
+        searchResults.querySelectorAll(
+            ".search-result-item"
+        );
+
+
+    resultItems.forEach((item) => {
+
+        item.addEventListener("click", () => {
+
+            const section =
+                item.dataset.section;
+
+
+            /*
+               Try to find section
+            */
+
+            const target =
+                document.getElementById(
+                    section
+                );
+
+
+            if (target) {
+
+                closeSearch();
+
+                target.scrollIntoView({
+
+                    behavior: "smooth",
+
+                    block: "start"
+
+                });
+
+            }
+
+        });
+
+    });
+
 }
 
-/* =========================================================
-   MOBILE
-========================================================= */
 
-@media (max-width: 700px) {
-    header.navbar,
-    .nav-container {
-        height: 68px;
-    }
+/* =====================================================
+   SEARCH INPUT
+===================================================== */
 
-    .nav-menu {
-        display: none;
-    }
+if (searchInput) {
 
-    .mobile-menu-button {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
+    searchInput.addEventListener(
+        "input",
+        (event) => {
 
-    .search-box {
-        position: fixed;
-        top: 75px;
-        left: 4%;
-        right: 4%;
-        width: auto;
-    }
+            performSearch(
+                event.target.value
+            );
 
-    .hero {
-        min-height: 700px;
-        padding-top: 68px;
-        align-items: center;
-    }
+        }
+    );
 
-    .hero-content {
-        padding-top: 30px;
-    }
-
-    .hero h1 {
-        font-size: clamp(42px, 12vw, 62px);
-        line-height: 1.02;
-        letter-spacing: -2px;
-    }
-
-    .hero p {
-        font-size: 14px;
-        line-height: 1.7;
-    }
-
-    .hero-buttons {
-        width: 100%;
-    }
-
-    .hero-primary-button,
-    .hero-secondary-button {
-        flex: 1;
-        min-width: 145px;
-    }
-
-    .hero-dots {
-        right: 50%;
-        transform: translateX(50%);
-        bottom: 25px;
-    }
-
-    section {
-        padding: 65px 0;
-    }
-
-    .section-heading {
-        align-items: flex-start;
-        flex-direction: column;
-        margin-bottom: 25px;
-    }
-
-    .content-grid,
-    .stories-grid,
-    .books-grid,
-    .upcoming-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 12px;
-    }
-
-    .card-info,
-    .story-info,
-    .book-info,
-    .upcoming-info {
-        padding: 12px;
-    }
-
-    .card-info h3,
-    .story-info h3,
-    .book-info h3 {
-        font-size: 14px;
-    }
-
-    .poster-play {
-        opacity: 1;
-        width: 44px;
-        height: 44px;
-    }
-
-    .footer-container {
-        grid-template-columns: 1fr;
-        gap: 30px;
-    }
 }
 
-/* =========================================================
-   SMALL MOBILE
-========================================================= */
 
-@media (max-width: 430px) {
-    .logo {
-        font-size: 21px;
+/* =====================================================
+   CLICK OUTSIDE SEARCH
+===================================================== */
+
+document.addEventListener(
+    "click",
+    (event) => {
+
+        if (!searchBox) return;
+
+        const clickedInsideSearch =
+            searchBox.contains(event.target);
+
+        const clickedSearchButton =
+            searchIconButton &&
+            searchIconButton.contains(event.target);
+
+
+        if (
+            !clickedInsideSearch &&
+            !clickedSearchButton
+        ) {
+
+            closeSearch();
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   MOBILE MENU
+===================================================== */
+
+function toggleMobileMenu() {
+
+    if (!mobileNav) return;
+
+    mobileNav.classList.toggle("active");
+
+
+    /*
+       Change icon
+    */
+
+    if (mobileMenuButton) {
+
+        const icon =
+            mobileMenuButton.querySelector("i");
+
+        if (icon) {
+
+            const isOpen =
+                mobileNav.classList.contains(
+                    "active"
+                );
+
+
+            if (isOpen) {
+
+                icon.classList.remove(
+                    "fa-bars"
+                );
+
+                icon.classList.add(
+                    "fa-xmark"
+                );
+
+            } else {
+
+                icon.classList.remove(
+                    "fa-xmark"
+                );
+
+                icon.classList.add(
+                    "fa-bars"
+                );
+
+            }
+
+        }
+
     }
 
-    .search-icon-button,
-    .mobile-menu-button {
-        width: 38px;
-        height: 38px;
-    }
-
-    .hero {
-        min-height: 670px;
-    }
-
-    .hero h1 {
-        font-size: 43px;
-        letter-spacing: -1.5px;
-    }
-
-    .hero p {
-        font-size: 13px;
-    }
-
-    .hero-buttons {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .content-grid,
-    .stories-grid,
-    .books-grid,
-    .upcoming-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
-    }
-
-    .card-info h3 {
-        font-size: 13px;
-    }
 }
 
-/* =========================================================
-   REDUCED MOTION
-========================================================= */
 
-@media (prefers-reduced-motion: reduce) {
-    html {
-        scroll-behavior: auto;
-    }
+if (mobileMenuButton) {
 
-    *,
-    *::before,
-    *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-    }
+    mobileMenuButton.addEventListener(
+        "click",
+        (event) => {
 
-    .hero-background.zoom {
-        transform: scale(1);
-    }
+            event.stopPropagation();
+
+            toggleMobileMenu();
+
+        }
+    );
+
 }
+
+
+/* =====================================================
+   MOBILE NAV CLICK
+===================================================== */
+
+if (mobileNav) {
+
+    const mobileLinks =
+        mobileNav.querySelectorAll("a");
+
+
+    mobileLinks.forEach((link) => {
+
+        link.addEventListener(
+            "click",
+            () => {
+
+                mobileNav.classList.remove(
+                    "active"
+                );
+
+
+                /*
+                   Reset icon
+                */
+
+                if (mobileMenuButton) {
+
+                    const icon =
+                        mobileMenuButton.querySelector(
+                            "i"
+                        );
+
+                    if (icon) {
+
+                        icon.classList.remove(
+                            "fa-xmark"
+                        );
+
+                        icon.classList.add(
+                            "fa-bars"
+                        );
+
+                    }
+
+                }
+
+            }
+        );
+
+    });
+
+}
+
+
+/* =====================================================
+   SMOOTH SCROLL FOR ALL NAV LINKS
+===================================================== */
+
+document
+    .querySelectorAll('a[href^="#"]')
+    .forEach((link) => {
+
+        link.addEventListener(
+            "click",
+            (event) => {
+
+                const targetID =
+                    link.getAttribute("href");
+
+
+                if (
+                    !targetID ||
+                    targetID === "#"
+                ) {
+
+                    return;
+
+                }
+
+
+                const target =
+                    document.querySelector(
+                        targetID
+                    );
+
+
+                if (target) {
+
+                    event.preventDefault();
+
+                    target.scrollIntoView({
+
+                        behavior: "smooth",
+
+                        block: "start"
+
+                    });
+
+                }
+
+            }
+        );
+
+    });
+
+
+/* =====================================================
+   PLAY BUTTON
+===================================================== */
+
+const playButtons =
+    document.querySelectorAll(
+        ".poster-play"
+    );
+
+
+playButtons.forEach((button) => {
+
+    button.addEventListener(
+        "click",
+        (event) => {
+
+            event.stopPropagation();
+
+            const card =
+                button.closest(
+                    ".movie-card"
+                );
+
+
+            let title =
+                "Movie";
+
+
+            if (card) {
+
+                const titleElement =
+                    card.querySelector(
+                        "h3"
+                    );
+
+                if (titleElement) {
+
+                    title =
+                        titleElement.textContent;
+
+                }
+
+            }
+
+
+            /*
+               Temporary action
+               
+               Later we will replace this
+               with actual video player.
+            */
+
+            alert(
+                `"${title}" video player will open here.`
+            );
+
+        }
+    );
+
+});
+
+
+/* =====================================================
+   STORY BUTTONS
+===================================================== */
+
+const storyButtons =
+    document.querySelectorAll(
+        ".story-button"
+    );
+
+
+storyButtons.forEach((button) => {
+
+    button.addEventListener(
+        "click",
+        () => {
+
+            const card =
+                button.closest(
+                    ".story-card"
+                );
+
+
+            const titleElement =
+                card &&
+                card.querySelector(
+                    "h3"
+                );
+
+
+            const title =
+                titleElement
+                    ? titleElement.textContent
+                    : "Story";
+
+
+            alert(
+                `"${title}" story will open here.`
+            );
+
+        }
+    );
+
+});
+
+
+/* =====================================================
+   BOOK BUTTONS
+===================================================== */
+
+const bookButtons =
+    document.querySelectorAll(
+        ".book-button"
+    );
+
+
+bookButtons.forEach((button) => {
+
+    button.addEventListener(
+        "click",
+        () => {
+
+            const card =
+                button.closest(
+                    ".book-card"
+                );
+
+
+            const titleElement =
+                card &&
+                card.querySelector(
+                    "h3"
+                );
+
+
+            const title =
+                titleElement
+                    ? titleElement.textContent
+                    : "Book";
+
+
+            alert(
+                `"${title}" will open here.`
+            );
+
+        }
+    );
+
+});
+
+
+/* =====================================================
+   VIEW ALL BUTTONS
+===================================================== */
+
+const viewAllButtons =
+    document.querySelectorAll(
+        ".view-all-button"
+    );
+
+
+viewAllButtons.forEach((button) => {
+
+    button.addEventListener(
+        "click",
+        () => {
+
+            alert(
+                "More content will be loaded here."
+            );
+
+        }
+    );
+
+});
+
+
+/* =====================================================
+   ESCAPE KEY
+===================================================== */
+
+document.addEventListener(
+    "keydown",
+    (event) => {
+
+        if (
+            event.key === "Escape"
+        ) {
+
+            closeSearch();
+
+
+            if (mobileNav) {
+
+                mobileNav.classList.remove(
+                    "active"
+                );
+
+            }
+
+
+            if (mobileMenuButton) {
+
+                const icon =
+                    mobileMenuButton.querySelector(
+                        "i"
+                    );
+
+                if (icon) {
+
+                    icon.classList.remove(
+                        "fa-xmark"
+                    );
+
+                    icon.classList.add(
+                        "fa-bars"
+                    );
+
+                }
+
+            }
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   ACTIVE NAV LINK ON SCROLL
+===================================================== */
+
+const sections =
+    document.querySelectorAll(
+        "section[id]"
+    );
+
+
+const navLinks =
+    document.querySelectorAll(
+        ".nav-link"
+    );
+
+
+function updateActiveNav() {
+
+    let currentSection =
+        "";
+
+
+    sections.forEach((section) => {
+
+        const sectionTop =
+            section.offsetTop - 150;
+
+        const sectionHeight =
+            section.offsetHeight;
+
+
+        if (
+            window.scrollY >= sectionTop &&
+            window.scrollY <
+                sectionTop + sectionHeight
+        ) {
+
+            currentSection =
+                section.getAttribute("id");
+
+        }
+
+    });
+
+
+    navLinks.forEach((link) => {
+
+        link.classList.remove(
+            "active"
+        );
+
+
+        const href =
+            link.getAttribute("href");
+
+
+        if (
+            href ===
+            `#${currentSection}`
+        ) {
+
+            link.classList.add(
+                "active"
+            );
+
+        }
+
+    });
+
+}
+
+
+window.addEventListener(
+    "scroll",
+    updateActiveNav
+);
+
+
+/* =====================================================
+   MOBILE TOUCH EFFECT
+===================================================== */
+
+const touchCards =
+    document.querySelectorAll(
+        ".movie-card, .story-card, .book-card, .upcoming-card"
+    );
+
+
+touchCards.forEach((card) => {
+
+    card.addEventListener(
+        "touchstart",
+        () => {
+
+            card.style.transform =
+                "scale(0.985)";
+
+        },
+        {
+            passive: true
+        }
+    );
+
+
+    card.addEventListener(
+        "touchend",
+        () => {
+
+            card.style.transform = "";
+
+        },
+        {
+            passive: true
+        }
+    );
+
+});
+
+
+/* =====================================================
+   PAGE LOADED
+===================================================== */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        updateActiveNav();
+
+        console.log(
+            "Cinema Mella / Cinema Hub loaded successfully."
+        );
+
+    }
+);
