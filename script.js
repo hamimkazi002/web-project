@@ -1,1080 +1,1288 @@
 /* =====================================================
    CINEMA MELLA / CINEMA HUB
+   MAIN SCRIPT
 ===================================================== */
 
 
 /* =====================================================
-   LOGO CHANGER
+   DOM ELEMENTS
 ===================================================== */
 
-const logoChanging =
-    document.getElementById("logoChanging");
+const changingLogo = document.querySelector(".logo-changing");
 
-const footerLogoChanging =
-    document.getElementById("footerLogoChanging");
+const heroBackground = document.querySelector(".hero-background");
+
+const heroDots = document.querySelectorAll(".hero-dot");
+
+const searchIconButton =
+    document.querySelector(".search-icon-button");
+
+const searchBox =
+    document.querySelector(".search-box");
+
+const searchInput =
+    document.querySelector(".search-box input");
+
+const searchClose =
+    document.querySelector(".search-input-wrapper button");
+
+const searchResults =
+    document.querySelector(".search-results");
+
+const mobileMenuButton =
+    document.querySelector(".mobile-menu-button");
+
+const mobileNav =
+    document.querySelector(".mobile-nav");
 
 
-const logoNames = [
-    "MELLA",
-    "HUB"
+/* =====================================================
+   LOGO TEXT
+   Cinema → Mella → Hub
+===================================================== */
+
+const logoWords = [
+    "Mella",
+    "Hub"
 ];
-
 
 let logoIndex = 0;
 
 
-function changeLogo() {
+function changeLogoText() {
 
-    logoChanging.classList.add("change");
+    if (!changingLogo) return;
 
-    if (footerLogoChanging) {
-        footerLogoChanging.classList.add("change");
-    }
-
+    changingLogo.style.opacity = "0";
+    changingLogo.style.transform =
+        "translateY(-5px)";
 
     setTimeout(() => {
 
+        changingLogo.textContent =
+            logoWords[logoIndex];
+
+        changingLogo.style.opacity = "1";
+        changingLogo.style.transform =
+            "translateY(0)";
+
         logoIndex++;
 
-        if (logoIndex >= logoNames.length) {
+        if (logoIndex >= logoWords.length) {
             logoIndex = 0;
         }
 
-
-        logoChanging.textContent =
-            logoNames[logoIndex];
-
-
-        if (footerLogoChanging) {
-
-            footerLogoChanging.textContent =
-                logoNames[logoIndex];
-
-        }
-
-
-        logoChanging.classList.remove("change");
-
-
-        if (footerLogoChanging) {
-            footerLogoChanging.classList.remove("change");
-        }
-
-    }, 350);
-
+    }, 250);
 }
 
 
-/* Every 3.5 seconds */
+/*
+   Logo change every 2.5 seconds
+*/
 
-setInterval(changeLogo, 3500);
-
+setInterval(changeLogoText, 2500);
 
 
 /* =====================================================
-   HERO SLIDER DATA
+   HERO BACKGROUND SLIDER
 ===================================================== */
 
-const heroSlides = [
+const heroImages = [
 
-    {
-        image:
-            "https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=1800&q=90",
+    "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=2000&q=90",
 
-        title:
-            "Shadow Force",
+    "https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?auto=format&fit=crop&w=2000&q=90",
 
-        year:
-            "2026",
+    "https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=2000&q=90",
 
-        genre:
-            "Action",
-
-        duration:
-            "2h 05m",
-
-        description:
-            "A powerful action story filled with danger, mystery and unexpected moments. Discover a new journey and experience the story in cinematic quality."
-    },
-
-
-    {
-        image:
-            "https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=1800&q=90",
-
-        title:
-            "Dark Horizon",
-
-        year:
-            "2026",
-
-        genre:
-            "Thriller",
-
-        duration:
-            "1h 55m",
-
-        description:
-            "A mysterious world hides secrets that nobody expected. Follow the journey and uncover what is waiting beyond the darkness."
-    },
-
-
-    {
-        image:
-            "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1800&q=90",
-
-        title:
-            "The Last Mission",
-
-        year:
-            "2026",
-
-        genre:
-            "Adventure",
-
-        duration:
-            "2h 12m",
-
-        description:
-            "One final mission. One impossible decision. Experience a thrilling story full of action, adventure and unforgettable moments."
-    },
-
-
-    {
-        image:
-            "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=1800&q=90",
-
-        title:
-            "শেষ বিকেলের গল্প",
-
-        year:
-            "2026",
-
-        genre:
-            "Romance",
-
-        duration:
-            "1h 48m",
-
-        description:
-            "A beautiful Bangla romantic story about memories, relationships and the moments that remain with us forever."
-    },
-
-
-    {
-        image:
-            "https://images.unsplash.com/photo-1506157786151-b8491531f063?auto=format&fit=crop&w=1800&q=90",
-
-        title:
-            "Night Warrior",
-
-        year:
-            "2025",
-
-        genre:
-            "Action",
-
-        duration:
-            "2h 08m",
-
-        description:
-            "A fearless warrior enters a dangerous world where every decision changes the future. Watch the story unfold."
-    }
-
+    "https://images.unsplash.com/photo-1440404653325-ab127d49abc1?auto=format&fit=crop&w=2000&q=90"
 ];
 
 
-
-/* =====================================================
-   HERO ELEMENTS
-===================================================== */
-
-const heroBackground =
-    document.getElementById("heroBackground");
-
-const heroTitle =
-    document.getElementById("heroTitle");
-
-const heroYear =
-    document.getElementById("heroYear");
-
-const heroGenre =
-    document.getElementById("heroGenre");
-
-const heroDuration =
-    document.getElementById("heroDuration");
-
-const heroDescription =
-    document.getElementById("heroDescription");
-
-const sliderDots =
-    document.getElementById("sliderDots");
-
-const heroPrev =
-    document.getElementById("heroPrev");
-
-const heroNext =
-    document.getElementById("heroNext");
-
-
-
-let currentSlide = 0;
-
-let slideTimer;
-
+let currentHeroIndex = 0;
 
 
 /* =====================================================
-   CREATE DOTS
+   PRELOAD HERO IMAGES
 ===================================================== */
 
-heroSlides.forEach((slide, index) => {
+heroImages.forEach((imageURL) => {
 
-    const dot =
-        document.createElement("button");
+    const image = new Image();
 
-
-    dot.className =
-        "slider-dot";
-
-
-    dot.type =
-        "button";
-
-
-    dot.setAttribute(
-        "aria-label",
-        `Go to slide ${index + 1}`
-    );
-
-
-    dot.addEventListener(
-        "click",
-        () => {
-
-            currentSlide = index;
-
-            showSlide(currentSlide);
-
-            restartSlider();
-
-        }
-    );
-
-
-    sliderDots.appendChild(dot);
+    image.src = imageURL;
 
 });
 
 
-
 /* =====================================================
-   SHOW HERO SLIDE
+   SHOW HERO IMAGE
 ===================================================== */
 
-function showSlide(index) {
+function showHeroImage(index) {
 
-    const slide =
-        heroSlides[index];
+    if (!heroBackground) return;
 
-
-    /* Fade out */
+    /*
+       Fade out
+    */
 
     heroBackground.style.opacity = "0";
 
 
     setTimeout(() => {
 
-        /* Change image */
+        /*
+           Change image
+        */
 
         heroBackground.style.backgroundImage =
-            `url("${slide.image}")`;
+            `url("${heroImages[index]}")`;
 
 
-        /* Reset zoom */
+        /*
+           Reset zoom
+        */
 
         heroBackground.classList.remove("zoom");
 
 
-        /* Change text */
+        /*
+           Fade in
+        */
 
-        heroTitle.textContent =
-            slide.title;
-
-        heroYear.textContent =
-            slide.year;
-
-        heroGenre.textContent =
-            slide.genre;
-
-        heroDuration.textContent =
-            slide.duration;
-
-        heroDescription.textContent =
-            slide.description;
+        heroBackground.style.opacity = "1";
 
 
-        /* Fade in */
+        /*
+           Start soft zoom
+        */
 
-        heroBackground.style.opacity =
-            "1";
+        requestAnimationFrame(() => {
+
+            requestAnimationFrame(() => {
+
+                heroBackground.classList.add("zoom");
+
+            });
+
+        });
 
 
-        /* Start slow zoom */
+        /*
+           Update dots
+        */
 
-        setTimeout(() => {
-
-            heroBackground.classList.add(
-                "zoom"
-            );
-
-        }, 100);
-
+        updateHeroDots(index);
 
     }, 450);
-
-
-    /* Update dots */
-
-    const dots =
-        document.querySelectorAll(
-            ".slider-dot"
-        );
-
-
-    dots.forEach((dot, dotIndex) => {
-
-        dot.classList.toggle(
-            "active",
-            dotIndex === index
-        );
-
-    });
-
 }
 
 
-
 /* =====================================================
-   NEXT SLIDE
+   HERO DOTS
 ===================================================== */
 
-function nextSlide() {
+function updateHeroDots(index) {
 
-    currentSlide++;
+    heroDots.forEach((dot, dotIndex) => {
 
-    if (currentSlide >= heroSlides.length) {
+        if (dotIndex === index) {
 
-        currentSlide = 0;
-
-    }
-
-    showSlide(currentSlide);
-
-}
-
-
-
-/* =====================================================
-   PREVIOUS SLIDE
-===================================================== */
-
-function previousSlide() {
-
-    currentSlide--;
-
-    if (currentSlide < 0) {
-
-        currentSlide =
-            heroSlides.length - 1;
-
-    }
-
-    showSlide(currentSlide);
-
-}
-
-
-
-/* =====================================================
-   HERO ARROWS
-===================================================== */
-
-heroNext.addEventListener(
-    "click",
-    () => {
-
-        nextSlide();
-
-        restartSlider();
-
-    }
-);
-
-
-heroPrev.addEventListener(
-    "click",
-    () => {
-
-        previousSlide();
-
-        restartSlider();
-
-    }
-);
-
-
-
-/* =====================================================
-   AUTO SLIDER
-===================================================== */
-
-function startSlider() {
-
-    slideTimer =
-        setInterval(
-            nextSlide,
-            4000
-        );
-
-}
-
-
-function restartSlider() {
-
-    clearInterval(slideTimer);
-
-    startSlider();
-
-}
-
-
-
-/* =====================================================
-   INITIAL HERO
-===================================================== */
-
-heroBackground.style.backgroundImage =
-    `url("${heroSlides[0].image}")`;
-
-showSlide(0);
-
-startSlider();
-
-
-
-/* =====================================================
-   MOBILE MENU
-===================================================== */
-
-const menuButton =
-    document.getElementById("menuButton");
-
-const mobileMenu =
-    document.getElementById("mobileMenu");
-
-
-menuButton.addEventListener(
-    "click",
-    () => {
-
-        mobileMenu.classList.toggle(
-            "show"
-        );
-
-
-        const icon =
-            menuButton.querySelector("i");
-
-
-        if (
-            mobileMenu.classList.contains("show")
-        ) {
-
-            icon.classList.remove(
-                "fa-bars"
-            );
-
-            icon.classList.add(
-                "fa-xmark"
-            );
+            dot.classList.add("active");
 
         } else {
 
-            icon.classList.remove(
-                "fa-xmark"
-            );
-
-            icon.classList.add(
-                "fa-bars"
-            );
+            dot.classList.remove("active");
 
         }
 
-    }
-);
-
+    });
+}
 
 
 /* =====================================================
-   MOBILE MENU LINK TAP
+   INITIAL HERO IMAGE
 ===================================================== */
 
-const mobileLinks =
-    document.querySelectorAll(
-        ".mobile-menu a"
-    );
+if (heroBackground) {
+
+    heroBackground.style.backgroundImage =
+        `url("${heroImages[0]}")`;
+
+    heroBackground.style.opacity = "1";
+
+    /*
+       Start first zoom
+    */
+
+    setTimeout(() => {
+
+        heroBackground.classList.add("zoom");
+
+    }, 300);
+}
 
 
-mobileLinks.forEach((link) => {
+/* =====================================================
+   AUTO HERO SLIDER
+===================================================== */
 
-    link.addEventListener(
-        "click",
-        () => {
+/*
+   Change image every 4 seconds
+*/
 
-            mobileMenu.classList.remove(
-                "show"
-            );
+let heroTimer =
+    setInterval(() => {
 
+        currentHeroIndex++;
 
-            const icon =
-                menuButton.querySelector("i");
+        if (
+            currentHeroIndex >=
+            heroImages.length
+        ) {
 
-
-            icon.classList.remove(
-                "fa-xmark"
-            );
-
-            icon.classList.add(
-                "fa-bars"
-            );
+            currentHeroIndex = 0;
 
         }
-    );
+
+        showHeroImage(currentHeroIndex);
+
+    }, 4000);
+
+
+/* =====================================================
+   DOT CLICK
+===================================================== */
+
+heroDots.forEach((dot, index) => {
+
+    dot.addEventListener("click", () => {
+
+        currentHeroIndex = index;
+
+        showHeroImage(currentHeroIndex);
+
+
+        /*
+           Restart timer
+        */
+
+        clearInterval(heroTimer);
+
+        heroTimer =
+            setInterval(() => {
+
+                currentHeroIndex++;
+
+                if (
+                    currentHeroIndex >=
+                    heroImages.length
+                ) {
+
+                    currentHeroIndex = 0;
+
+                }
+
+                showHeroImage(
+                    currentHeroIndex
+                );
+
+            }, 4000);
+
+    });
 
 });
 
 
-
 /* =====================================================
-   SEARCH
+   SEARCH OPEN / CLOSE
 ===================================================== */
 
-const searchBox =
-    document.querySelector(
-        ".search-box"
-    );
+function openSearch() {
 
-const searchInput =
-    document.getElementById(
-        "searchInput"
-    );
+    if (!searchBox) return;
 
-const searchClear =
-    document.getElementById(
-        "searchClear"
-    );
+    searchBox.classList.add("active");
 
+    setTimeout(() => {
 
-
-/* Mobile search open */
-
-searchBox.addEventListener(
-    "click",
-    (event) => {
-
-        if (
-            window.innerWidth <= 600 &&
-            !searchBox.classList.contains(
-                "search-open"
-            )
-        ) {
-
-            event.preventDefault();
-
-            searchBox.classList.add(
-                "search-open"
-            );
+        if (searchInput) {
 
             searchInput.focus();
 
         }
 
-    }
-);
+    }, 150);
+
+}
 
 
+function closeSearch() {
 
-/* Search */
+    if (!searchBox) return;
 
-searchInput.addEventListener(
-    "input",
-    () => {
+    searchBox.classList.remove("active");
 
-        const value =
-            searchInput.value
-                .toLowerCase()
-                .trim();
-
-
-        searchClear.classList.toggle(
-            "show",
-            value.length > 0
-        );
-
-
-        filterMovies(value);
-
-    }
-);
-
-
-
-/* Clear search */
-
-searchClear.addEventListener(
-    "click",
-    (event) => {
-
-        event.stopPropagation();
+    if (searchInput) {
 
         searchInput.value = "";
 
-        searchClear.classList.remove(
-            "show"
-        );
+    }
 
-        filterMovies("");
+    if (searchResults) {
+
+        searchResults.innerHTML = "";
 
     }
-);
-
-
-
-/* =====================================================
-   MOVIE SEARCH
-===================================================== */
-
-function filterMovies(value) {
-
-    const cards =
-        document.querySelectorAll(
-            ".movie-card"
-        );
-
-
-    cards.forEach((card) => {
-
-        const title =
-            card
-                .getAttribute(
-                    "data-title"
-                )
-                .toLowerCase();
-
-
-        const categories =
-            card
-                .getAttribute(
-                    "data-category"
-                )
-                .toLowerCase();
-
-
-        if (
-            value === "" ||
-            title.includes(value) ||
-            categories.includes(value)
-        ) {
-
-            card.style.display =
-                "";
-
-        } else {
-
-            card.style.display =
-                "none";
-
-        }
-
-    });
 
 }
 
 
-
 /* =====================================================
-   CATEGORY FILTER
+   SEARCH BUTTON
 ===================================================== */
 
-const categoryButtons =
-    document.querySelectorAll(
-        ".category-button"
-    );
+if (searchIconButton) {
 
-
-categoryButtons.forEach(
-    (button) => {
-
-        button.addEventListener(
-            "click",
-            () => {
-
-                categoryButtons.forEach(
-                    (item) => {
-
-                        item.classList.remove(
-                            "active"
-                        );
-
-                    }
-                );
-
-
-                button.classList.add(
-                    "active"
-                );
-
-
-                const category =
-                    button.getAttribute(
-                        "data-category"
-                    );
-
-
-                const cards =
-                    document.querySelectorAll(
-                        ".movie-card"
-                    );
-
-
-                cards.forEach((card) => {
-
-                    const categories =
-                        card.getAttribute(
-                            "data-category"
-                        );
-
-
-                    if (
-                        category === "all" ||
-                        categories.includes(
-                            category
-                        )
-                    ) {
-
-                        card.style.display =
-                            "";
-
-                    } else {
-
-                        card.style.display =
-                            "none";
-
-                    }
-
-                });
-
-            }
-        );
-
-    }
-);
-
-
-
-/* =====================================================
-   MOVIE CARD TAP
-===================================================== */
-
-const movieCards =
-    document.querySelectorAll(
-        ".movie-card"
-    );
-
-
-movieCards.forEach((card) => {
-
-    card.addEventListener(
+    searchIconButton.addEventListener(
         "click",
         (event) => {
 
-            const title =
-                card.getAttribute(
-                    "data-title"
-                );
-
+            event.stopPropagation();
 
             if (
-                event.target.closest(
-                    ".card-play"
-                )
+                searchBox &&
+                searchBox.classList.contains("active")
             ) {
 
-                showToast(
-                    `Opening ${title}...`
-                );
+                closeSearch();
 
-                return;
+            } else {
+
+                openSearch();
 
             }
-
-
-            showToast(
-                `${title} selected`
-            );
 
         }
     );
 
-});
-
-
-
-/* =====================================================
-   WATCH BUTTONS
-===================================================== */
-
-const watchButtons =
-    document.querySelectorAll(
-        ".watch-button, .small-watch"
-    );
-
-
-watchButtons.forEach(
-    (button) => {
-
-        button.addEventListener(
-            "click",
-            () => {
-
-                showToast(
-                    "Video player will be connected in the next step 🎬"
-                );
-
-            }
-        );
-
-    }
-);
-
+}
 
 
 /* =====================================================
-   MORE INFO
+   SEARCH CLOSE BUTTON
 ===================================================== */
 
-const heroInfoButton =
-    document.getElementById(
-        "heroInfoButton"
+if (searchClose) {
+
+    searchClose.addEventListener(
+        "click",
+        (event) => {
+
+            event.stopPropagation();
+
+            closeSearch();
+
+        }
     );
-
-
-heroInfoButton.addEventListener(
-    "click",
-    () => {
-
-        showToast(
-            `${heroTitle.textContent} selected`
-        );
-
-    }
-);
-
-
-
-/* =====================================================
-   NOTIFICATION
-===================================================== */
-
-const notificationBtn =
-    document.getElementById(
-        "notificationBtn"
-    );
-
-
-notificationBtn.addEventListener(
-    "click",
-    () => {
-
-        showToast(
-            "No new notifications"
-        );
-
-    }
-);
-
-
-
-/* =====================================================
-   REMIND ME
-===================================================== */
-
-const remindButtons =
-    document.querySelectorAll(
-        ".remind-button"
-    );
-
-
-remindButtons.forEach(
-    (button) => {
-
-        button.addEventListener(
-            "click",
-            () => {
-
-                showToast(
-                    "Reminder added successfully 🔔"
-                );
-
-            }
-        );
-
-    }
-);
-
-
-
-/* =====================================================
-   HERO WATCH
-===================================================== */
-
-const heroWatchButton =
-    document.getElementById(
-        "heroWatchButton"
-    );
-
-
-heroWatchButton.addEventListener(
-    "click",
-    () => {
-
-        showToast(
-            `${heroTitle.textContent} player will open in the next step 🎬`
-        );
-
-    }
-);
-
-
-
-/* =====================================================
-   TOAST
-===================================================== */
-
-const toast =
-    document.getElementById(
-        "toast"
-    );
-
-
-let toastTimer;
-
-
-function showToast(message) {
-
-    toast.textContent =
-        message;
-
-
-    toast.classList.add(
-        "show"
-    );
-
-
-    clearTimeout(
-        toastTimer
-    );
-
-
-    toastTimer =
-        setTimeout(
-            () => {
-
-                toast.classList.remove(
-                    "show"
-                );
-
-            },
-            2800
-        );
 
 }
 
 
-
 /* =====================================================
-   TOUCH FRIENDLY HERO SWIPE
+   MOVIE DATABASE FOR SEARCH
 ===================================================== */
 
-let touchStartX = 0;
+const searchableItems = [
 
-let touchEndX = 0;
-
-
-const hero =
-    document.querySelector(
-        ".hero"
-    );
-
-
-hero.addEventListener(
-    "touchstart",
-    (event) => {
-
-        touchStartX =
-            event.changedTouches[0].screenX;
-
-    },
     {
-        passive: true
-    }
-);
-
-
-hero.addEventListener(
-    "touchend",
-    (event) => {
-
-        touchEndX =
-            event.changedTouches[0].screenX;
-
-
-        handleSwipe();
-
+        title: "The Last Horizon",
+        category: "Movie",
+        section: "movies"
     },
+
     {
-        passive: true
+        title: "Midnight Story",
+        category: "Movie",
+        section: "movies"
+    },
+
+    {
+        title: "Lost City",
+        category: "Movie",
+        section: "movies"
+    },
+
+    {
+        title: "Shadow Night",
+        category: "Movie",
+        section: "movies"
+    },
+
+    {
+        title: "Moner Golpo",
+        category: "Natok",
+        section: "natok"
+    },
+
+    {
+        title: "Eka Manush",
+        category: "Natok",
+        section: "natok"
+    },
+
+    {
+        title: "Shesh Chithi",
+        category: "Natok",
+        section: "natok"
+    },
+
+    {
+        title: "Tomar Jonno",
+        category: "Natok",
+        section: "natok"
+    },
+
+    {
+        title: "Dark Dimension",
+        category: "Web Series",
+        section: "series"
+    },
+
+    {
+        title: "The Unknown",
+        category: "Web Series",
+        section: "series"
+    },
+
+    {
+        title: "Cyber City",
+        category: "Web Series",
+        section: "series"
+    },
+
+    {
+        title: "Hidden Truth",
+        category: "Web Series",
+        section: "series"
+    },
+
+    {
+        title: "A Story of Life",
+        category: "Story",
+        section: "stories"
+    },
+
+    {
+        title: "The Last Letter",
+        category: "Story",
+        section: "stories"
+    },
+
+    {
+        title: "Winter Night",
+        category: "Story",
+        section: "stories"
+    },
+
+    {
+        title: "Unknown Journey",
+        category: "Story",
+        section: "stories"
+    },
+
+    {
+        title: "The Silent Book",
+        category: "Book",
+        section: "books"
+    },
+
+    {
+        title: "History of Cinema",
+        category: "Book",
+        section: "books"
+    },
+
+    {
+        title: "Modern Stories",
+        category: "Book",
+        section: "books"
+    },
+
+    {
+        title: "The Great Journey",
+        category: "Book",
+        section: "books"
     }
-);
+
+];
 
 
-function handleSwipe() {
+/* =====================================================
+   SEARCH FUNCTION
+===================================================== */
 
-    const distance =
-        touchEndX - touchStartX;
+function performSearch(keyword) {
+
+    if (!searchResults) return;
+
+    const searchText =
+        keyword.trim().toLowerCase();
 
 
-    if (
-        Math.abs(distance) < 50
-    ) {
+    /*
+       Empty search
+    */
+
+    if (!searchText) {
+
+        searchResults.innerHTML = "";
 
         return;
 
     }
 
 
-    if (distance < 0) {
+    /*
+       Find matching items
+    */
 
-        nextSlide();
+    const results =
+        searchableItems.filter((item) => {
 
-    } else {
+            return (
 
-        previousSlide();
+                item.title
+                    .toLowerCase()
+                    .includes(searchText)
+
+                ||
+
+                item.category
+                    .toLowerCase()
+                    .includes(searchText)
+
+            );
+
+        });
+
+
+    /*
+       No result
+    */
+
+    if (results.length === 0) {
+
+        searchResults.innerHTML = `
+
+            <div class="search-result-item">
+
+                <div class="search-result-icon">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </div>
+
+                <div>
+
+                    <h4>No result found</h4>
+
+                    <p>
+                        Try another movie, natok or series name
+                    </p>
+
+                </div>
+
+            </div>
+
+        `;
+
+        return;
 
     }
 
 
-    restartSlider();
+    /*
+       Show results
+    */
+
+    searchResults.innerHTML =
+        results
+            .slice(0, 8)
+            .map((item) => {
+
+                return `
+
+                    <div
+                        class="search-result-item"
+                        data-section="${item.section}"
+                    >
+
+                        <div class="search-result-icon">
+
+                            <i class="fa-solid fa-film"></i>
+
+                        </div>
+
+                        <div>
+
+                            <h4>
+                                ${item.title}
+                            </h4>
+
+                            <p>
+                                ${item.category}
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                `;
+
+            })
+            .join("");
+
+
+    /*
+       Add click to results
+    */
+
+    const resultItems =
+        searchResults.querySelectorAll(
+            ".search-result-item"
+        );
+
+
+    resultItems.forEach((item) => {
+
+        item.addEventListener("click", () => {
+
+            const section =
+                item.dataset.section;
+
+
+            /*
+               Try to find section
+            */
+
+            const target =
+                document.getElementById(
+                    section
+                );
+
+
+            if (target) {
+
+                closeSearch();
+
+                target.scrollIntoView({
+
+                    behavior: "smooth",
+
+                    block: "start"
+
+                });
+
+            }
+
+        });
+
+    });
 
 }
+
+
+/* =====================================================
+   SEARCH INPUT
+===================================================== */
+
+if (searchInput) {
+
+    searchInput.addEventListener(
+        "input",
+        (event) => {
+
+            performSearch(
+                event.target.value
+            );
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   CLICK OUTSIDE SEARCH
+===================================================== */
+
+document.addEventListener(
+    "click",
+    (event) => {
+
+        if (!searchBox) return;
+
+        const clickedInsideSearch =
+            searchBox.contains(event.target);
+
+        const clickedSearchButton =
+            searchIconButton &&
+            searchIconButton.contains(event.target);
+
+
+        if (
+            !clickedInsideSearch &&
+            !clickedSearchButton
+        ) {
+
+            closeSearch();
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   MOBILE MENU
+===================================================== */
+
+function toggleMobileMenu() {
+
+    if (!mobileNav) return;
+
+    mobileNav.classList.toggle("active");
+
+
+    /*
+       Change icon
+    */
+
+    if (mobileMenuButton) {
+
+        const icon =
+            mobileMenuButton.querySelector("i");
+
+        if (icon) {
+
+            const isOpen =
+                mobileNav.classList.contains(
+                    "active"
+                );
+
+
+            if (isOpen) {
+
+                icon.classList.remove(
+                    "fa-bars"
+                );
+
+                icon.classList.add(
+                    "fa-xmark"
+                );
+
+            } else {
+
+                icon.classList.remove(
+                    "fa-xmark"
+                );
+
+                icon.classList.add(
+                    "fa-bars"
+                );
+
+            }
+
+        }
+
+    }
+
+}
+
+
+if (mobileMenuButton) {
+
+    mobileMenuButton.addEventListener(
+        "click",
+        (event) => {
+
+            event.stopPropagation();
+
+            toggleMobileMenu();
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   MOBILE NAV CLICK
+===================================================== */
+
+if (mobileNav) {
+
+    const mobileLinks =
+        mobileNav.querySelectorAll("a");
+
+
+    mobileLinks.forEach((link) => {
+
+        link.addEventListener(
+            "click",
+            () => {
+
+                mobileNav.classList.remove(
+                    "active"
+                );
+
+
+                /*
+                   Reset icon
+                */
+
+                if (mobileMenuButton) {
+
+                    const icon =
+                        mobileMenuButton.querySelector(
+                            "i"
+                        );
+
+                    if (icon) {
+
+                        icon.classList.remove(
+                            "fa-xmark"
+                        );
+
+                        icon.classList.add(
+                            "fa-bars"
+                        );
+
+                    }
+
+                }
+
+            }
+        );
+
+    });
+
+}
+
+
+/* =====================================================
+   SMOOTH SCROLL FOR ALL NAV LINKS
+===================================================== */
+
+document
+    .querySelectorAll('a[href^="#"]')
+    .forEach((link) => {
+
+        link.addEventListener(
+            "click",
+            (event) => {
+
+                const targetID =
+                    link.getAttribute("href");
+
+
+                if (
+                    !targetID ||
+                    targetID === "#"
+                ) {
+
+                    return;
+
+                }
+
+
+                const target =
+                    document.querySelector(
+                        targetID
+                    );
+
+
+                if (target) {
+
+                    event.preventDefault();
+
+                    target.scrollIntoView({
+
+                        behavior: "smooth",
+
+                        block: "start"
+
+                    });
+
+                }
+
+            }
+        );
+
+    });
+
+
+/* =====================================================
+   PLAY BUTTON
+===================================================== */
+
+const playButtons =
+    document.querySelectorAll(
+        ".poster-play"
+    );
+
+
+playButtons.forEach((button) => {
+
+    button.addEventListener(
+        "click",
+        (event) => {
+
+            event.stopPropagation();
+
+            const card =
+                button.closest(
+                    ".movie-card"
+                );
+
+
+            let title =
+                "Movie";
+
+
+            if (card) {
+
+                const titleElement =
+                    card.querySelector(
+                        "h3"
+                    );
+
+                if (titleElement) {
+
+                    title =
+                        titleElement.textContent;
+
+                }
+
+            }
+
+
+            /*
+               Temporary action
+               
+               Later we will replace this
+               with actual video player.
+            */
+
+            alert(
+                `"${title}" video player will open here.`
+            );
+
+        }
+    );
+
+});
+
+
+/* =====================================================
+   STORY BUTTONS
+===================================================== */
+
+const storyButtons =
+    document.querySelectorAll(
+        ".story-button"
+    );
+
+
+storyButtons.forEach((button) => {
+
+    button.addEventListener(
+        "click",
+        () => {
+
+            const card =
+                button.closest(
+                    ".story-card"
+                );
+
+
+            const titleElement =
+                card &&
+                card.querySelector(
+                    "h3"
+                );
+
+
+            const title =
+                titleElement
+                    ? titleElement.textContent
+                    : "Story";
+
+
+            alert(
+                `"${title}" story will open here.`
+            );
+
+        }
+    );
+
+});
+
+
+/* =====================================================
+   BOOK BUTTONS
+===================================================== */
+
+const bookButtons =
+    document.querySelectorAll(
+        ".book-button"
+    );
+
+
+bookButtons.forEach((button) => {
+
+    button.addEventListener(
+        "click",
+        () => {
+
+            const card =
+                button.closest(
+                    ".book-card"
+                );
+
+
+            const titleElement =
+                card &&
+                card.querySelector(
+                    "h3"
+                );
+
+
+            const title =
+                titleElement
+                    ? titleElement.textContent
+                    : "Book";
+
+
+            alert(
+                `"${title}" will open here.`
+            );
+
+        }
+    );
+
+});
+
+
+/* =====================================================
+   VIEW ALL BUTTONS
+===================================================== */
+
+const viewAllButtons =
+    document.querySelectorAll(
+        ".view-all-button"
+    );
+
+
+viewAllButtons.forEach((button) => {
+
+    button.addEventListener(
+        "click",
+        () => {
+
+            alert(
+                "More content will be loaded here."
+            );
+
+        }
+    );
+
+});
+
+
+/* =====================================================
+   ESCAPE KEY
+===================================================== */
+
+document.addEventListener(
+    "keydown",
+    (event) => {
+
+        if (
+            event.key === "Escape"
+        ) {
+
+            closeSearch();
+
+
+            if (mobileNav) {
+
+                mobileNav.classList.remove(
+                    "active"
+                );
+
+            }
+
+
+            if (mobileMenuButton) {
+
+                const icon =
+                    mobileMenuButton.querySelector(
+                        "i"
+                    );
+
+                if (icon) {
+
+                    icon.classList.remove(
+                        "fa-xmark"
+                    );
+
+                    icon.classList.add(
+                        "fa-bars"
+                    );
+
+                }
+
+            }
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   ACTIVE NAV LINK ON SCROLL
+===================================================== */
+
+const sections =
+    document.querySelectorAll(
+        "section[id]"
+    );
+
+
+const navLinks =
+    document.querySelectorAll(
+        ".nav-link"
+    );
+
+
+function updateActiveNav() {
+
+    let currentSection =
+        "";
+
+
+    sections.forEach((section) => {
+
+        const sectionTop =
+            section.offsetTop - 150;
+
+        const sectionHeight =
+            section.offsetHeight;
+
+
+        if (
+            window.scrollY >= sectionTop &&
+            window.scrollY <
+                sectionTop + sectionHeight
+        ) {
+
+            currentSection =
+                section.getAttribute("id");
+
+        }
+
+    });
+
+
+    navLinks.forEach((link) => {
+
+        link.classList.remove(
+            "active"
+        );
+
+
+        const href =
+            link.getAttribute("href");
+
+
+        if (
+            href ===
+            `#${currentSection}`
+        ) {
+
+            link.classList.add(
+                "active"
+            );
+
+        }
+
+    });
+
+}
+
+
+window.addEventListener(
+    "scroll",
+    updateActiveNav
+);
+
+
+/* =====================================================
+   MOBILE TOUCH EFFECT
+===================================================== */
+
+const touchCards =
+    document.querySelectorAll(
+        ".movie-card, .story-card, .book-card, .upcoming-card"
+    );
+
+
+touchCards.forEach((card) => {
+
+    card.addEventListener(
+        "touchstart",
+        () => {
+
+            card.style.transform =
+                "scale(0.985)";
+
+        },
+        {
+            passive: true
+        }
+    );
+
+
+    card.addEventListener(
+        "touchend",
+        () => {
+
+            card.style.transform = "";
+
+        },
+        {
+            passive: true
+        }
+    );
+
+});
+
+
+/* =====================================================
+   PAGE LOADED
+===================================================== */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        updateActiveNav();
+
+        console.log(
+            "Cinema Mella / Cinema Hub loaded successfully."
+        );
+
+    }
+);

@@ -2,20 +2,19 @@
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Cinema Mella</title>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-    <link rel="stylesheet" href="style.css">
+    <title>Cinema Mella & Hub</title>
 
-    <!-- Google Font -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-    <link
-        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
-        rel="stylesheet"
+    <meta
+        name="description"
+        content="Cinema Mella & Hub - Movies, Natok, Web Series, Upcoming Movies, Stories and Books."
     >
 
     <!-- Font Awesome -->
@@ -23,6 +22,30 @@
         rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
     >
+
+    <!-- Google Font -->
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <!-- Main CSS -->
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
 </head>
 
 
@@ -37,103 +60,192 @@
 
     <div class="nav-container">
 
+
         <!-- LOGO -->
 
-        <a href="#home" class="logo">
+        <a
+            href="#home"
+            class="logo"
+        >
 
-            <span class="logo-main">CINEMA</span>
+            <span class="logo-cinema">
+                CINEMA
+            </span>
 
-            <span class="logo-changing" id="logoChanging">
+            <span
+                class="logo-changing"
+                id="logoChangingText"
+            >
                 MELLA
             </span>
 
         </a>
 
 
-        <!-- DESKTOP NAVIGATION -->
+        <!-- DESKTOP NAV -->
 
-        <nav class="nav-links" id="navLinks">
+        <nav class="nav-menu">
 
-            <a href="#home" class="active">
+            <a
+                href="#home"
+                class="nav-link active"
+            >
                 Home
             </a>
 
-            <a href="#movies">
+            <a
+                href="#movies"
+                class="nav-link"
+            >
                 Movies
             </a>
 
-            <a href="#natok">
+            <a
+                href="#natok"
+                class="nav-link"
+            >
                 Natok
             </a>
 
-            <a href="#series">
+            <a
+                href="#webseries"
+                class="nav-link"
+            >
                 Web Series
             </a>
 
-            <a href="#upcoming">
+            <a
+                href="#upcoming"
+                class="nav-link"
+            >
                 Upcoming
+            </a>
+
+            <a
+                href="#stories"
+                class="nav-link"
+            >
+                Stories
+            </a>
+
+            <a
+                href="#books"
+                class="nav-link"
+            >
+                Books
             </a>
 
         </nav>
 
 
-        <!-- RIGHT SIDE -->
+        <!-- SEARCH -->
 
-        <div class="nav-right">
+        <div class="nav-search-wrapper">
+
+            <button
+                class="search-icon-button"
+                id="searchToggle"
+                type="button"
+                aria-label="Search"
+            >
+
+                <i class="fa-solid fa-magnifying-glass"></i>
+
+            </button>
 
 
-            <!-- SEARCH -->
+            <div
+                class="search-box"
+                id="searchBox"
+            >
 
-            <div class="search-box">
+                <div class="search-input-wrapper">
 
-                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                    <i class="fa-solid fa-magnifying-glass"></i>
 
-                <input
-                    type="text"
-                    id="searchInput"
-                    placeholder="Search movies, series, natok..."
-                    autocomplete="off"
+                    <input
+                        type="text"
+                        id="searchInput"
+                        placeholder="Search movies, natok..."
+                        autocomplete="off"
+                    >
+
+                    <button
+                        id="searchClose"
+                        type="button"
+                    >
+
+                        <i class="fa-solid fa-xmark"></i>
+
+                    </button>
+
+                </div>
+
+
+                <div
+                    class="search-results"
+                    id="searchResults"
                 >
 
-                <button
-                    class="search-clear"
-                    id="searchClear"
-                    type="button"
-                >
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
+                    <!-- Results will appear here -->
+
+                </div>
 
             </div>
 
-
-            <!-- NOTIFICATION -->
-
-            <button
-                class="icon-button"
-                id="notificationBtn"
-                type="button"
-                aria-label="Notifications"
-            >
-
-                <i class="fa-regular fa-bell"></i>
-
-            </button>
-
-
-            <!-- MOBILE MENU -->
-
-            <button
-                class="menu-button"
-                id="menuButton"
-                type="button"
-                aria-label="Open menu"
-            >
-
-                <i class="fa-solid fa-bars"></i>
-
-            </button>
-
         </div>
+
+
+        <!-- MOBILE MENU BUTTON -->
+
+        <button
+            class="mobile-menu-button"
+            id="mobileMenuButton"
+            type="button"
+            aria-label="Open menu"
+        >
+
+            <i class="fa-solid fa-bars"></i>
+
+        </button>
+
+    </div>
+
+
+    <!-- MOBILE NAV -->
+
+    <div
+        class="mobile-nav"
+        id="mobileNav"
+    >
+
+        <a href="#home">
+            Home
+        </a>
+
+        <a href="#movies">
+            Movies
+        </a>
+
+        <a href="#natok">
+            Natok
+        </a>
+
+        <a href="#webseries">
+            Web Series
+        </a>
+
+        <a href="#upcoming">
+            Upcoming
+        </a>
+
+        <a href="#stories">
+            Stories
+        </a>
+
+        <a href="#books">
+            Books
+        </a>
 
     </div>
 
@@ -142,50 +254,27 @@
 
 
 <!-- =====================================================
-     MOBILE MENU
+     HERO SECTION
 ===================================================== -->
 
-<div class="mobile-menu" id="mobileMenu">
-
-    <a href="#home">
-        <i class="fa-solid fa-house"></i>
-        Home
-    </a>
-
-    <a href="#movies">
-        <i class="fa-solid fa-film"></i>
-        Movies
-    </a>
-
-    <a href="#natok">
-        <i class="fa-solid fa-masks-theater"></i>
-        Natok
-    </a>
-
-    <a href="#series">
-        <i class="fa-solid fa-tv"></i>
-        Web Series
-    </a>
-
-    <a href="#upcoming">
-        <i class="fa-solid fa-calendar"></i>
-        Upcoming
-    </a>
-
-</div>
+<main>
 
 
-
-<!-- =====================================================
-     HERO
-===================================================== -->
-
-<section class="hero" id="home">
+<section
+    class="hero"
+    id="home"
+>
 
 
-    <!-- BACKGROUND SLIDES -->
+    <!-- HERO BACKGROUND -->
 
-    <div class="hero-background" id="heroBackground"></div>
+    <div
+        class="hero-background"
+        id="heroBackground"
+    ></div>
+
+
+    <!-- HERO OVERLAY -->
 
     <div class="hero-overlay"></div>
 
@@ -197,269 +286,110 @@
         <div class="hero-content">
 
 
-            <div class="trending-label">
+            <span class="hero-badge">
 
-                <span class="fire-icon">
-                    <i class="fa-solid fa-fire"></i>
-                </span>
+                <i class="fa-solid fa-film"></i>
 
-                TRENDING NOW
+                FEATURED ENTERTAINMENT
 
-            </div>
+            </span>
 
 
-            <h1 id="heroTitle">
-                Shadow Force
+            <h1>
+
+                Watch Movies,
+
+                <br>
+
+                Natok
+
+                <br>
+
+                & Web Series
+
+                <br>
+
+                Anytime
+
             </h1>
 
 
-            <div class="hero-meta">
+            <p>
 
-                <span id="heroYear">
-                    2026
-                </span>
-
-                <span class="dot">
-                    •
-                </span>
-
-                <span id="heroGenre">
-                    Action
-                </span>
-
-                <span class="dot">
-                    •
-                </span>
-
-                <span id="heroDuration">
-                    2h 05m
-                </span>
-
-                <span class="quality-badge">
-                    HD
-                </span>
-
-            </div>
-
-
-            <p id="heroDescription">
-
-                Discover an exciting story filled with action,
-                mystery and unforgettable moments. Watch your
-                favorite entertainment anytime and anywhere.
+                Discover your favorite entertainment
+                in one place. Watch on desktop or
+                mobile and explore the latest releases,
+                trending content and upcoming movies.
 
             </p>
 
 
             <div class="hero-buttons">
 
-                <button
-                    class="watch-button"
-                    id="heroWatchButton"
-                    type="button"
+
+                <a
+                    href="#movies"
+                    class="hero-primary-button"
                 >
 
                     <i class="fa-solid fa-play"></i>
 
-                    Watch Now
+                    Explore Now
 
-                </button>
+                </a>
 
 
-                <button
-                    class="info-button"
-                    id="heroInfoButton"
-                    type="button"
+                <a
+                    href="#upcoming"
+                    class="hero-secondary-button"
                 >
 
-                    <i class="fa-solid fa-circle-info"></i>
+                    View Upcoming
 
-                    More Info
-
-                </button>
+                </a>
 
             </div>
 
+
         </div>
 
-
-        <!-- HERO SLIDER CONTROLS -->
-
-        <button
-            class="hero-arrow hero-prev"
-            id="heroPrev"
-            type="button"
-            aria-label="Previous"
-        >
-
-            <i class="fa-solid fa-chevron-left"></i>
-
-        </button>
+    </div>
 
 
-        <button
-            class="hero-arrow hero-next"
-            id="heroNext"
-            type="button"
-            aria-label="Next"
-        >
+    <!-- SLIDER DOTS -->
 
-            <i class="fa-solid fa-chevron-right"></i>
+    <div
+        class="hero-dots"
+        id="heroDots"
+    >
 
-        </button>
+        <span class="hero-dot active"></span>
 
+        <span class="hero-dot"></span>
 
-        <!-- DOTS -->
+        <span class="hero-dot"></span>
 
-        <div
-            class="slider-dots"
-            id="sliderDots"
-        ></div>
+        <span class="hero-dot"></span>
 
     </div>
+
 
 </section>
 
 
 
 <!-- =====================================================
-     CATEGORY BAR
+     MOVIES SECTION
 ===================================================== -->
 
-<section class="category-section">
+<section
+    class="content-section"
+    id="movies"
+>
 
-    <div class="category-container" id="categoryContainer">
-
-
-        <button
-            class="category-button active"
-            data-category="all"
-            type="button"
-        >
-
-            <i class="fa-solid fa-border-all"></i>
-
-            <span>All</span>
-
-        </button>
-
-
-        <button
-            class="category-button"
-            data-category="movie"
-            type="button"
-        >
-
-            <i class="fa-solid fa-film"></i>
-
-            <span>Movies</span>
-
-        </button>
-
-
-        <button
-            class="category-button"
-            data-category="series"
-            type="button"
-        >
-
-            <i class="fa-solid fa-tv"></i>
-
-            <span>Web Series</span>
-
-        </button>
-
-
-        <button
-            class="category-button"
-            data-category="natok"
-            type="button"
-        >
-
-            <i class="fa-solid fa-masks-theater"></i>
-
-            <span>Natok</span>
-
-        </button>
-
-
-        <button
-            class="category-button"
-            data-category="action"
-            type="button"
-        >
-
-            <i class="fa-solid fa-bolt"></i>
-
-            <span>Action</span>
-
-        </button>
-
-
-        <button
-            class="category-button"
-            data-category="romance"
-            type="button"
-        >
-
-            <i class="fa-solid fa-heart"></i>
-
-            <span>Romance</span>
-
-        </button>
-
-
-        <button
-            class="category-button"
-            data-category="comedy"
-            type="button"
-        >
-
-            <i class="fa-solid fa-face-laugh"></i>
-
-            <span>Comedy</span>
-
-        </button>
-
-
-        <button
-            class="category-button"
-            data-category="horror"
-            type="button"
-        >
-
-            <i class="fa-solid fa-ghost"></i>
-
-            <span>Horror</span>
-
-        </button>
-
-
-        <button
-            class="category-button"
-            data-category="thriller"
-            type="button"
-        >
-
-            <i class="fa-solid fa-crosshairs"></i>
-
-            <span>Thriller</span>
-
-        </button>
-
-    </div>
-
-</section>
-
-
-
-<!-- =====================================================
-     TRENDING MOVIES
-===================================================== -->
-
-<section class="content-section" id="movies">
 
     <div class="section-heading">
+
 
         <div class="heading-left">
 
@@ -468,11 +398,11 @@
             <div>
 
                 <h2>
-                    Trending Now
+                    Movies
                 </h2>
 
                 <p>
-                    Most watched entertainment
+                    Latest movies and popular releases
                 </p>
 
             </div>
@@ -491,31 +421,25 @@
 
         </button>
 
+
     </div>
 
 
-    <div
-        class="movie-grid"
-        id="movieGrid"
-    >
+    <div class="content-grid">
 
 
-        <!-- MOVIE 1 -->
+        <!-- MOVIE 01 -->
 
-        <article
-            class="movie-card"
-            data-category="movie action thriller"
-            data-title="Shadow Force"
-        >
+        <article class="movie-card">
 
             <div class="movie-poster poster-1">
 
-                <span class="poster-quality">
+                <span class="content-badge">
                     HD
                 </span>
 
                 <button
-                    class="card-play"
+                    class="poster-play"
                     type="button"
                 >
 
@@ -523,28 +447,32 @@
 
                 </button>
 
-                <div class="movie-rating">
-                    <i class="fa-solid fa-star"></i>
-                    8.4
-                </div>
-
             </div>
 
 
-            <div class="movie-card-info">
+            <div class="card-info">
+
+                <span class="card-category">
+                    MOVIE
+                </span>
 
                 <h3>
-                    Shadow Force
+                    Featured Movie
                 </h3>
 
-                <div class="movie-small-info">
+                <p>
+                    Latest movie release
+                </p>
+
+                <div class="card-meta">
 
                     <span>
                         2026
                     </span>
 
                     <span>
-                        Action
+                        <i class="fa-solid fa-star"></i>
+                        8.5
                     </span>
 
                 </div>
@@ -555,22 +483,18 @@
 
 
 
-        <!-- MOVIE 2 -->
+        <!-- MOVIE 02 -->
 
-        <article
-            class="movie-card"
-            data-category="movie thriller"
-            data-title="Dark Horizon"
-        >
+        <article class="movie-card">
 
             <div class="movie-poster poster-2">
 
-                <span class="poster-quality">
-                    4K
+                <span class="content-badge">
+                    NEW
                 </span>
 
                 <button
-                    class="card-play"
+                    class="poster-play"
                     type="button"
                 >
 
@@ -578,28 +502,32 @@
 
                 </button>
 
-                <div class="movie-rating">
-                    <i class="fa-solid fa-star"></i>
-                    8.1
-                </div>
-
             </div>
 
 
-            <div class="movie-card-info">
+            <div class="card-info">
+
+                <span class="card-category">
+                    MOVIE
+                </span>
 
                 <h3>
-                    Dark Horizon
+                    Midnight Journey
                 </h3>
 
-                <div class="movie-small-info">
+                <p>
+                    A new cinematic experience
+                </p>
+
+                <div class="card-meta">
 
                     <span>
                         2026
                     </span>
 
                     <span>
-                        Thriller
+                        <i class="fa-solid fa-star"></i>
+                        8.1
                     </span>
 
                 </div>
@@ -610,22 +538,18 @@
 
 
 
-        <!-- MOVIE 3 -->
+        <!-- MOVIE 03 -->
 
-        <article
-            class="movie-card"
-            data-category="series action"
-            data-title="The Last Mission"
-        >
+        <article class="movie-card">
 
             <div class="movie-poster poster-3">
 
-                <span class="poster-quality">
-                    HD
+                <span class="content-badge">
+                    4K
                 </span>
 
                 <button
-                    class="card-play"
+                    class="poster-play"
                     type="button"
                 >
 
@@ -633,83 +557,32 @@
 
                 </button>
 
-                <div class="movie-rating">
-                    <i class="fa-solid fa-star"></i>
-                    8.7
-                </div>
-
             </div>
 
 
-            <div class="movie-card-info">
+            <div class="card-info">
 
-                <h3>
-                    The Last Mission
-                </h3>
-
-                <div class="movie-small-info">
-
-                    <span>
-                        Season 1
-                    </span>
-
-                    <span>
-                        Action
-                    </span>
-
-                </div>
-
-            </div>
-
-        </article>
-
-
-
-        <!-- MOVIE 4 -->
-
-        <article
-            class="movie-card"
-            data-category="natok romance"
-            data-title="শেষ বিকেলের গল্প"
-        >
-
-            <div class="movie-poster poster-4">
-
-                <span class="poster-quality">
-                    HD
+                <span class="card-category">
+                    MOVIE
                 </span>
 
-                <button
-                    class="card-play"
-                    type="button"
-                >
-
-                    <i class="fa-solid fa-play"></i>
-
-                </button>
-
-                <div class="movie-rating">
-                    <i class="fa-solid fa-star"></i>
-                    9.0
-                </div>
-
-            </div>
-
-
-            <div class="movie-card-info">
-
                 <h3>
-                    শেষ বিকেলের গল্প
+                    The Last Story
                 </h3>
 
-                <div class="movie-small-info">
+                <p>
+                    Mystery and adventure
+                </p>
+
+                <div class="card-meta">
 
                     <span>
                         2026
                     </span>
 
                     <span>
-                        Romance
+                        <i class="fa-solid fa-star"></i>
+                        8.7
                     </span>
 
                 </div>
@@ -720,22 +593,18 @@
 
 
 
-        <!-- MOVIE 5 -->
+        <!-- MOVIE 04 -->
 
-        <article
-            class="movie-card"
-            data-category="movie action"
-            data-title="Night Warrior"
-        >
+        <article class="movie-card">
 
-            <div class="movie-poster poster-5">
+            <div class="movie-poster poster-4">
 
-                <span class="poster-quality">
-                    4K
+                <span class="content-badge">
+                    NEW
                 </span>
 
                 <button
-                    class="card-play"
+                    class="poster-play"
                     type="button"
                 >
 
@@ -743,83 +612,32 @@
 
                 </button>
 
-                <div class="movie-rating">
-                    <i class="fa-solid fa-star"></i>
-                    8.2
-                </div>
-
             </div>
 
 
-            <div class="movie-card-info">
+            <div class="card-info">
 
-                <h3>
-                    Night Warrior
-                </h3>
-
-                <div class="movie-small-info">
-
-                    <span>
-                        2025
-                    </span>
-
-                    <span>
-                        Action
-                    </span>
-
-                </div>
-
-            </div>
-
-        </article>
-
-
-
-        <!-- MOVIE 6 -->
-
-        <article
-            class="movie-card"
-            data-category="series horror"
-            data-title="The Silent House"
-        >
-
-            <div class="movie-poster poster-6">
-
-                <span class="poster-quality">
-                    HD
+                <span class="card-category">
+                    MOVIE
                 </span>
 
-                <button
-                    class="card-play"
-                    type="button"
-                >
-
-                    <i class="fa-solid fa-play"></i>
-
-                </button>
-
-                <div class="movie-rating">
-                    <i class="fa-solid fa-star"></i>
-                    7.9
-                </div>
-
-            </div>
-
-
-            <div class="movie-card-info">
-
                 <h3>
-                    The Silent House
+                    Beyond The Night
                 </h3>
 
-                <div class="movie-small-info">
+                <p>
+                    Drama and emotion
+                </p>
+
+                <div class="card-meta">
 
                     <span>
-                        Season 2
+                        2026
                     </span>
 
                     <span>
-                        Horror
+                        <i class="fa-solid fa-star"></i>
+                        8.3
                     </span>
 
                 </div>
@@ -827,6 +645,7 @@
             </div>
 
         </article>
+
 
     </div>
 
@@ -835,52 +654,7 @@
 
 
 <!-- =====================================================
-     FEATURED SECTION
-===================================================== -->
-
-<section class="featured-section" id="series">
-
-    <div class="featured-background"></div>
-
-    <div class="featured-overlay"></div>
-
-
-    <div class="featured-content">
-
-        <span class="featured-label">
-            ORIGINAL SERIES
-        </span>
-
-        <h2>
-            Beyond The Darkness
-        </h2>
-
-        <p>
-            A mysterious journey filled with secrets,
-            action and unexpected twists. Discover a
-            story that keeps you watching until the end.
-        </p>
-
-
-        <button
-            class="watch-button"
-            type="button"
-        >
-
-            <i class="fa-solid fa-play"></i>
-
-            Watch Series
-
-        </button>
-
-    </div>
-
-</section>
-
-
-
-<!-- =====================================================
-     NATOK
+     NATOK SECTION
 ===================================================== -->
 
 <section
@@ -888,7 +662,9 @@
     id="natok"
 >
 
+
     <div class="section-heading">
+
 
         <div class="heading-left">
 
@@ -897,11 +673,11 @@
             <div>
 
                 <h2>
-                    Latest Natok
+                    Natok
                 </h2>
 
                 <p>
-                    New Bangla entertainment
+                    Latest Bangla natok and drama
                 </p>
 
             </div>
@@ -920,39 +696,61 @@
 
         </button>
 
+
     </div>
 
 
-    <div class="natok-grid">
+    <div class="content-grid">
 
 
-        <article class="natok-card">
+        <!-- NATOK 01 -->
 
-            <div class="natok-image natok-1">
+        <article class="movie-card">
 
-                <span class="poster-quality">
-                    HD
+            <div class="movie-poster natok-1">
+
+                <span class="content-badge">
+                    NEW
                 </span>
 
-                <button class="card-play">
+                <button
+                    class="poster-play"
+                    type="button"
+                >
+
                     <i class="fa-solid fa-play"></i>
+
                 </button>
 
             </div>
 
-            <div class="natok-info">
+
+            <div class="card-info">
+
+                <span class="card-category">
+                    NATOK
+                </span>
 
                 <h3>
-                    ভালোবাসার গল্প
+                    Tomake Chai
                 </h3>
 
                 <p>
-                    A beautiful Bangla romantic story.
+                    A new emotional Bangla natok
                 </p>
 
-                <button class="small-watch">
-                    Watch Now
-                </button>
+                <div class="card-meta">
+
+                    <span>
+                        2026
+                    </span>
+
+                    <span>
+                        <i class="fa-solid fa-star"></i>
+                        8.6
+                    </span>
+
+                </div>
 
             </div>
 
@@ -960,33 +758,54 @@
 
 
 
-        <article class="natok-card">
+        <!-- NATOK 02 -->
 
-            <div class="natok-image natok-2">
+        <article class="movie-card">
 
-                <span class="poster-quality">
+            <div class="movie-poster natok-2">
+
+                <span class="content-badge">
                     HD
                 </span>
 
-                <button class="card-play">
+                <button
+                    class="poster-play"
+                    type="button"
+                >
+
                     <i class="fa-solid fa-play"></i>
+
                 </button>
 
             </div>
 
-            <div class="natok-info">
+
+            <div class="card-info">
+
+                <span class="card-category">
+                    NATOK
+                </span>
 
                 <h3>
-                    শেষ চিঠি
+                    Moner Kotha
                 </h3>
 
                 <p>
-                    A story of love and memories.
+                    Love and relationship drama
                 </p>
 
-                <button class="small-watch">
-                    Watch Now
-                </button>
+                <div class="card-meta">
+
+                    <span>
+                        2026
+                    </span>
+
+                    <span>
+                        <i class="fa-solid fa-star"></i>
+                        8.2
+                    </span>
+
+                </div>
 
             </div>
 
@@ -994,37 +813,114 @@
 
 
 
-        <article class="natok-card">
+        <!-- NATOK 03 -->
 
-            <div class="natok-image natok-3">
+        <article class="movie-card">
 
-                <span class="poster-quality">
-                    HD
+            <div class="movie-poster natok-3">
+
+                <span class="content-badge">
+                    NEW
                 </span>
 
-                <button class="card-play">
+                <button
+                    class="poster-play"
+                    type="button"
+                >
+
                     <i class="fa-solid fa-play"></i>
+
                 </button>
 
             </div>
 
-            <div class="natok-info">
+
+            <div class="card-info">
+
+                <span class="card-category">
+                    NATOK
+                </span>
 
                 <h3>
-                    অজানা পথ
+                    Oporajita
                 </h3>
 
                 <p>
-                    A journey full of emotions.
+                    A story of life and hope
                 </p>
 
-                <button class="small-watch">
-                    Watch Now
-                </button>
+                <div class="card-meta">
+
+                    <span>
+                        2026
+                    </span>
+
+                    <span>
+                        <i class="fa-solid fa-star"></i>
+                        8.4
+                    </span>
+
+                </div>
 
             </div>
 
         </article>
+
+
+
+        <!-- NATOK 04 -->
+
+        <article class="movie-card">
+
+            <div class="movie-poster natok-4">
+
+                <span class="content-badge">
+                    HD
+                </span>
+
+                <button
+                    class="poster-play"
+                    type="button"
+                >
+
+                    <i class="fa-solid fa-play"></i>
+
+                </button>
+
+            </div>
+
+
+            <div class="card-info">
+
+                <span class="card-category">
+                    NATOK
+                </span>
+
+                <h3>
+                    Shesh Dekha
+                </h3>
+
+                <p>
+                    A beautiful dramatic story
+                </p>
+
+                <div class="card-meta">
+
+                    <span>
+                        2026
+                    </span>
+
+                    <span>
+                        <i class="fa-solid fa-star"></i>
+                        8.0
+                    </span>
+
+                </div>
+
+            </div>
+
+        </article>
+
 
     </div>
 
@@ -1033,114 +929,953 @@
 
 
 <!-- =====================================================
-     UPCOMING
+     WEB SERIES SECTION
 ===================================================== -->
 
 <section
-    class="upcoming-section"
-    id="upcoming"
+    class="content-section"
+    id="webseries"
 >
 
-    <div class="content-section">
+
+    <div class="section-heading">
 
 
-        <div class="section-heading">
+        <div class="heading-left">
 
-            <div class="heading-left">
+            <span class="heading-line"></span>
 
-                <span class="heading-line"></span>
+            <div>
 
-                <div>
+                <h2>
+                    Web Series
+                </h2>
 
-                    <h2>
-                        Upcoming Movies
-                    </h2>
-
-                    <p>
-                        Coming soon
-                    </p>
-
-                </div>
+                <p>
+                    Trending and latest web series
+                </p>
 
             </div>
 
         </div>
 
 
-        <div class="upcoming-grid">
+        <button
+            class="view-all-button"
+            type="button"
+        >
+
+            View All
+
+            <i class="fa-solid fa-arrow-right"></i>
+
+        </button>
 
 
-            <div class="upcoming-card">
+    </div>
 
-                <div>
 
-                    <span>
-                        COMING SOON
-                    </span>
+    <div class="content-grid">
 
-                    <h3>
-                        War of Tomorrow
-                    </h3>
 
-                    <p>
-                        December 2026
-                    </p>
+        <!-- SERIES 01 -->
 
-                </div>
+        <article class="movie-card">
 
+            <div class="movie-poster series-1">
+
+                <span class="content-badge">
+                    SERIES
+                </span>
 
                 <button
-                    class="remind-button"
+                    class="poster-play"
                     type="button"
                 >
 
-                    <i class="fa-regular fa-bell"></i>
-
-                    Remind Me
+                    <i class="fa-solid fa-play"></i>
 
                 </button>
 
             </div>
 
 
+            <div class="card-info">
 
-            <div class="upcoming-card">
+                <span class="card-category">
+                    WEB SERIES
+                </span>
 
-                <div>
+                <h3>
+                    Dark City
+                </h3>
+
+                <p>
+                    Mystery and thriller series
+                </p>
+
+                <div class="card-meta">
 
                     <span>
-                        COMING SOON
+                        S01
                     </span>
 
-                    <h3>
-                        Galaxy Warriors
-                    </h3>
-
-                    <p>
-                        January 2027
-                    </p>
+                    <span>
+                        <i class="fa-solid fa-star"></i>
+                        8.8
+                    </span>
 
                 </div>
 
+            </div>
+
+        </article>
+
+
+
+        <!-- SERIES 02 -->
+
+        <article class="movie-card">
+
+            <div class="movie-poster series-2">
+
+                <span class="content-badge">
+                    NEW
+                </span>
 
                 <button
-                    class="remind-button"
+                    class="poster-play"
                     type="button"
                 >
 
-                    <i class="fa-regular fa-bell"></i>
-
-                    Remind Me
+                    <i class="fa-solid fa-play"></i>
 
                 </button>
 
             </div>
 
-        </div>
+
+            <div class="card-info">
+
+                <span class="card-category">
+                    WEB SERIES
+                </span>
+
+                <h3>
+                    The Unknown
+                </h3>
+
+                <p>
+                    An unexpected journey
+                </p>
+
+                <div class="card-meta">
+
+                    <span>
+                        S01
+                    </span>
+
+                    <span>
+                        <i class="fa-solid fa-star"></i>
+                        8.5
+                    </span>
+
+                </div>
+
+            </div>
+
+        </article>
+
+
+
+        <!-- SERIES 03 -->
+
+        <article class="movie-card">
+
+            <div class="movie-poster series-3">
+
+                <span class="content-badge">
+                    HD
+                </span>
+
+                <button
+                    class="poster-play"
+                    type="button"
+                >
+
+                    <i class="fa-solid fa-play"></i>
+
+                </button>
+
+            </div>
+
+
+            <div class="card-info">
+
+                <span class="card-category">
+                    WEB SERIES
+                </span>
+
+                <h3>
+                    Hidden Truth
+                </h3>
+
+                <p>
+                    Crime and investigation
+                </p>
+
+                <div class="card-meta">
+
+                    <span>
+                        S02
+                    </span>
+
+                    <span>
+                        <i class="fa-solid fa-star"></i>
+                        8.9
+                    </span>
+
+                </div>
+
+            </div>
+
+        </article>
+
+
+
+        <!-- SERIES 04 -->
+
+        <article class="movie-card">
+
+            <div class="movie-poster series-4">
+
+                <span class="content-badge">
+                    TOP
+                </span>
+
+                <button
+                    class="poster-play"
+                    type="button"
+                >
+
+                    <i class="fa-solid fa-play"></i>
+
+                </button>
+
+            </div>
+
+
+            <div class="card-info">
+
+                <span class="card-category">
+                    WEB SERIES
+                </span>
+
+                <h3>
+                    The Journey
+                </h3>
+
+                <p>
+                    Adventure and drama
+                </p>
+
+                <div class="card-meta">
+
+                    <span>
+                        S01
+                    </span>
+
+                    <span>
+                        <i class="fa-solid fa-star"></i>
+                        8.3
+                    </span>
+
+                </div>
+
+            </div>
+
+        </article>
+
 
     </div>
 
 </section>
+
+
+
+<!-- =====================================================
+     UPCOMING SECTION
+===================================================== -->
+
+<section
+    class="content-section upcoming-section"
+    id="upcoming"
+>
+
+
+    <div class="section-heading">
+
+
+        <div class="heading-left">
+
+            <span class="heading-line"></span>
+
+            <div>
+
+                <h2>
+                    Upcoming
+                </h2>
+
+                <p>
+                    Coming soon movies and entertainment
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <button
+            class="view-all-button"
+            type="button"
+        >
+
+            View All
+
+            <i class="fa-solid fa-arrow-right"></i>
+
+        </button>
+
+
+    </div>
+
+
+    <div class="upcoming-grid">
+
+
+        <!-- UPCOMING 01 -->
+
+        <article class="upcoming-card">
+
+            <div class="upcoming-poster upcoming-1">
+
+                <span class="coming-badge">
+                    COMING SOON
+                </span>
+
+            </div>
+
+
+            <div class="upcoming-info">
+
+                <span>
+                    RELEASE DATE
+                </span>
+
+                <h3>
+                    August 2026
+                </h3>
+
+                <p>
+                    Coming soon to Cinema Mella.
+                </p>
+
+            </div>
+
+        </article>
+
+
+
+        <!-- UPCOMING 02 -->
+
+        <article class="upcoming-card">
+
+            <div class="upcoming-poster upcoming-2">
+
+                <span class="coming-badge">
+                    COMING SOON
+                </span>
+
+            </div>
+
+
+            <div class="upcoming-info">
+
+                <span>
+                    RELEASE DATE
+                </span>
+
+                <h3>
+                    September 2026
+                </h3>
+
+                <p>
+                    Stay tuned for the latest update.
+                </p>
+
+            </div>
+
+        </article>
+
+
+
+        <!-- UPCOMING 03 -->
+
+        <article class="upcoming-card">
+
+            <div class="upcoming-poster upcoming-3">
+
+                <span class="coming-badge">
+                    SOON
+                </span>
+
+            </div>
+
+
+            <div class="upcoming-info">
+
+                <span>
+                    RELEASE DATE
+                </span>
+
+                <h3>
+                    October 2026
+                </h3>
+
+                <p>
+                    More details coming soon.
+                </p>
+
+            </div>
+
+        </article>
+
+
+
+        <!-- UPCOMING 04 -->
+
+        <article class="upcoming-card">
+
+            <div class="upcoming-poster upcoming-4">
+
+                <span class="coming-badge">
+                    SOON
+                </span>
+
+            </div>
+
+
+            <div class="upcoming-info">
+
+                <span>
+                    RELEASE DATE
+                </span>
+
+                <h3>
+                    Coming Soon
+                </h3>
+
+                <p>
+                    Watch this space for updates.
+                </p>
+
+            </div>
+
+        </article>
+
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     STORIES SECTION
+===================================================== -->
+
+<section
+    class="content-section stories-section"
+    id="stories"
+>
+
+
+    <div class="section-heading">
+
+
+        <div class="heading-left">
+
+            <span class="heading-line"></span>
+
+            <div>
+
+                <h2>
+                    Stories
+                </h2>
+
+                <p>
+                    Read the latest stories and updates
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <button
+            class="view-all-button"
+            type="button"
+        >
+
+            View All
+
+            <i class="fa-solid fa-arrow-right"></i>
+
+        </button>
+
+
+    </div>
+
+
+    <div class="stories-grid">
+
+
+        <!-- STORY 01 -->
+
+        <article class="story-card">
+
+            <div
+                class="story-image story-image-1"
+            >
+
+                <span class="story-badge">
+                    STORY
+                </span>
+
+            </div>
+
+
+            <div class="story-info">
+
+                <span class="story-date">
+                    AUG 2026
+                </span>
+
+                <h3>
+                    শেষ বিকেলের গল্প
+                </h3>
+
+                <p>
+                    কিছু গল্প শেষ হয় না,
+                    শুধু সময়ের সাথে বদলে যায়।
+                </p>
+
+                <button
+                    class="story-button"
+                    type="button"
+                >
+
+                    Read Story
+
+                    <i class="fa-solid fa-arrow-right"></i>
+
+                </button>
+
+            </div>
+
+        </article>
+
+
+
+        <!-- STORY 02 -->
+
+        <article class="story-card">
+
+            <div
+                class="story-image story-image-2"
+            >
+
+                <span class="story-badge">
+                    STORY
+                </span>
+
+            </div>
+
+
+            <div class="story-info">
+
+                <span class="story-date">
+                    AUG 2026
+                </span>
+
+                <h3>
+                    শেষ চিঠি
+                </h3>
+
+                <p>
+                    কিছু চিঠি কখনো পাঠানো হয় না,
+                    কিন্তু গল্প হয়ে থেকে যায়।
+                </p>
+
+                <button
+                    class="story-button"
+                    type="button"
+                >
+
+                    Read Story
+
+                    <i class="fa-solid fa-arrow-right"></i>
+
+                </button>
+
+            </div>
+
+        </article>
+
+
+
+        <!-- STORY 03 -->
+
+        <article class="story-card">
+
+            <div
+                class="story-image story-image-3"
+            >
+
+                <span class="story-badge">
+                    FEATURED
+                </span>
+
+            </div>
+
+
+            <div class="story-info">
+
+                <span class="story-date">
+                    JUL 2026
+                </span>
+
+                <h3>
+                    The Last Evening
+                </h3>
+
+                <p>
+                    One evening, one decision
+                    and a story that changed everything.
+                </p>
+
+                <button
+                    class="story-button"
+                    type="button"
+                >
+
+                    Read Story
+
+                    <i class="fa-solid fa-arrow-right"></i>
+
+                </button>
+
+            </div>
+
+        </article>
+
+
+
+        <!-- STORY 04 -->
+
+        <article class="story-card">
+
+            <div
+                class="story-image story-image-4"
+            >
+
+                <span class="story-badge">
+                    NEW
+                </span>
+
+            </div>
+
+
+            <div class="story-info">
+
+                <span class="story-date">
+                    JUL 2026
+                </span>
+
+                <h3>
+                    A Story Without An End
+                </h3>
+
+                <p>
+                    Every ending can become
+                    the beginning of another story.
+                </p>
+
+                <button
+                    class="story-button"
+                    type="button"
+                >
+
+                    Read Story
+
+                    <i class="fa-solid fa-arrow-right"></i>
+
+                </button>
+
+            </div>
+
+        </article>
+
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     BOOKS SECTION
+===================================================== -->
+
+<section
+    class="content-section books-section"
+    id="books"
+>
+
+
+    <div class="section-heading">
+
+
+        <div class="heading-left">
+
+            <span class="heading-line"></span>
+
+            <div>
+
+                <h2>
+                    Books
+                </h2>
+
+                <p>
+                    Discover books and latest reading updates
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <button
+            class="view-all-button"
+            type="button"
+        >
+
+            View All
+
+            <i class="fa-solid fa-arrow-right"></i>
+
+        </button>
+
+
+    </div>
+
+
+    <div class="books-grid">
+
+
+        <!-- BOOK 01 -->
+
+        <article class="book-card">
+
+            <div
+                class="book-cover book-cover-1"
+            >
+
+                <span class="book-badge">
+                    NEW
+                </span>
+
+            </div>
+
+
+            <div class="book-info">
+
+                <span class="book-category">
+                    NOVEL
+                </span>
+
+                <h3>
+                    The Silent Moon
+                </h3>
+
+                <p>
+                    A mysterious journey filled with
+                    love, memories and hidden secrets.
+                </p>
+
+                <button
+                    class="book-button"
+                    type="button"
+                >
+
+                    Read More
+
+                    <i class="fa-solid fa-arrow-right"></i>
+
+                </button>
+
+            </div>
+
+        </article>
+
+
+
+        <!-- BOOK 02 -->
+
+        <article class="book-card">
+
+            <div
+                class="book-cover book-cover-2"
+            >
+
+                <span class="book-badge">
+                    FEATURED
+                </span>
+
+            </div>
+
+
+            <div class="book-info">
+
+                <span class="book-category">
+                    FICTION
+                </span>
+
+                <h3>
+                    Last Chapter
+                </h3>
+
+                <p>
+                    A cinematic story about life,
+                    friendship and unexpected moments.
+                </p>
+
+                <button
+                    class="book-button"
+                    type="button"
+                >
+
+                    Read More
+
+                    <i class="fa-solid fa-arrow-right"></i>
+
+                </button>
+
+            </div>
+
+        </article>
+
+
+
+        <!-- BOOK 03 -->
+
+        <article class="book-card">
+
+            <div
+                class="book-cover book-cover-3"
+            >
+
+                <span class="book-badge">
+                    NEW
+                </span>
+
+            </div>
+
+
+            <div class="book-info">
+
+                <span class="book-category">
+                    DRAMA
+                </span>
+
+                <h3>
+                    Midnight Story
+                </h3>
+
+                <p>
+                    A dark and emotional story
+                    that begins after midnight.
+                </p>
+
+                <button
+                    class="book-button"
+                    type="button"
+                >
+
+                    Read More
+
+                    <i class="fa-solid fa-arrow-right"></i>
+
+                </button>
+
+            </div>
+
+        </article>
+
+
+
+        <!-- BOOK 04 -->
+
+        <article class="book-card">
+
+            <div
+                class="book-cover book-cover-4"
+            >
+
+                <span class="book-badge">
+                    POPULAR
+                </span>
+
+            </div>
+
+
+            <div class="book-info">
+
+                <span class="book-category">
+                    ROMANCE
+                </span>
+
+                <h3>
+                    Before We Forget
+                </h3>
+
+                <p>
+                    Some memories disappear,
+                    but some stories never end.
+                </p>
+
+                <button
+                    class="book-button"
+                    type="button"
+                >
+
+                    Read More
+
+                    <i class="fa-solid fa-arrow-right"></i>
+
+                </button>
+
+            </div>
+
+        </article>
+
+
+    </div>
+
+</section>
+
+
+</main>
 
 
 
@@ -1148,63 +1883,180 @@
      FOOTER
 ===================================================== -->
 
-<footer>
-
-    <div class="footer-content">
+<footer class="footer">
 
 
-        <div class="footer-logo">
+    <div class="footer-container">
 
-            <span>
-                CINEMA
-            </span>
 
-            <strong id="footerLogoChanging">
-                MELLA
-            </strong>
+        <!-- FOOTER BRAND -->
+
+        <div class="footer-brand">
+
+            <a
+                href="#home"
+                class="logo footer-logo"
+            >
+
+                <span class="logo-cinema">
+                    CINEMA
+                </span>
+
+                <span class="logo-changing">
+                    MELLA
+                </span>
+
+            </a>
+
+
+            <p>
+                Your entertainment destination for
+                movies, natok, web series, stories
+                and books.
+            </p>
+
+
+            <div class="social-links">
+
+                <a
+                    href="#"
+                    aria-label="Facebook"
+                >
+
+                    <i class="fa-brands fa-facebook-f"></i>
+
+                </a>
+
+
+                <a
+                    href="#"
+                    aria-label="YouTube"
+                >
+
+                    <i class="fa-brands fa-youtube"></i>
+
+                </a>
+
+
+                <a
+                    href="#"
+                    aria-label="Instagram"
+                >
+
+                    <i class="fa-brands fa-instagram"></i>
+
+                </a>
+
+
+                <a
+                    href="#"
+                    aria-label="Telegram"
+                >
+
+                    <i class="fa-brands fa-telegram"></i>
+
+                </a>
+
+            </div>
 
         </div>
 
 
-        <p>
-            © 2026 Cinema Mella & Hub. All Rights Reserved.
-        </p>
 
+        <!-- FOOTER LINKS -->
 
-        <div class="social-links">
+        <div class="footer-column">
 
-            <a href="#" aria-label="Facebook">
-                <i class="fa-brands fa-facebook-f"></i>
+            <h3>
+                Explore
+            </h3>
+
+            <a href="#movies">
+                Movies
             </a>
 
-            <a href="#" aria-label="YouTube">
-                <i class="fa-brands fa-youtube"></i>
+            <a href="#natok">
+                Natok
             </a>
 
-            <a href="#" aria-label="Instagram">
-                <i class="fa-brands fa-instagram"></i>
+            <a href="#webseries">
+                Web Series
+            </a>
+
+            <a href="#upcoming">
+                Upcoming
             </a>
 
         </div>
+
+
+
+        <!-- FOOTER CONTENT -->
+
+        <div class="footer-column">
+
+            <h3>
+                More
+            </h3>
+
+            <a href="#stories">
+                Stories
+            </a>
+
+            <a href="#books">
+                Books
+            </a>
+
+            <a href="#home">
+                Home
+            </a>
+
+        </div>
+
+
+
+        <!-- FOOTER INFO -->
+
+        <div class="footer-column">
+
+            <h3>
+                Cinema Mella
+            </h3>
+
+            <p>
+                Watch and discover your favorite
+                entertainment anytime.
+            </p>
+
+        </div>
+
 
     </div>
+
+
+
+    <!-- FOOTER BOTTOM -->
+
+    <div class="footer-bottom">
+
+        <p>
+            © 2026 Cinema Mella & Hub.
+            All Rights Reserved.
+        </p>
+
+    </div>
+
 
 </footer>
 
 
 
 <!-- =====================================================
-     TOAST
+     JAVASCRIPT
 ===================================================== -->
 
-<div
-    class="toast"
-    id="toast"
-></div>
-
-
-
 <script src="script.js"></script>
+
 
 </body>
 
