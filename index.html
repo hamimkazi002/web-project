@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>CineVerse - Movies, Natok & Web Series</title>
+
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- Google Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  />
+</head>
+
+<body>
+
+  <!-- ================= HEADER ================= -->
+  <header class="header">
+    <div class="container navbar">
+
+      <a href="#" class="logo">
+        CINE<span>VERSE</span>
+      </a>
+
+      <nav class="nav-menu" id="navMenu">
+        <a href="#home">Home</a>
+        <a href="#movies">Movies</a>
+        <a href="#natok">Natok</a>
+        <a href="#series">Web Series</a>
+        <a href="#upcoming">Upcoming</a>
+      </nav>
+
+      <div class="nav-right">
+        <button class="search-toggle" id="searchToggle" aria-label="Search">
+          🔍
+        </button>
+
+        <button class="menu-toggle" id="menuToggle" aria-label="Menu">
+          ☰
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Search Box -->
+    <div class="search-area" id="searchArea">
+      <div class="container search-box">
+        <input
+          type="text"
+          id="searchInput"
+          placeholder="Search movies, natok or web series..."
+        />
+        <button id="searchButton">Search</button>
+      </div>
+
+      <div class="container search-results" id="searchResults"></div>
+    </div>
+  </header>
+
+
+  <!-- ================= HERO SECTION ================= -->
+  <main>
+
+    <section class="hero" id="home">
+
+      <div class="hero-overlay"></div>
+
+      <div class="container hero-content">
+
+        <span class="tag">FEATURED MOVIE</span>
+
+        <h1>Watch Movies, Natok<br />& Web Series Anytime</h1>
+
+        <p>
+          Discover your favorite entertainment in one place.
+          Watch on desktop or mobile and explore the latest releases,
+          trending content and upcoming movies.
+        </p>
+
+        <div class="hero-buttons">
+          <a href="#movies" class="btn btn-primary">▶ Explore Now</a>
+          <a href="#upcoming" class="btn btn-outline">View Upcoming</a>
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ================= TRENDING ================= -->
+    <section class="content-section" id="movies">
+
+      <div class="container">
+
+        <div class="section-header">
+          <div>
+            <p class="section-small-title">POPULAR NOW</p>
+            <h2>Trending Movies</h2>
+          </div>
+
+          <button class="view-all-btn">View All →</button>
+        </div>
+
+        <div class="movie-grid">
+
+          <article class="movie-card searchable-item"
+            data-title="Midnight Chase Action Movie">
+            <div class="poster poster-1">
+              <span class="quality">HD</span>
+              <button class="play-card">▶</button>
+            </div>
+            <div class="movie-info">
+              <h3>Midnight Chase</h3>
+              <div class="movie-meta">
+                <span>2026</span>
+                <span>Action</span>
+                <span>★ 8.7</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="movie-card searchable-item"
+            data-title="The Last Kingdom Adventure Movie">
+            <div class="poster poster-2">
+              <span class="quality">HD</span>
+              <button class="play-card">▶</button>
+            </div>
+            <div class="movie-info">
+              <h3>The Last Kingdom</h3>
+              <div class="movie-meta">
+                <span>2025</span>
+                <span>Adventure</span>
+                <span>★ 8.5</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="movie-card searchable-item"
+            data-title="Dark Horizon Thriller Movie">
+            <div class="poster poster-3">
+              <span class="quality">HD</span>
+              <button class="play-card">▶</button>
+            </div>
+            <div class="movie-info">
+              <h3>Dark Horizon</h3>
+              <div class="movie-meta">
+                <span>2026</span>
+                <span>Thriller</span>
+                <span>★ 9.0</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="movie-card searchable-item"
+            data-title="Red Shadow Crime Movie">
+            <div class="poster poster-4">
+              <span class="quality">HD</span>
+              <button class="play-card">▶</button>
+            </div>
+            <div class="movie-info">
+              <h3>Red Shadow</h3>
+              <div class="movie-meta">
+                <span>2026</span>
+                <span>Crime</span>
+                <span>★ 8.2</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="movie-card searchable-item"
+            data-title="Lost Planet Science Fiction Movie">
+            <div class="poster poster-5">
+              <span class="quality">HD</span>
+              <button class="play-card">▶</button>
+            </div>
+            <div class="movie-info">
+              <h3>Lost Planet</h3>
+              <div class="movie-meta">
+                <span>2025</span>
+                <span>Sci-Fi</span>
+                <span>★ 8.9</span>
+              </div>
+            </div>
+          </article>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ================= NATAK ================= -->
+    <section class="content-section dark-section" id="natok">
+
+      <div class="container">
+
+        <div class="section-header">
+          <div>
+            <p class="section-small-title">BANGLA ENTERTAINMENT</p>
+            <h2>Latest Natok</h2>
+          </div>
+
+          <button class="view-all-btn">View All →</button>
+        </div>
+
+        <div class="movie-grid">
+
+          <article class="movie-card searchable-item"
+            data-title="Bhalobashar Golpo Bangla Natok">
+            <div class="poster poster-6">
+              <span class="quality">NEW</span>
+              <button class="play-card">▶</button>
+            </div>
+            <div class="movie-info">
+              <h3>Bhalobashar Golpo</h3>
+              <div class="movie-meta">
+                <span>Natok</span>
+                <span>Drama</span>
+                <span>2026</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="movie-card searchable-item"
+            data-title="Tumi Amar Bangla Natok">
+            <div class="poster poster-7">
+              <span class="quality">HD</span>
+              <button class="play-card">▶</button>
+            </div>
+            <div class="movie-info">
+              <h3>Tumi Amar</h3>
+              <div class="movie-meta">
+                <span>Natok</span>
+                <span>Romance</span>
+                <span>2026</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="movie-card searchable-item"
+            data-title="Ekti Shopno Bangla Natok">
+            <div class="poster poster-8">
+              <span class="quality">HD</span>
+              <button class="play-card">▶</button>
+            </div>
+            <div class="movie-info">
+              <h3>Ekti Shopno</h3>
+              <div class="movie-meta">
+                <span>Natok</span>
+                <span>Drama</span>
+                <span>2025</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="movie-card searchable-item"
+            data-title="Moner Kotha Bangla Natok">
+            <div class="poster poster-9">
+              <span class="quality">NEW</span>
+              <button class="play-card">▶</button>
+            </div>
+            <div class="movie-info">
+              <h3>Moner Kotha</h3>
+              <div class="movie-meta">
+                <span>Natok</span>
+                <span>Romance</span>
+                <span>2026</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="movie-card searchable-item"
+            data-title="Chaya Bangla Natok">
+            <div class="poster poster-10">
+              <span class="quality">HD</span>
+              <button class="play-card">▶</button>
+            </div>
+            <div class="movie-info">
+              <h3>Chaya</h3>
+              <div class="movie-meta">
+                <span>Natok</span>
+                <span>Mystery</span>
+                <span>2026</span>
+              </div>
+            </div>
+          </article>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ================= WEB SERIES ================= -->
+    <section class="content-section" id="series">
+
+      <div class="container">
+
+        <div class="section-header">
+          <div>
+            <p class="section-small-title">BINGE WATCH</p>
+            <h2>Popular Web Series</h2>
+          </div>
+
+          <button class="view-all-btn">View All →</button>
+        </div>
+
+        <div class="movie-grid">
+
+          <article class="movie-card searchable-item"
+            data-title="Code Zero Web Series">
+            <div class="poster poster-11">
+              <span class="quality">S1</span>
+              <button class="play-card">▶</button>
+            </div>
+            <div class="movie-info">
+              <h3>Code Zero</h3>
+              <div class="movie-meta">
+                <span>Series</span>
+                <span>Action</span>
+                <span>8 Episodes</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="movie-card searchable-item"
+            data-title="The Hidden Truth Web Series">
+            <div class="poster poster-12">
+              <span class="quality">S2</span>
+              <button class="play-card">▶</button>
+            </div>
+            <div class="movie-info">
+              <h3>The Hidden Truth</h3>
+              <div class="movie-meta">
+                <span>Series</span>
+                <span>Crime</span>
+                <span>12 Episodes</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="movie-card searchable-item"
+            data-title="City Nights Web Series">
+            <div class="poster poster-13">
+              <span class="quality">S1</span>
+              <button class="play-card">▶</button>
+            </div>
+            <div class="movie-info">
+              <h3>City Nights</h3>
+              <div class="movie-meta">
+                <span>Series</span>
+                <span>Drama</span>
+                <span>10 Episodes</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="movie-card searchable-item"
+            data-title="Final Game Web Series">
+            <div class="poster poster-14">
+              <span class="quality">S3</span>
+              <button class="play-card">▶</button>
+            </div>
+            <div class="movie-info">
+              <h3>Final Game</h3>
+              <div class="movie-meta">
+                <span>Series</span>
+                <span>Thriller</span>
+                <span>16 Episodes</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="movie-card searchable-item"
+            data-title="Beyond Earth Web Series">
+            <div class="poster poster-15">
+              <span class="quality">S1</span>
+              <button class="play-card">▶</button>
+            </div>
+            <div class="movie-info">
+              <h3>Beyond Earth</h3>
+              <div class="movie-meta">
+                <span>Series</span>
+                <span>Sci-Fi</span>
+                <span>8 Episodes</span>
+              </div>
+            </div>
+          </article>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ================= UPCOMING ================= -->
+    <section class="content-section dark-section" id="upcoming">
+
+      <div class="container">
+
+        <div class="section-header">
+          <div>
+            <p class="section-small-title">COMING SOON</p>
+            <h2>Upcoming Movies</h2>
+          </div>
+        </div>
+
+        <div class="upcoming-grid">
+
+          <div class="upcoming-card">
+            <div class="upcoming-poster upcoming-1"></div>
+            <div class="upcoming-content">
+              <span>COMING SOON</span>
+              <h3>Rise of Heroes</h3>
+              <p>Expected Release: December 2026</p>
+              <button class="notify-btn">Notify Me</button>
+            </div>
+          </div>
+
+          <div class="upcoming-card">
+            <div class="upcoming-poster upcoming-2"></div>
+            <div class="upcoming-content">
+              <span>COMING SOON</span>
+              <h3>The Dark World</h3>
+              <p>Expected Release: November 2026</p>
+              <button class="notify-btn">Notify Me</button>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ================= NEWSLETTER ================= -->
+    <section class="newsletter">
+
+      <div class="container newsletter-content">
+
+        <div>
+          <p class="section-small-title">STAY UPDATED</p>
+          <h2>Never Miss New Releases</h2>
+          <p>
+            Get notified when new movies, natok and web series are added.
+          </p>
+        </div>
+
+        <form class="newsletter-form" id="newsletterForm">
+          <input
+            type="email"
+            id="emailInput"
+            placeholder="Enter your email address"
+            required
+          />
+          <button type="submit">Subscribe</button>
+        </form>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="footer">
+
+    <div class="container footer-content">
+
+      <div class="footer-brand">
+        <a href="#" class="logo">
+          CINE<span>VERSE</span>
+        </a>
+
+        <p>
+          Your entertainment destination for movies, natok and web series.
+        </p>
+      </div>
+
+      <div class="footer-links">
+        <div>
+          <h4>Explore</h4>
+          <a href="#movies">Movies</a>
+          <a href="#natok">Natok</a>
+          <a href="#series">Web Series</a>
+        </div>
+
+        <div>
+          <h4>More</h4>
+          <a href="#upcoming">Upcoming</a>
+          <a href="#">About Us</a>
+          <a href="#">Contact</a>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="footer-bottom">
+      <p>© 2026 CineVerse. All Rights Reserved.</p>
+    </div>
+
+  </footer>
+
+
+  <!-- JavaScript -->
+  <script src="script.js"></script>
+
+</body>
+</html>
