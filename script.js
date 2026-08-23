@@ -1,6 +1,7 @@
 /* =====================================================
    CINEMA MELLA / CINEMA HUB
    MAIN SCRIPT
+   >>> VERSION 2 — includes hero zoom fix <<<
 ===================================================== */
 
 
@@ -85,34 +86,31 @@ setInterval(changeLogoText, 2500);
 
 /* =====================================================
    HERO BACKGROUND SLIDER
+   Cycles through Movie / Natok / Series themed looks
+   (same gradients used on the poster cards, so the hero
+   visually ties in with those sections below).
+
+   NOTE: swap any of these for a real poster/banner image
+   any time by replacing the string with url("path.jpg").
 ===================================================== */
 
 const heroImages = [
 
-    "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=2000&q=90",
+    // Movie
+    "linear-gradient(120deg, #1a0033 0%, #3a0ca3 45%, #7209b7 100%)",
 
-    "https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?auto=format&fit=crop&w=2000&q=90",
+    // Natok
+    "linear-gradient(120deg, #2c0703 0%, #6a040f 45%, #9d0208 100%)",
 
-    "https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=2000&q=90",
+    // Web Series
+    "linear-gradient(120deg, #03071e 0%, #10002b 45%, #3c096c 100%)",
 
-    "https://images.unsplash.com/photo-1440404653325-ab127d49abc1?auto=format&fit=crop&w=2000&q=90"
+    // Movie (variant, keeps the cycle at 4 like the dots)
+    "linear-gradient(120deg, #0f3057 0%, #00587a 45%, #14213d 100%)"
 ];
 
 
 let currentHeroIndex = 0;
-
-
-/* =====================================================
-   PRELOAD HERO IMAGES
-===================================================== */
-
-heroImages.forEach((imageURL) => {
-
-    const image = new Image();
-
-    image.src = imageURL;
-
-});
 
 
 /* =====================================================
@@ -133,25 +131,46 @@ function showHeroImage(index) {
     setTimeout(() => {
 
         /*
-           Change image
+           Change background
         */
 
         heroBackground.style.backgroundImage =
-            `url("${heroImages[index]}")`;
+            heroImages[index];
 
 
         /*
-           Reset zoom
+           IMPORTANT FIX:
+           Turn off the transform transition and snap the
+           scale back to 1 INSTANTLY (no animation). Without
+           this, removing "zoom" starts a slow 4s transition
+           back toward scale(1), and re-adding "zoom" a few
+           milliseconds later just nudges it slightly instead
+           of replaying the full zoom - which is why only the
+           very first image ever visibly zoomed.
         */
+
+        heroBackground.style.transition = "opacity 0.65s ease";
 
         heroBackground.classList.remove("zoom");
 
+        heroBackground.style.opacity = "1";
+
 
         /*
-           Fade in
+           Force the browser to apply the instant reset above
+           before we re-enable the transform transition.
         */
 
-        heroBackground.style.opacity = "1";
+        void heroBackground.offsetWidth;
+
+
+        /*
+           Re-enable the full transition (opacity + transform)
+           so the next zoom actually animates over 4s.
+        */
+
+        heroBackground.style.transition =
+            "opacity 0.65s ease, transform 4s cubic-bezier(0.2, 0.5, 0.3, 1)";
 
 
         /*
@@ -208,7 +227,7 @@ function updateHeroDots(index) {
 if (heroBackground) {
 
     heroBackground.style.backgroundImage =
-        `url("${heroImages[0]}")`;
+        heroImages[0];
 
     heroBackground.style.opacity = "1";
 
