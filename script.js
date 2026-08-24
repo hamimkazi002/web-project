@@ -1,260 +1,291 @@
 /* =====================================================
-   CINEMA MELLA / CINEMA HUB
-   MAIN SCRIPT
-   >>> VERSION 2 — includes hero zoom fix <<<
+   CINEMA MELLA
+   MAIN WEBSITE
+   DATABASE VERSION
 ===================================================== */
+
+
+/* =====================================================
+   SUPABASE CONFIG
+===================================================== */
+
+const SUPABASE_URL =
+    "https://vuvstnlalyikvlanxxwy.supabase.co";
+
+
+const SUPABASE_PUBLISHABLE_KEY =
+    "sb_publishable_ed-PGIvnw8yN2OwI2264IA_f1FOdWrp";
+
+
+const publicSupabase =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_PUBLISHABLE_KEY
+    );
+
+
+/* =====================================================
+   DATABASE CONTENT
+===================================================== */
+
+let databaseContents = [];
 
 
 /* =====================================================
    DOM ELEMENTS
 ===================================================== */
 
-const changingLogo = document.querySelector(".logo-changing");
+const changingLogo =
+    document.getElementById(
+        "logoChangingText"
+    );
 
-const heroBackground = document.querySelector(".hero-background");
 
-const heroDots = document.querySelectorAll(".hero-dot");
+const heroBackground =
+    document.getElementById(
+        "heroBackground"
+    );
+
+
+const heroDots =
+    document.querySelectorAll(
+        ".hero-dot"
+    );
+
 
 const searchIconButton =
-    document.querySelector(".search-icon-button");
+    document.getElementById(
+        "searchToggle"
+    );
+
 
 const searchBox =
-    document.querySelector(".search-box");
+    document.getElementById(
+        "searchBox"
+    );
+
 
 const searchInput =
-    document.querySelector(".search-box input");
+    document.getElementById(
+        "searchInput"
+    );
+
 
 const searchClose =
-    document.querySelector(".search-input-wrapper button");
+    document.getElementById(
+        "searchClose"
+    );
+
 
 const searchResults =
-    document.querySelector(".search-results");
+    document.getElementById(
+        "searchResults"
+    );
+
 
 const mobileMenuButton =
-    document.querySelector(".mobile-menu-button");
+    document.getElementById(
+        "mobileMenuButton"
+    );
+
 
 const mobileNav =
-    document.querySelector(".mobile-nav");
+    document.getElementById(
+        "mobileNav"
+    );
 
 
 /* =====================================================
    LOGO TEXT
-   Cinema → Mella → Hub
 ===================================================== */
 
 const logoWords = [
-    "Mella",
-    "Hub"
+    "MELLA",
+    "HUB"
 ];
+
 
 let logoIndex = 0;
 
 
 function changeLogoText() {
 
-    if (!changingLogo) return;
+    if (!changingLogo) {
+        return;
+    }
 
-    changingLogo.style.opacity = "0";
+
+    changingLogo.style.opacity =
+        "0";
+
+
     changingLogo.style.transform =
         "translateY(-5px)";
+
 
     setTimeout(() => {
 
         changingLogo.textContent =
             logoWords[logoIndex];
 
-        changingLogo.style.opacity = "1";
+
+        changingLogo.style.opacity =
+            "1";
+
+
         changingLogo.style.transform =
             "translateY(0)";
 
+
         logoIndex++;
 
-        if (logoIndex >= logoWords.length) {
+
+        if (
+            logoIndex >=
+            logoWords.length
+        ) {
+
             logoIndex = 0;
+
         }
 
     }, 250);
+
 }
 
 
-/*
-   Logo change every 2.5 seconds
-*/
-
-setInterval(changeLogoText, 2500);
+setInterval(
+    changeLogoText,
+    2500
+);
 
 
 /* =====================================================
-   HERO BACKGROUND SLIDER
-   Cycles through Movie / Natok / Series themed looks
-   (same gradients used on the poster cards, so the hero
-   visually ties in with those sections below).
-
-   NOTE: swap any of these for a real poster/banner image
-   any time by replacing the string with url("path.jpg").
+   HERO SLIDER
 ===================================================== */
 
 const heroImages = [
 
-    // Movie
     "linear-gradient(120deg, #1a0033 0%, #3a0ca3 45%, #7209b7 100%)",
 
-    // Natok
     "linear-gradient(120deg, #2c0703 0%, #6a040f 45%, #9d0208 100%)",
 
-    // Web Series
     "linear-gradient(120deg, #03071e 0%, #10002b 45%, #3c096c 100%)",
 
-    // Movie (variant, keeps the cycle at 4 like the dots)
     "linear-gradient(120deg, #0f3057 0%, #00587a 45%, #14213d 100%)"
+
 ];
 
 
 let currentHeroIndex = 0;
 
 
-/* =====================================================
-   SHOW HERO IMAGE
-===================================================== */
+function updateHeroDots(index) {
+
+    heroDots.forEach(
+        (
+            dot,
+            dotIndex
+        ) => {
+
+            dot.classList.toggle(
+                "active",
+                dotIndex === index
+            );
+
+        }
+    );
+
+}
+
 
 function showHeroImage(index) {
 
-    if (!heroBackground) return;
+    if (!heroBackground) {
+        return;
+    }
 
-    /*
-       Fade out
-    */
 
-    heroBackground.style.opacity = "0";
+    heroBackground.style.opacity =
+        "0";
 
 
     setTimeout(() => {
-
-        /*
-           Change background
-        */
 
         heroBackground.style.backgroundImage =
             heroImages[index];
 
 
-        /*
-           IMPORTANT FIX:
-           Turn off the transform transition and snap the
-           scale back to 1 INSTANTLY (no animation). Without
-           this, removing "zoom" starts a slow 4s transition
-           back toward scale(1), and re-adding "zoom" a few
-           milliseconds later just nudges it slightly instead
-           of replaying the full zoom - which is why only the
-           very first image ever visibly zoomed.
-        */
-
-        heroBackground.style.transition = "opacity 0.65s ease";
-
-        heroBackground.classList.remove("zoom");
-
-        heroBackground.style.opacity = "1";
+        heroBackground.style.transition =
+            "opacity 0.65s ease";
 
 
-        /*
-           Force the browser to apply the instant reset above
-           before we re-enable the transform transition.
-        */
+        heroBackground.classList.remove(
+            "zoom"
+        );
+
+
+        heroBackground.style.opacity =
+            "1";
+
 
         void heroBackground.offsetWidth;
 
-
-        /*
-           Re-enable the full transition (opacity + transform)
-           so the next zoom actually animates over 4s.
-        */
 
         heroBackground.style.transition =
             "opacity 0.65s ease, transform 4s cubic-bezier(0.2, 0.5, 0.3, 1)";
 
 
-        /*
-           Start soft zoom
-        */
-
         requestAnimationFrame(() => {
 
             requestAnimationFrame(() => {
 
-                heroBackground.classList.add("zoom");
+                heroBackground.classList.add(
+                    "zoom"
+                );
 
             });
 
         });
 
 
-        /*
-           Update dots
-        */
-
         updateHeroDots(index);
 
     }, 450);
+
 }
 
 
-/* =====================================================
-   HERO DOTS
-===================================================== */
-
-function updateHeroDots(index) {
-
-    heroDots.forEach((dot, dotIndex) => {
-
-        if (dotIndex === index) {
-
-            dot.classList.add("active");
-
-        } else {
-
-            dot.classList.remove("active");
-
-        }
-
-    });
-}
-
-
-/* =====================================================
-   INITIAL HERO IMAGE
-===================================================== */
+/* INITIAL HERO */
 
 if (heroBackground) {
 
     heroBackground.style.backgroundImage =
         heroImages[0];
 
-    heroBackground.style.opacity = "1";
 
-    /*
-       Start first zoom
-    */
+    heroBackground.style.opacity =
+        "1";
+
 
     setTimeout(() => {
 
-        heroBackground.classList.add("zoom");
+        heroBackground.classList.add(
+            "zoom"
+        );
 
     }, 300);
+
 }
 
 
-/* =====================================================
-   AUTO HERO SLIDER
-===================================================== */
-
-/*
-   Change image every 4 seconds
-*/
+/* AUTO HERO */
 
 let heroTimer =
     setInterval(() => {
 
         currentHeroIndex++;
+
 
         if (
             currentHeroIndex >=
@@ -265,64 +296,1259 @@ let heroTimer =
 
         }
 
-        showHeroImage(currentHeroIndex);
+
+        showHeroImage(
+            currentHeroIndex
+        );
 
     }, 4000);
 
 
-/* =====================================================
-   DOT CLICK
-===================================================== */
+/* DOT CLICK */
 
-heroDots.forEach((dot, index) => {
+heroDots.forEach(
+    (
+        dot,
+        index
+    ) => {
 
-    dot.addEventListener("click", () => {
+        dot.addEventListener(
+            "click",
+            () => {
 
-        currentHeroIndex = index;
+                currentHeroIndex =
+                    index;
 
-        showHeroImage(currentHeroIndex);
-
-
-        /*
-           Restart timer
-        */
-
-        clearInterval(heroTimer);
-
-        heroTimer =
-            setInterval(() => {
-
-                currentHeroIndex++;
-
-                if (
-                    currentHeroIndex >=
-                    heroImages.length
-                ) {
-
-                    currentHeroIndex = 0;
-
-                }
 
                 showHeroImage(
                     currentHeroIndex
                 );
 
-            }, 4000);
 
-    });
+                clearInterval(
+                    heroTimer
+                );
 
-});
+
+                heroTimer =
+                    setInterval(() => {
+
+                        currentHeroIndex++;
+
+
+                        if (
+                            currentHeroIndex >=
+                            heroImages.length
+                        ) {
+
+                            currentHeroIndex = 0;
+
+                        }
+
+
+                        showHeroImage(
+                            currentHeroIndex
+                        );
+
+                    }, 4000);
+
+            }
+        );
+
+    }
+);
 
 
 /* =====================================================
-   SEARCH OPEN / CLOSE
+   LOAD SUPABASE CONTENT
+===================================================== */
+
+async function loadWebsiteContents() {
+
+    try {
+
+        const {
+            data,
+            error
+        } =
+            await publicSupabase
+                .from("contents")
+                .select("*")
+                .eq(
+                    "status",
+                    "published"
+                )
+                .order(
+                    "created_at",
+                    {
+                        ascending: false
+                    }
+                );
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+        databaseContents =
+            data || [];
+
+
+        renderMovies();
+
+        renderNatok();
+
+        renderSeries();
+
+        renderUpcoming();
+
+        renderStories();
+
+        renderBooks();
+
+
+        console.log(
+            "Database content loaded:",
+            databaseContents
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Supabase Error:",
+            error
+        );
+
+
+        showDatabaseError();
+
+    }
+
+}
+
+
+/* =====================================================
+   MOVIES
+===================================================== */
+
+function renderMovies() {
+
+    const grid =
+        document.getElementById(
+            "moviesGrid"
+        );
+
+
+    if (!grid) {
+        return;
+    }
+
+
+    const movies =
+        databaseContents.filter(
+            item =>
+                item.type ===
+                "movie"
+        );
+
+
+    if (
+        movies.length === 0
+    ) {
+
+        grid.innerHTML =
+            emptyMessage(
+                "No movies added yet."
+            );
+
+        return;
+
+    }
+
+
+    grid.innerHTML =
+        movies
+            .map(
+                item =>
+                    createVideoCard(
+                        item,
+                        "MOVIE"
+                    )
+            )
+            .join("");
+
+}
+
+
+/* =====================================================
+   NATOK
+===================================================== */
+
+function renderNatok() {
+
+    const grid =
+        document.getElementById(
+            "natokGrid"
+        );
+
+
+    if (!grid) {
+        return;
+    }
+
+
+    const natok =
+        databaseContents.filter(
+            item =>
+                item.type ===
+                "natok"
+        );
+
+
+    if (
+        natok.length === 0
+    ) {
+
+        grid.innerHTML =
+            emptyMessage(
+                "No natok added yet."
+            );
+
+        return;
+
+    }
+
+
+    grid.innerHTML =
+        natok
+            .map(
+                item =>
+                    createVideoCard(
+                        item,
+                        "NATOK"
+                    )
+            )
+            .join("");
+
+}
+
+
+/* =====================================================
+   WEB SERIES
+===================================================== */
+
+function renderSeries() {
+
+    const grid =
+        document.getElementById(
+            "webseriesGrid"
+        );
+
+
+    if (!grid) {
+        return;
+    }
+
+
+    const series =
+        databaseContents.filter(
+            item =>
+                item.type ===
+                "series"
+        );
+
+
+    if (
+        series.length === 0
+    ) {
+
+        grid.innerHTML =
+            emptyMessage(
+                "No web series added yet."
+            );
+
+        return;
+
+    }
+
+
+    grid.innerHTML =
+        series
+            .map(
+                item =>
+                    createVideoCard(
+                        item,
+                        "WEB SERIES"
+                    )
+            )
+            .join("");
+
+}
+
+
+/* =====================================================
+   VIDEO CARD
+===================================================== */
+
+function createVideoCard(
+    item,
+    category
+) {
+
+    const posterStyle =
+        item.poster_url
+            ? `
+                background-image:
+                url("${escapeAttribute(
+                    item.poster_url
+                )}");
+            `
+            : "";
+
+
+    let leftMeta = "";
+
+
+    if (
+        item.type ===
+        "series"
+    ) {
+
+        if (item.season) {
+
+            leftMeta =
+                `S${String(
+                    item.season
+                ).padStart(
+                    2,
+                    "0"
+                )}`;
+
+        }
+
+    }
+
+    else {
+
+        leftMeta =
+            item.year || "";
+
+    }
+
+
+    return `
+
+        <article
+            class="movie-card"
+            data-content-id="${item.id}"
+        >
+
+            <div
+                class="movie-poster"
+                style='${posterStyle}'
+            >
+
+
+                ${
+                    item.badge
+                        ? `
+
+                            <span
+                                class="content-badge"
+                            >
+
+                                ${escapeHTML(
+                                    item.badge
+                                )}
+
+                            </span>
+
+                        `
+                        : ""
+                }
+
+
+                ${
+                    item.video_url
+                        ? `
+
+                            <button
+                                class="poster-play dynamic-play"
+                                type="button"
+                                data-video="${escapeAttribute(
+                                    item.video_url
+                                )}"
+                            >
+
+                                <i
+                                    class="fa-solid fa-play"
+                                ></i>
+
+                            </button>
+
+                        `
+                        : ""
+                }
+
+            </div>
+
+
+            <div class="card-info">
+
+
+                <span class="card-category">
+
+                    ${category}
+
+                </span>
+
+
+                <h3>
+
+                    ${escapeHTML(
+                        item.title ||
+                        "Untitled"
+                    )}
+
+                </h3>
+
+
+                <p>
+
+                    ${escapeHTML(
+                        item.description ||
+                        ""
+                    )}
+
+                </p>
+
+
+                <div class="card-meta">
+
+
+                    <span>
+
+                        ${escapeHTML(
+                            leftMeta
+                        )}
+
+                    </span>
+
+
+                    <span>
+
+                        ${
+                            item.rating
+                                ? `
+
+                                    <i
+                                        class="fa-solid fa-star"
+                                    ></i>
+
+                                    ${escapeHTML(
+                                        item.rating
+                                    )}
+
+                                `
+                                : ""
+                        }
+
+                    </span>
+
+
+                </div>
+
+            </div>
+
+        </article>
+
+    `;
+
+}
+
+
+/* =====================================================
+   UPCOMING
+===================================================== */
+
+function renderUpcoming() {
+
+    const grid =
+        document.getElementById(
+            "upcomingGrid"
+        );
+
+
+    if (!grid) {
+        return;
+    }
+
+
+    const upcoming =
+        databaseContents.filter(
+            item =>
+                item.type ===
+                "upcoming"
+        );
+
+
+    if (
+        upcoming.length === 0
+    ) {
+
+        grid.innerHTML =
+            emptyMessage(
+                "No upcoming content."
+            );
+
+        return;
+
+    }
+
+
+    grid.innerHTML =
+        upcoming
+            .map(item => {
+
+                const image =
+                    item.banner_url ||
+                    item.poster_url;
+
+
+                const backgroundStyle =
+                    image
+                        ? `
+                            background-image:
+                            url("${escapeAttribute(
+                                image
+                            )}");
+                        `
+                        : "";
+
+
+                return `
+
+                    <article
+                        class="upcoming-card"
+                    >
+
+
+                        <div
+                            class="upcoming-poster"
+                            style='${backgroundStyle}'
+                        >
+
+
+                            <span
+                                class="coming-badge"
+                            >
+
+                                ${escapeHTML(
+                                    item.badge ||
+                                    "COMING SOON"
+                                )}
+
+                            </span>
+
+                        </div>
+
+
+                        <div
+                            class="upcoming-info"
+                        >
+
+
+                            <span>
+                                RELEASE DATE
+                            </span>
+
+
+                            <h3>
+
+                                ${escapeHTML(
+                                    item.title ||
+                                    ""
+                                )}
+
+                            </h3>
+
+
+                            ${
+                                item.release_date
+                                    ? `
+
+                                        <p>
+
+                                            ${escapeHTML(
+                                                formatDate(
+                                                    item.release_date
+                                                )
+                                            )}
+
+                                        </p>
+
+                                    `
+                                    : ""
+                            }
+
+
+                            <p>
+
+                                ${escapeHTML(
+                                    item.description ||
+                                    ""
+                                )}
+
+                            </p>
+
+                        </div>
+
+                    </article>
+
+                `;
+
+            })
+            .join("");
+
+}
+
+
+/* =====================================================
+   STORIES
+===================================================== */
+
+function renderStories() {
+
+    const grid =
+        document.getElementById(
+            "storiesGrid"
+        );
+
+
+    if (!grid) {
+        return;
+    }
+
+
+    const stories =
+        databaseContents.filter(
+            item =>
+                item.type ===
+                "story"
+        );
+
+
+    if (
+        stories.length === 0
+    ) {
+
+        grid.innerHTML =
+            emptyMessage(
+                "No stories added yet."
+            );
+
+        return;
+
+    }
+
+
+    grid.innerHTML =
+        stories
+            .map(item => {
+
+                const backgroundStyle =
+                    item.poster_url
+                        ? `
+                            background-image:
+                            url("${escapeAttribute(
+                                item.poster_url
+                            )}");
+                        `
+                        : "";
+
+
+                return `
+
+                    <article
+                        class="story-card"
+                    >
+
+
+                        <div
+                            class="story-image"
+                            style='${backgroundStyle}'
+                        >
+
+
+                            <span
+                                class="story-badge"
+                            >
+
+                                ${
+                                    item.featured
+                                        ? "FEATURED"
+                                        : "STORY"
+                                }
+
+                            </span>
+
+                        </div>
+
+
+                        <div
+                            class="story-info"
+                        >
+
+
+                            <span
+                                class="story-date"
+                            >
+
+                                ${
+                                    item.release_date
+                                        ? escapeHTML(
+                                            formatDate(
+                                                item.release_date
+                                            )
+                                        )
+                                        : ""
+                                }
+
+                            </span>
+
+
+                            <h3>
+
+                                ${escapeHTML(
+                                    item.title ||
+                                    ""
+                                )}
+
+                            </h3>
+
+
+                            ${
+                                item.author
+                                    ? `
+
+                                        <p>
+
+                                            By ${escapeHTML(
+                                                item.author
+                                            )}
+
+                                        </p>
+
+                                    `
+                                    : ""
+                            }
+
+
+                            <p>
+
+                                ${escapeHTML(
+                                    item.description ||
+                                    ""
+                                )}
+
+                            </p>
+
+
+                            <button
+                                class="story-button dynamic-story"
+                                type="button"
+                                data-id="${item.id}"
+                            >
+
+                                Read Story
+
+                                <i
+                                    class="fa-solid fa-arrow-right"
+                                ></i>
+
+                            </button>
+
+                        </div>
+
+                    </article>
+
+                `;
+
+            })
+            .join("");
+
+}
+
+
+/* =====================================================
+   BOOKS
+===================================================== */
+
+function renderBooks() {
+
+    const grid =
+        document.getElementById(
+            "booksGrid"
+        );
+
+
+    if (!grid) {
+        return;
+    }
+
+
+    const books =
+        databaseContents.filter(
+            item =>
+                item.type ===
+                "book"
+        );
+
+
+    if (
+        books.length === 0
+    ) {
+
+        grid.innerHTML =
+            emptyMessage(
+                "No books added yet."
+            );
+
+        return;
+
+    }
+
+
+    grid.innerHTML =
+        books
+            .map(item => {
+
+                const backgroundStyle =
+                    item.poster_url
+                        ? `
+                            background-image:
+                            url("${escapeAttribute(
+                                item.poster_url
+                            )}");
+                        `
+                        : "";
+
+
+                return `
+
+                    <article
+                        class="book-card"
+                    >
+
+
+                        <div
+                            class="book-cover"
+                            style='${backgroundStyle}'
+                        >
+
+
+                            <span
+                                class="book-badge"
+                            >
+
+                                ${
+                                    item.featured
+                                        ? "FEATURED"
+                                        : "BOOK"
+                                }
+
+                            </span>
+
+                        </div>
+
+
+                        <div
+                            class="book-info"
+                        >
+
+
+                            <span
+                                class="book-category"
+                            >
+
+                                ${escapeHTML(
+                                    item.genre ||
+                                    "BOOK"
+                                )}
+
+                            </span>
+
+
+                            <h3>
+
+                                ${escapeHTML(
+                                    item.title ||
+                                    ""
+                                )}
+
+                            </h3>
+
+
+                            ${
+                                item.author
+                                    ? `
+
+                                        <p>
+
+                                            By ${escapeHTML(
+                                                item.author
+                                            )}
+
+                                        </p>
+
+                                    `
+                                    : ""
+                            }
+
+
+                            <p>
+
+                                ${escapeHTML(
+                                    item.description ||
+                                    ""
+                                )}
+
+                            </p>
+
+
+                            ${
+                                item.file_url
+                                    ? `
+
+                                        <button
+                                            class="book-button dynamic-book"
+                                            type="button"
+                                            data-file="${escapeAttribute(
+                                                item.file_url
+                                            )}"
+                                        >
+
+                                            Read Book
+
+                                            <i
+                                                class="fa-solid fa-arrow-right"
+                                            ></i>
+
+                                        </button>
+
+                                    `
+                                    : ""
+                            }
+
+                        </div>
+
+                    </article>
+
+                `;
+
+            })
+            .join("");
+
+}
+
+
+/* =====================================================
+   DYNAMIC BUTTON CLICK
+===================================================== */
+
+document.addEventListener(
+    "click",
+    event => {
+
+
+        /* VIDEO */
+
+        const playButton =
+            event.target.closest(
+                ".dynamic-play"
+            );
+
+
+        if (playButton) {
+
+            event.stopPropagation();
+
+
+            const videoUrl =
+                playButton.dataset.video;
+
+
+            if (videoUrl) {
+
+                window.open(
+                    videoUrl,
+                    "_blank",
+                    "noopener,noreferrer"
+                );
+
+            }
+
+
+            return;
+
+        }
+
+
+        /* STORY */
+
+        const storyButton =
+            event.target.closest(
+                ".dynamic-story"
+            );
+
+
+        if (storyButton) {
+
+            const storyId =
+                Number(
+                    storyButton.dataset.id
+                );
+
+
+            const story =
+                databaseContents.find(
+                    item =>
+                        Number(
+                            item.id
+                        ) ===
+                        storyId
+                );
+
+
+            if (story) {
+
+                openStoryReader(
+                    story
+                );
+
+            }
+
+
+            return;
+
+        }
+
+
+        /* BOOK */
+
+        const bookButton =
+            event.target.closest(
+                ".dynamic-book"
+            );
+
+
+        if (bookButton) {
+
+            const fileUrl =
+                bookButton.dataset.file;
+
+
+            if (fileUrl) {
+
+                window.open(
+                    fileUrl,
+                    "_blank",
+                    "noopener,noreferrer"
+                );
+
+            }
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   STORY MODAL
+===================================================== */
+
+function openStoryReader(story) {
+
+    const oldModal =
+        document.getElementById(
+            "storyReaderModal"
+        );
+
+
+    if (oldModal) {
+
+        oldModal.remove();
+
+    }
+
+
+    const modal =
+        document.createElement(
+            "div"
+        );
+
+
+    modal.id =
+        "storyReaderModal";
+
+
+    modal.innerHTML = `
+
+        <div
+            style="
+                position: fixed;
+                inset: 0;
+                background: rgba(0,0,0,0.88);
+                z-index: 99999;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 20px;
+            "
+        >
+
+
+            <div
+                style="
+                    position: relative;
+                    width: min(760px, 100%);
+                    max-height: 86vh;
+                    overflow-y: auto;
+                    background: #101116;
+                    border: 1px solid rgba(255,255,255,0.1);
+                    border-radius: 16px;
+                    padding: 32px;
+                "
+            >
+
+
+                <button
+                    id="closeStoryReader"
+                    type="button"
+                    style="
+                        position: absolute;
+                        top: 18px;
+                        right: 18px;
+                        width: 38px;
+                        height: 38px;
+                        border: none;
+                        border-radius: 50%;
+                        background: #ef1024;
+                        color: #ffffff;
+                        cursor: pointer;
+                    "
+                >
+
+                    <i
+                        class="fa-solid fa-xmark"
+                    ></i>
+
+                </button>
+
+
+                <h2
+                    style="
+                        padding-right: 50px;
+                        margin-bottom: 8px;
+                    "
+                >
+
+                    ${escapeHTML(
+                        story.title
+                    )}
+
+                </h2>
+
+
+                ${
+                    story.author
+                        ? `
+
+                            <p
+                                style="
+                                    color: #ff1b2d;
+                                    margin-bottom: 24px;
+                                "
+                            >
+
+                                By ${escapeHTML(
+                                    story.author
+                                )}
+
+                            </p>
+
+                        `
+                        : ""
+                }
+
+
+                <div
+                    style="
+                        white-space: pre-wrap;
+                        color: rgba(255,255,255,0.78);
+                        line-height: 1.9;
+                        font-size: 15px;
+                    "
+                >
+
+                    ${escapeHTML(
+                        story.full_content ||
+                        "Story content is not available."
+                    )}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    `;
+
+
+    document.body.appendChild(
+        modal
+    );
+
+
+    const closeButton =
+        document.getElementById(
+            "closeStoryReader"
+        );
+
+
+    closeButton.addEventListener(
+        "click",
+        () => {
+
+            modal.remove();
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   SEARCH OPEN
 ===================================================== */
 
 function openSearch() {
 
-    if (!searchBox) return;
+    if (!searchBox) {
+        return;
+    }
 
-    searchBox.classList.add("active");
+
+    searchBox.classList.add(
+        "active"
+    );
+
 
     setTimeout(() => {
 
@@ -332,26 +1558,39 @@ function openSearch() {
 
         }
 
-    }, 150);
+    }, 100);
 
 }
 
 
+/* =====================================================
+   SEARCH CLOSE
+===================================================== */
+
 function closeSearch() {
 
-    if (!searchBox) return;
+    if (!searchBox) {
+        return;
+    }
 
-    searchBox.classList.remove("active");
+
+    searchBox.classList.remove(
+        "active"
+    );
+
 
     if (searchInput) {
 
-        searchInput.value = "";
+        searchInput.value =
+            "";
 
     }
 
+
     if (searchResults) {
 
-        searchResults.innerHTML = "";
+        searchResults.innerHTML =
+            "";
 
     }
 
@@ -366,18 +1605,23 @@ if (searchIconButton) {
 
     searchIconButton.addEventListener(
         "click",
-        (event) => {
+        event => {
 
             event.stopPropagation();
 
+
             if (
                 searchBox &&
-                searchBox.classList.contains("active")
+                searchBox.classList.contains(
+                    "active"
+                )
             ) {
 
                 closeSearch();
 
-            } else {
+            }
+
+            else {
 
                 openSearch();
 
@@ -397,7 +1641,7 @@ if (searchClose) {
 
     searchClose.addEventListener(
         "click",
-        (event) => {
+        event => {
 
             event.stopPropagation();
 
@@ -410,203 +1654,127 @@ if (searchClose) {
 
 
 /* =====================================================
-   MOVIE DATABASE FOR SEARCH
-===================================================== */
-
-const searchableItems = [
-
-    {
-        title: "The Last Horizon",
-        category: "Movie",
-        section: "movies"
-    },
-
-    {
-        title: "Midnight Story",
-        category: "Movie",
-        section: "movies"
-    },
-
-    {
-        title: "Lost City",
-        category: "Movie",
-        section: "movies"
-    },
-
-    {
-        title: "Shadow Night",
-        category: "Movie",
-        section: "movies"
-    },
-
-    {
-        title: "Moner Golpo",
-        category: "Natok",
-        section: "natok"
-    },
-
-    {
-        title: "Eka Manush",
-        category: "Natok",
-        section: "natok"
-    },
-
-    {
-        title: "Shesh Chithi",
-        category: "Natok",
-        section: "natok"
-    },
-
-    {
-        title: "Tomar Jonno",
-        category: "Natok",
-        section: "natok"
-    },
-
-    {
-        title: "Dark Dimension",
-        category: "Web Series",
-        section: "series"
-    },
-
-    {
-        title: "The Unknown",
-        category: "Web Series",
-        section: "series"
-    },
-
-    {
-        title: "Cyber City",
-        category: "Web Series",
-        section: "series"
-    },
-
-    {
-        title: "Hidden Truth",
-        category: "Web Series",
-        section: "series"
-    },
-
-    {
-        title: "A Story of Life",
-        category: "Story",
-        section: "stories"
-    },
-
-    {
-        title: "The Last Letter",
-        category: "Story",
-        section: "stories"
-    },
-
-    {
-        title: "Winter Night",
-        category: "Story",
-        section: "stories"
-    },
-
-    {
-        title: "Unknown Journey",
-        category: "Story",
-        section: "stories"
-    },
-
-    {
-        title: "The Silent Book",
-        category: "Book",
-        section: "books"
-    },
-
-    {
-        title: "History of Cinema",
-        category: "Book",
-        section: "books"
-    },
-
-    {
-        title: "Modern Stories",
-        category: "Book",
-        section: "books"
-    },
-
-    {
-        title: "The Great Journey",
-        category: "Book",
-        section: "books"
-    }
-
-];
-
-
-/* =====================================================
-   SEARCH FUNCTION
+   PERFORM SEARCH
 ===================================================== */
 
 function performSearch(keyword) {
 
-    if (!searchResults) return;
+    if (!searchResults) {
+        return;
+    }
+
 
     const searchText =
-        keyword.trim().toLowerCase();
+        keyword
+            .trim()
+            .toLowerCase();
 
-
-    /*
-       Empty search
-    */
 
     if (!searchText) {
 
-        searchResults.innerHTML = "";
+        searchResults.innerHTML =
+            "";
 
         return;
 
     }
 
 
-    /*
-       Find matching items
-    */
-
     const results =
-        searchableItems.filter((item) => {
-
-            return (
-
-                item.title
-                    .toLowerCase()
-                    .includes(searchText)
-
-                ||
-
-                item.category
-                    .toLowerCase()
-                    .includes(searchText)
-
-            );
-
-        });
+        databaseContents.filter(
+            item => {
 
 
-    /*
-       No result
-    */
+                const title =
+                    String(
+                        item.title ||
+                        ""
+                    )
+                    .toLowerCase();
 
-    if (results.length === 0) {
+
+                const category =
+                    formatType(
+                        item.type
+                    )
+                    .toLowerCase();
+
+
+                const genre =
+                    String(
+                        item.genre ||
+                        ""
+                    )
+                    .toLowerCase();
+
+
+                const author =
+                    String(
+                        item.author ||
+                        ""
+                    )
+                    .toLowerCase();
+
+
+                return (
+
+                    title.includes(
+                        searchText
+                    )
+
+                    ||
+
+                    category.includes(
+                        searchText
+                    )
+
+                    ||
+
+                    genre.includes(
+                        searchText
+                    )
+
+                    ||
+
+                    author.includes(
+                        searchText
+                    )
+
+                );
+
+            }
+        );
+
+
+    if (
+        results.length === 0
+    ) {
 
         searchResults.innerHTML = `
 
-            <div class="search-result-item">
+            <div
+                class="search-result-item"
+            >
 
-                <div class="search-result-icon">
-                    <i class="fa-solid fa-magnifying-glass"></i>
+                <div
+                    class="search-result-icon"
+                >
+
+                    <i
+                        class="fa-solid fa-magnifying-glass"
+                    ></i>
+
                 </div>
+
 
                 <div>
 
-                    <h4>No result found</h4>
+                    <h4>
+                        No result found
+                    </h4>
 
                     <p>
-                        Try another movie, natok or series name
+                        Try another keyword
                     </p>
 
                 </div>
@@ -615,41 +1783,61 @@ function performSearch(keyword) {
 
         `;
 
+
         return;
 
     }
 
 
-    /*
-       Show results
-    */
-
     searchResults.innerHTML =
         results
-            .slice(0, 8)
-            .map((item) => {
+            .slice(
+                0,
+                8
+            )
+            .map(item => {
 
                 return `
 
                     <div
-                        class="search-result-item"
-                        data-section="${item.section}"
+                        class="search-result-item dynamic-search-result"
+                        data-type="${escapeAttribute(
+                            item.type
+                        )}"
                     >
 
-                        <div class="search-result-icon">
 
-                            <i class="fa-solid fa-film"></i>
+                        <div
+                            class="search-result-icon"
+                        >
+
+                            <i
+                                class="${getTypeIcon(
+                                    item.type
+                                )}"
+                            ></i>
 
                         </div>
+
 
                         <div>
 
                             <h4>
-                                ${item.title}
+
+                                ${escapeHTML(
+                                    item.title
+                                )}
+
                             </h4>
 
                             <p>
-                                ${item.category}
+
+                                ${escapeHTML(
+                                    formatType(
+                                        item.type
+                                    )
+                                )}
+
                             </p>
 
                         </div>
@@ -660,53 +1848,6 @@ function performSearch(keyword) {
 
             })
             .join("");
-
-
-    /*
-       Add click to results
-    */
-
-    const resultItems =
-        searchResults.querySelectorAll(
-            ".search-result-item"
-        );
-
-
-    resultItems.forEach((item) => {
-
-        item.addEventListener("click", () => {
-
-            const section =
-                item.dataset.section;
-
-
-            /*
-               Try to find section
-            */
-
-            const target =
-                document.getElementById(
-                    section
-                );
-
-
-            if (target) {
-
-                closeSearch();
-
-                target.scrollIntoView({
-
-                    behavior: "smooth",
-
-                    block: "start"
-
-                });
-
-            }
-
-        });
-
-    });
 
 }
 
@@ -719,11 +1860,71 @@ if (searchInput) {
 
     searchInput.addEventListener(
         "input",
-        (event) => {
+        event => {
 
             performSearch(
                 event.target.value
             );
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   SEARCH RESULT CLICK
+===================================================== */
+
+if (searchResults) {
+
+    searchResults.addEventListener(
+        "click",
+        event => {
+
+            const result =
+                event.target.closest(
+                    ".dynamic-search-result"
+                );
+
+
+            if (!result) {
+                return;
+            }
+
+
+            const type =
+                result.dataset.type;
+
+
+            const sectionId =
+                getSectionFromType(
+                    type
+                );
+
+
+            const target =
+                document.getElementById(
+                    sectionId
+                );
+
+
+            closeSearch();
+
+
+            if (target) {
+
+                target.scrollIntoView({
+
+                    behavior:
+                        "smooth",
+
+                    block:
+                        "start"
+
+                });
+
+            }
 
         }
     );
@@ -737,20 +1938,28 @@ if (searchInput) {
 
 document.addEventListener(
     "click",
-    (event) => {
+    event => {
 
-        if (!searchBox) return;
+        if (!searchBox) {
+            return;
+        }
 
-        const clickedInsideSearch =
-            searchBox.contains(event.target);
+
+        const clickedInside =
+            searchBox.contains(
+                event.target
+            );
+
 
         const clickedSearchButton =
             searchIconButton &&
-            searchIconButton.contains(event.target);
+            searchIconButton.contains(
+                event.target
+            );
 
 
         if (
-            !clickedInsideSearch &&
+            !clickedInside &&
             !clickedSearchButton
         ) {
 
@@ -766,51 +1975,36 @@ document.addEventListener(
    MOBILE MENU
 ===================================================== */
 
-function toggleMobileMenu() {
+function closeMobileMenu() {
 
-    if (!mobileNav) return;
+    if (!mobileNav) {
+        return;
+    }
 
-    mobileNav.classList.toggle("active");
 
+    mobileNav.classList.remove(
+        "active"
+    );
 
-    /*
-       Change icon
-    */
 
     if (mobileMenuButton) {
 
         const icon =
-            mobileMenuButton.querySelector("i");
+            mobileMenuButton.querySelector(
+                "i"
+            );
+
 
         if (icon) {
 
-            const isOpen =
-                mobileNav.classList.contains(
-                    "active"
-                );
+            icon.classList.remove(
+                "fa-xmark"
+            );
 
 
-            if (isOpen) {
-
-                icon.classList.remove(
-                    "fa-bars"
-                );
-
-                icon.classList.add(
-                    "fa-xmark"
-                );
-
-            } else {
-
-                icon.classList.remove(
-                    "fa-xmark"
-                );
-
-                icon.classList.add(
-                    "fa-bars"
-                );
-
-            }
+            icon.classList.add(
+                "fa-bars"
+            );
 
         }
 
@@ -823,11 +2017,61 @@ if (mobileMenuButton) {
 
     mobileMenuButton.addEventListener(
         "click",
-        (event) => {
+        event => {
 
             event.stopPropagation();
 
-            toggleMobileMenu();
+
+            if (!mobileNav) {
+                return;
+            }
+
+
+            mobileNav.classList.toggle(
+                "active"
+            );
+
+
+            const icon =
+                mobileMenuButton.querySelector(
+                    "i"
+                );
+
+
+            if (!icon) {
+                return;
+            }
+
+
+            if (
+                mobileNav.classList.contains(
+                    "active"
+                )
+            ) {
+
+                icon.classList.remove(
+                    "fa-bars"
+                );
+
+
+                icon.classList.add(
+                    "fa-xmark"
+                );
+
+            }
+
+            else {
+
+                icon.classList.remove(
+                    "fa-xmark"
+                );
+
+
+                icon.classList.add(
+                    "fa-bars"
+                );
+
+            }
 
         }
     );
@@ -836,78 +2080,50 @@ if (mobileMenuButton) {
 
 
 /* =====================================================
-   MOBILE NAV CLICK
+   MOBILE LINKS
 ===================================================== */
 
 if (mobileNav) {
 
-    const mobileLinks =
-        mobileNav.querySelectorAll("a");
+    mobileNav
+        .querySelectorAll(
+            "a"
+        )
+        .forEach(link => {
 
+            link.addEventListener(
+                "click",
+                closeMobileMenu
+            );
 
-    mobileLinks.forEach((link) => {
-
-        link.addEventListener(
-            "click",
-            () => {
-
-                mobileNav.classList.remove(
-                    "active"
-                );
-
-
-                /*
-                   Reset icon
-                */
-
-                if (mobileMenuButton) {
-
-                    const icon =
-                        mobileMenuButton.querySelector(
-                            "i"
-                        );
-
-                    if (icon) {
-
-                        icon.classList.remove(
-                            "fa-xmark"
-                        );
-
-                        icon.classList.add(
-                            "fa-bars"
-                        );
-
-                    }
-
-                }
-
-            }
-        );
-
-    });
+        });
 
 }
 
 
 /* =====================================================
-   SMOOTH SCROLL FOR ALL NAV LINKS
+   SMOOTH SCROLL
 ===================================================== */
 
 document
-    .querySelectorAll('a[href^="#"]')
-    .forEach((link) => {
+    .querySelectorAll(
+        'a[href^="#"]'
+    )
+    .forEach(link => {
 
         link.addEventListener(
             "click",
-            (event) => {
+            event => {
 
-                const targetID =
-                    link.getAttribute("href");
+                const targetId =
+                    link.getAttribute(
+                        "href"
+                    );
 
 
                 if (
-                    !targetID ||
-                    targetID === "#"
+                    !targetId ||
+                    targetId === "#"
                 ) {
 
                     return;
@@ -917,23 +2133,27 @@ document
 
                 const target =
                     document.querySelector(
-                        targetID
+                        targetId
                     );
 
 
-                if (target) {
-
-                    event.preventDefault();
-
-                    target.scrollIntoView({
-
-                        behavior: "smooth",
-
-                        block: "start"
-
-                    });
-
+                if (!target) {
+                    return;
                 }
+
+
+                event.preventDefault();
+
+
+                target.scrollIntoView({
+
+                    behavior:
+                        "smooth",
+
+                    block:
+                        "start"
+
+                });
 
             }
         );
@@ -942,236 +2162,7 @@ document
 
 
 /* =====================================================
-   PLAY BUTTON
-===================================================== */
-
-const playButtons =
-    document.querySelectorAll(
-        ".poster-play"
-    );
-
-
-playButtons.forEach((button) => {
-
-    button.addEventListener(
-        "click",
-        (event) => {
-
-            event.stopPropagation();
-
-            const card =
-                button.closest(
-                    ".movie-card"
-                );
-
-
-            let title =
-                "Movie";
-
-
-            if (card) {
-
-                const titleElement =
-                    card.querySelector(
-                        "h3"
-                    );
-
-                if (titleElement) {
-
-                    title =
-                        titleElement.textContent;
-
-                }
-
-            }
-
-
-            /*
-               Temporary action
-               
-               Later we will replace this
-               with actual video player.
-            */
-
-            alert(
-                `"${title}" video player will open here.`
-            );
-
-        }
-    );
-
-});
-
-
-/* =====================================================
-   STORY BUTTONS
-===================================================== */
-
-const storyButtons =
-    document.querySelectorAll(
-        ".story-button"
-    );
-
-
-storyButtons.forEach((button) => {
-
-    button.addEventListener(
-        "click",
-        () => {
-
-            const card =
-                button.closest(
-                    ".story-card"
-                );
-
-
-            const titleElement =
-                card &&
-                card.querySelector(
-                    "h3"
-                );
-
-
-            const title =
-                titleElement
-                    ? titleElement.textContent
-                    : "Story";
-
-
-            alert(
-                `"${title}" story will open here.`
-            );
-
-        }
-    );
-
-});
-
-
-/* =====================================================
-   BOOK BUTTONS
-===================================================== */
-
-const bookButtons =
-    document.querySelectorAll(
-        ".book-button"
-    );
-
-
-bookButtons.forEach((button) => {
-
-    button.addEventListener(
-        "click",
-        () => {
-
-            const card =
-                button.closest(
-                    ".book-card"
-                );
-
-
-            const titleElement =
-                card &&
-                card.querySelector(
-                    "h3"
-                );
-
-
-            const title =
-                titleElement
-                    ? titleElement.textContent
-                    : "Book";
-
-
-            alert(
-                `"${title}" will open here.`
-            );
-
-        }
-    );
-
-});
-
-
-/* =====================================================
-   VIEW ALL BUTTONS
-===================================================== */
-
-const viewAllButtons =
-    document.querySelectorAll(
-        ".view-all-button"
-    );
-
-
-viewAllButtons.forEach((button) => {
-
-    button.addEventListener(
-        "click",
-        () => {
-
-            alert(
-                "More content will be loaded here."
-            );
-
-        }
-    );
-
-});
-
-
-/* =====================================================
-   ESCAPE KEY
-===================================================== */
-
-document.addEventListener(
-    "keydown",
-    (event) => {
-
-        if (
-            event.key === "Escape"
-        ) {
-
-            closeSearch();
-
-
-            if (mobileNav) {
-
-                mobileNav.classList.remove(
-                    "active"
-                );
-
-            }
-
-
-            if (mobileMenuButton) {
-
-                const icon =
-                    mobileMenuButton.querySelector(
-                        "i"
-                    );
-
-                if (icon) {
-
-                    icon.classList.remove(
-                        "fa-xmark"
-                    );
-
-                    icon.classList.add(
-                        "fa-bars"
-                    );
-
-                }
-
-            }
-
-        }
-
-    }
-);
-
-
-/* =====================================================
-   ACTIVE NAV LINK ON SCROLL
+   ACTIVE NAV
 ===================================================== */
 
 const sections =
@@ -1192,52 +2183,51 @@ function updateActiveNav() {
         "";
 
 
-    sections.forEach((section) => {
+    sections.forEach(
+        section => {
 
-        const sectionTop =
-            section.offsetTop - 150;
-
-        const sectionHeight =
-            section.offsetHeight;
+            const sectionTop =
+                section.offsetTop -
+                150;
 
 
-        if (
-            window.scrollY >= sectionTop &&
-            window.scrollY <
-                sectionTop + sectionHeight
-        ) {
+            const sectionBottom =
+                sectionTop +
+                section.offsetHeight;
 
-            currentSection =
-                section.getAttribute("id");
+
+            if (
+                window.scrollY >=
+                    sectionTop
+
+                &&
+
+                window.scrollY <
+                    sectionBottom
+            ) {
+
+                currentSection =
+                    section.id;
+
+            }
 
         }
-
-    });
-
-
-    navLinks.forEach((link) => {
-
-        link.classList.remove(
-            "active"
-        );
+    );
 
 
-        const href =
-            link.getAttribute("href");
+    navLinks.forEach(
+        link => {
 
-
-        if (
-            href ===
-            `#${currentSection}`
-        ) {
-
-            link.classList.add(
-                "active"
+            link.classList.toggle(
+                "active",
+                link.getAttribute(
+                    "href"
+                ) ===
+                `#${currentSection}`
             );
 
         }
-
-    });
+    );
 
 }
 
@@ -1249,58 +2239,347 @@ window.addEventListener(
 
 
 /* =====================================================
-   MOBILE TOUCH EFFECT
+   ESCAPE KEY
 ===================================================== */
 
-const touchCards =
-    document.querySelectorAll(
-        ".movie-card, .story-card, .book-card, .upcoming-card"
-    );
+document.addEventListener(
+    "keydown",
+    event => {
 
+        if (
+            event.key !==
+            "Escape"
+        ) {
 
-touchCards.forEach((card) => {
+            return;
 
-    card.addEventListener(
-        "touchstart",
-        () => {
-
-            card.style.transform =
-                "scale(0.985)";
-
-        },
-        {
-            passive: true
         }
-    );
 
 
-    card.addEventListener(
-        "touchend",
-        () => {
+        closeSearch();
 
-            card.style.transform = "";
+        closeMobileMenu();
 
-        },
-        {
-            passive: true
+
+        const modal =
+            document.getElementById(
+                "storyReaderModal"
+            );
+
+
+        if (modal) {
+
+            modal.remove();
+
         }
-    );
 
-});
+    }
+);
 
 
 /* =====================================================
-   PAGE LOADED
+   ERROR UI
+===================================================== */
+
+function showDatabaseError() {
+
+    const grids = [
+
+        "moviesGrid",
+        "natokGrid",
+        "webseriesGrid",
+        "upcomingGrid",
+        "storiesGrid",
+        "booksGrid"
+
+    ];
+
+
+    grids.forEach(id => {
+
+        const grid =
+            document.getElementById(
+                id
+            );
+
+
+        if (grid) {
+
+            grid.innerHTML =
+                emptyMessage(
+                    "Unable to load content."
+                );
+
+        }
+
+    });
+
+}
+
+
+/* =====================================================
+   FORMAT TYPE
+===================================================== */
+
+function formatType(type) {
+
+    const typeNames = {
+
+        movie:
+            "Movie",
+
+        natok:
+            "Natok",
+
+        series:
+            "Web Series",
+
+        upcoming:
+            "Upcoming",
+
+        story:
+            "Story",
+
+        book:
+            "Book"
+
+    };
+
+
+    return (
+        typeNames[type] ||
+        type ||
+        ""
+    );
+
+}
+
+
+/* =====================================================
+   SECTION FROM TYPE
+===================================================== */
+
+function getSectionFromType(type) {
+
+    const sectionsMap = {
+
+        movie:
+            "movies",
+
+        natok:
+            "natok",
+
+        series:
+            "webseries",
+
+        upcoming:
+            "upcoming",
+
+        story:
+            "stories",
+
+        book:
+            "books"
+
+    };
+
+
+    return (
+        sectionsMap[type] ||
+        "home"
+    );
+
+}
+
+
+/* =====================================================
+   TYPE ICON
+===================================================== */
+
+function getTypeIcon(type) {
+
+    const icons = {
+
+        movie:
+            "fa-solid fa-film",
+
+        natok:
+            "fa-solid fa-clapperboard",
+
+        series:
+            "fa-solid fa-tv",
+
+        upcoming:
+            "fa-solid fa-clock",
+
+        story:
+            "fa-solid fa-book-open",
+
+        book:
+            "fa-solid fa-book"
+
+    };
+
+
+    return (
+        icons[type] ||
+        "fa-solid fa-film"
+    );
+
+}
+
+
+/* =====================================================
+   DATE FORMAT
+===================================================== */
+
+function formatDate(date) {
+
+    if (!date) {
+
+        return "";
+
+    }
+
+
+    try {
+
+        return new Date(
+            `${date}T00:00:00`
+        )
+        .toLocaleDateString(
+            "en-US",
+            {
+
+                year:
+                    "numeric",
+
+                month:
+                    "short",
+
+                day:
+                    "numeric"
+
+            }
+        );
+
+    }
+
+    catch (error) {
+
+        return date;
+
+    }
+
+}
+
+
+/* =====================================================
+   EMPTY MESSAGE
+===================================================== */
+
+function emptyMessage(message) {
+
+    return `
+
+        <div
+            style="
+                grid-column: 1 / -1;
+                padding: 35px 20px;
+                text-align: center;
+                color: rgba(255,255,255,0.42);
+                background: #101116;
+                border: 1px solid rgba(255,255,255,0.06);
+                border-radius: 12px;
+            "
+        >
+
+            ${escapeHTML(
+                message
+            )}
+
+        </div>
+
+    `;
+
+}
+
+
+/* =====================================================
+   ESCAPE HTML
+===================================================== */
+
+function escapeHTML(value) {
+
+    if (
+        value === null ||
+        value === undefined
+    ) {
+
+        return "";
+
+    }
+
+
+    return String(value)
+
+        .replaceAll(
+            "&",
+            "&amp;"
+        )
+
+        .replaceAll(
+            "<",
+            "&lt;"
+        )
+
+        .replaceAll(
+            ">",
+            "&gt;"
+        )
+
+        .replaceAll(
+            '"',
+            "&quot;"
+        )
+
+        .replaceAll(
+            "'",
+            "&#039;"
+        );
+
+}
+
+
+/* =====================================================
+   ESCAPE ATTRIBUTE
+===================================================== */
+
+function escapeAttribute(value) {
+
+    return escapeHTML(
+        value
+    );
+
+}
+
+
+/* =====================================================
+   PAGE START
 ===================================================== */
 
 document.addEventListener(
     "DOMContentLoaded",
-    () => {
+    async () => {
 
         updateActiveNav();
 
+
+        await loadWebsiteContents();
+
+
         console.log(
-            "Cinema Mella / Cinema Hub loaded successfully."
+            "Cinema Mella website loaded."
         );
 
     }

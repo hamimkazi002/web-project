@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Cinema Mella Admin</title>
+
+    <link
+        rel="stylesheet"
+        href="admin.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+</head>
+
+<body>
+
+<div class="admin-layout">
+
+    <!-- SIDEBAR -->
+
+    <aside class="admin-sidebar">
+
+        <div class="admin-brand">
+            CINEMA <span>MELLA</span>
+        </div>
+
+        <nav class="admin-menu">
+
+            <button class="admin-menu-item active">
+                <i class="fa-solid fa-house"></i>
+                Dashboard
+            </button>
+
+            <button class="admin-menu-item">
+                <i class="fa-solid fa-film"></i>
+                Movies
+            </button>
+
+            <button class="admin-menu-item">
+                <i class="fa-solid fa-clapperboard"></i>
+                Natok
+            </button>
+
+            <button class="admin-menu-item">
+                <i class="fa-solid fa-tv"></i>
+                Web Series
+            </button>
+
+            <button class="admin-menu-item">
+                <i class="fa-solid fa-clock"></i>
+                Upcoming
+            </button>
+
+            <button class="admin-menu-item">
+                <i class="fa-solid fa-book-open"></i>
+                Stories
+            </button>
+
+            <button class="admin-menu-item">
+                <i class="fa-solid fa-book"></i>
+                Books
+            </button>
+
+        </nav>
+
+        <button
+            id="logoutButton"
+            class="sidebar-logout"
+        >
+            <i class="fa-solid fa-right-from-bracket"></i>
+            Logout
+        </button>
+
+    </aside>
+
+
+    <!-- MAIN -->
+
+    <main class="admin-main">
+
+        <header class="admin-topbar">
+
+            <div>
+
+                <h1>Dashboard</h1>
+
+                <p>
+                    Welcome,
+                    <strong id="adminEmail">
+                        Admin
+                    </strong>
+                </p>
+
+            </div>
+
+            <button
+                id="openAddContent"
+                class="add-content-button"
+            >
+                <i class="fa-solid fa-plus"></i>
+                Add Content
+            </button>
+
+        </header>
+
+
+        <!-- STATS -->
+
+        <section class="dashboard-stats">
+
+            <div class="stat-card">
+                <span>Total Content</span>
+                <strong id="totalContent">0</strong>
+            </div>
+
+            <div class="stat-card">
+                <span>Movies</span>
+                <strong id="totalMovies">0</strong>
+            </div>
+
+            <div class="stat-card">
+                <span>Natok</span>
+                <strong id="totalNatok">0</strong>
+            </div>
+
+            <div class="stat-card">
+                <span>Series</span>
+                <strong id="totalSeries">0</strong>
+            </div>
+
+        </section>
+
+
+        <!-- FORM -->
+
+        <section class="content-form-section">
+
+            <div class="section-title">
+
+                <div>
+
+                    <h2 id="formTitle">
+                        Add New Content
+                    </h2>
+
+                    <p>
+                        Select a content type. The form will change automatically.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <form id="contentForm">
+
+                <input
+                    type="hidden"
+                    id="contentId"
+                >
+
+                <input
+                    type="hidden"
+                    id="currentPosterUrl"
+                >
+
+                <input
+                    type="hidden"
+                    id="currentBannerUrl"
+                >
+
+                <input
+                    type="hidden"
+                    id="currentFileUrl"
+                >
+
+
+                <div class="form-grid">
+
+
+                    <!-- TYPE -->
+
+                    <div class="admin-form-group">
+
+                        <label>
+                            Content Type *
+                        </label>
+
+                        <select
+                            id="contentType"
+                            required
+                        >
+
+                            <option value="">
+                                Select Type
+                            </option>
+
+                            <option value="movie">
+                                Movie
+                            </option>
+
+                            <option value="natok">
+                                Natok
+                            </option>
+
+                            <option value="series">
+                                Web Series
+                            </option>
+
+                            <option value="upcoming">
+                                Upcoming
+                            </option>
+
+                            <option value="story">
+                                Story
+                            </option>
+
+                            <option value="book">
+                                Book
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- TITLE -->
+
+                    <div class="admin-form-group">
+
+                        <label id="titleLabel">
+                            Title *
+                        </label>
+
+                        <input
+                            type="text"
+                            id="contentTitle"
+                            placeholder="Enter title"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- DESCRIPTION -->
+
+                    <div class="admin-form-group full-width">
+
+                        <label>
+                            Short Description
+                        </label>
+
+                        <textarea
+                            id="contentDescription"
+                            placeholder="Short description..."
+                        ></textarea>
+
+                    </div>
+
+
+                    <!-- POSTER / COVER -->
+
+                    <div
+                        class="admin-form-group type-field"
+                        data-types="movie,natok,series,upcoming,story,book"
+                    >
+
+                        <label id="posterLabel">
+                            Poster Image
+                        </label>
+
+                        <input
+                            type="file"
+                            id="posterFile"
+                            accept="image/*"
+                        >
+
+                        <div
+                            class="upload-preview"
+                            id="posterPreview"
+                        ></div>
+
+                    </div>
+
+
+                    <!-- BANNER -->
+
+                    <div
+                        class="admin-form-group type-field"
+                        data-types="movie,natok,series,upcoming"
+                    >
+
+                        <label>
+                            Banner Image
+                        </label>
+
+                        <input
+                            type="file"
+                            id="bannerFile"
+                            accept="image/*"
+                        >
+
+                        <div
+                            class="upload-preview"
+                            id="bannerPreview"
+                        ></div>
+
+                    </div>
+
+
+                    <!-- VIDEO -->
+
+                    <div
+                        class="admin-form-group type-field"
+                        data-types="movie,natok,series"
+                    >
+
+                        <label>
+                            Video / Watch URL
+                        </label>
+
+                        <input
+                            type="url"
+                            id="videoUrl"
+                            placeholder="YouTube / Vimeo / Video URL"
+                        >
+
+                    </div>
+
+
+                    <!-- YEAR -->
+
+                    <div
+                        class="admin-form-group type-field"
+                        data-types="movie,natok,series,book"
+                    >
+
+                        <label id="yearLabel">
+                            Year
+                        </label>
+
+                        <input
+                            type="number"
+                            id="contentYear"
+                            placeholder="2026"
+                        >
+
+                    </div>
+
+
+                    <!-- RATING -->
+
+                    <div
+                        class="admin-form-group type-field"
+                        data-types="movie,natok,series"
+                    >
+
+                        <label>
+                            Rating
+                        </label>
+
+                        <input
+                            type="number"
+                            id="contentRating"
+                            step="0.1"
+                            min="0"
+                            max="10"
+                            placeholder="8.5"
+                        >
+
+                    </div>
+
+
+                    <!-- GENRE / CATEGORY -->
+
+                    <div
+                        class="admin-form-group type-field"
+                        data-types="movie,natok,series,upcoming,book"
+                    >
+
+                        <label id="genreLabel">
+                            Genre
+                        </label>
+
+                        <input
+                            type="text"
+                            id="contentGenre"
+                            placeholder="Drama, Thriller..."
+                        >
+
+                    </div>
+
+
+                    <!-- SEASON -->
+
+                    <div
+                        class="admin-form-group type-field"
+                        data-types="series"
+                    >
+
+                        <label>
+                            Season
+                        </label>
+
+                        <input
+                            type="number"
+                            id="contentSeason"
+                            min="1"
+                            placeholder="1"
+                        >
+
+                    </div>
+
+
+                    <!-- BADGE -->
+
+                    <div
+                        class="admin-form-group type-field"
+                        data-types="movie,natok,series,upcoming"
+                    >
+
+                        <label>
+                            Badge
+                        </label>
+
+                        <input
+                            type="text"
+                            id="contentBadge"
+                            placeholder="NEW / HD / 4K"
+                        >
+
+                    </div>
+
+
+                    <!-- AUTHOR -->
+
+                    <div
+                        class="admin-form-group type-field"
+                        data-types="story,book"
+                    >
+
+                        <label>
+                            Author
+                        </label>
+
+                        <input
+                            type="text"
+                            id="contentAuthor"
+                            placeholder="Author name"
+                        >
+
+                    </div>
+
+
+                    <!-- RELEASE DATE -->
+
+                    <div
+                        class="admin-form-group type-field"
+                        data-types="movie,natok,series,upcoming,story"
+                    >
+
+                        <label id="releaseDateLabel">
+                            Release Date
+                        </label>
+
+                        <input
+                            type="date"
+                            id="releaseDate"
+                        >
+
+                    </div>
+
+
+                    <!-- BOOK PDF -->
+
+                    <div
+                        class="admin-form-group type-field"
+                        data-types="book"
+                    >
+
+                        <label>
+                            Book PDF
+                        </label>
+
+                        <input
+                            type="file"
+                            id="bookFile"
+                            accept="application/pdf"
+                        >
+
+                        <div
+                            class="file-status"
+                            id="bookFileStatus"
+                        ></div>
+
+                    </div>
+
+
+                    <!-- STATUS -->
+
+                    <div class="admin-form-group">
+
+                        <label>
+                            Status
+                        </label>
+
+                        <select id="contentStatus">
+
+                            <option value="published">
+                                Published
+                            </option>
+
+                            <option value="draft">
+                                Draft
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- FEATURED -->
+
+                    <div class="admin-form-group checkbox-group">
+
+                        <label>
+
+                            <input
+                                type="checkbox"
+                                id="contentFeatured"
+                            >
+
+                            Featured Content
+
+                        </label>
+
+                    </div>
+
+
+                    <!-- FULL STORY -->
+
+                    <div
+                        class="admin-form-group full-width type-field"
+                        data-types="story"
+                    >
+
+                        <label>
+                            Full Story
+                        </label>
+
+                        <textarea
+                            id="fullContent"
+                            class="large-textarea"
+                            placeholder="Write the full story here..."
+                        ></textarea>
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-actions">
+
+                    <button
+                        type="submit"
+                        id="saveContentButton"
+                        class="save-content-button"
+                    >
+
+                        <i class="fa-solid fa-floppy-disk"></i>
+
+                        Save Content
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        id="cancelEditButton"
+                        class="cancel-button"
+                    >
+
+                        Cancel Edit
+
+                    </button>
+
+                </div>
+
+                <p id="contentMessage"></p>
+
+            </form>
+
+        </section>
+
+
+        <!-- CONTENT LIST -->
+
+        <section class="content-list-section">
+
+            <div class="section-title">
+
+                <div>
+
+                    <h2>All Content</h2>
+
+                    <p>
+                        Edit or delete your content.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="admin-table-wrapper">
+
+                <table class="admin-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Content</th>
+                            <th>Type</th>
+                            <th>Year</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="contentTableBody">
+
+                        <tr>
+                            <td colspan="5">
+                                Loading...
+                            </td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="admin.js"></script>
+
+</body>
+
+</html>
