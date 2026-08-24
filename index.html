@@ -17,13 +17,13 @@
         content="Cinema Mella & Hub - Movies, Natok, Web Series, Upcoming Movies, Stories and Books."
     >
 
-    <!-- Font Awesome -->
+    <!-- FONT AWESOME -->
     <link
         rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
     >
 
-    <!-- Google Font -->
+    <!-- GOOGLE FONT -->
     <link
         rel="preconnect"
         href="https://fonts.googleapis.com"
@@ -40,7 +40,7 @@
         rel="stylesheet"
     >
 
-    <!-- Main CSS -->
+    <!-- MAIN CSS -->
     <link
         rel="stylesheet"
         href="style.css"
@@ -173,6 +173,7 @@
                     <button
                         id="searchClose"
                         type="button"
+                        aria-label="Close search"
                     >
 
                         <i class="fa-solid fa-xmark"></i>
@@ -185,18 +186,14 @@
                 <div
                     class="search-results"
                     id="searchResults"
-                >
-
-                    <!-- Results will appear here -->
-
-                </div>
+                ></div>
 
             </div>
 
         </div>
 
 
-        <!-- MOBILE MENU BUTTON -->
+        <!-- MOBILE MENU -->
 
         <button
             class="mobile-menu-button"
@@ -252,21 +249,17 @@
 </header>
 
 
-
-<!-- =====================================================
-     HERO SECTION
-===================================================== -->
-
 <main>
 
+
+<!-- =====================================================
+     HERO
+===================================================== -->
 
 <section
     class="hero"
     id="home"
 >
-
-
-    <!-- HERO BACKGROUND -->
 
     <div
         class="hero-background"
@@ -274,12 +267,8 @@
     ></div>
 
 
-    <!-- HERO OVERLAY -->
-
     <div class="hero-overlay"></div>
 
-
-    <!-- HERO CONTENT -->
 
     <div class="hero-container">
 
@@ -326,7 +315,6 @@
 
             <div class="hero-buttons">
 
-
                 <a
                     href="#movies"
                     class="hero-primary-button"
@@ -350,13 +338,12 @@
 
             </div>
 
-
         </div>
 
     </div>
 
 
-    <!-- SLIDER DOTS -->
+    <!-- HERO DOTS -->
 
     <div
         class="hero-dots"
@@ -364,22 +351,17 @@
     >
 
         <span class="hero-dot active"></span>
-
         <span class="hero-dot"></span>
-
         <span class="hero-dot"></span>
-
         <span class="hero-dot"></span>
 
     </div>
 
-
 </section>
 
 
-
 <!-- =====================================================
-     MOVIES SECTION
+     MOVIES
 ===================================================== -->
 
 <section
@@ -387,9 +369,7 @@
     id="movies"
 >
 
-
     <div class="section-heading">
-
 
         <div class="heading-left">
 
@@ -409,252 +389,25 @@
 
         </div>
 
-
-        <button
-            class="view-all-button"
-            type="button"
-        >
-
-            View All
-
-            <i class="fa-solid fa-arrow-right"></i>
-
-        </button>
-
-
     </div>
 
 
-    <div class="content-grid">
-
-
-        <!-- MOVIE 01 -->
-
-        <article class="movie-card">
-
-            <div class="movie-poster poster-1">
-
-                <span class="content-badge">
-                    HD
-                </span>
-
-                <button
-                    class="poster-play"
-                    type="button"
-                >
-
-                    <i class="fa-solid fa-play"></i>
-
-                </button>
-
-            </div>
-
-
-            <div class="card-info">
-
-                <span class="card-category">
-                    MOVIE
-                </span>
-
-                <h3>
-                    Featured Movie
-                </h3>
-
-                <p>
-                    Latest movie release
-                </p>
-
-                <div class="card-meta">
-
-                    <span>
-                        2026
-                    </span>
-
-                    <span>
-                        <i class="fa-solid fa-star"></i>
-                        8.5
-                    </span>
-
-                </div>
-
-            </div>
-
-        </article>
-
-
-
-        <!-- MOVIE 02 -->
-
-        <article class="movie-card">
-
-            <div class="movie-poster poster-2">
-
-                <span class="content-badge">
-                    NEW
-                </span>
-
-                <button
-                    class="poster-play"
-                    type="button"
-                >
-
-                    <i class="fa-solid fa-play"></i>
-
-                </button>
-
-            </div>
-
-
-            <div class="card-info">
-
-                <span class="card-category">
-                    MOVIE
-                </span>
-
-                <h3>
-                    Midnight Journey
-                </h3>
-
-                <p>
-                    A new cinematic experience
-                </p>
-
-                <div class="card-meta">
-
-                    <span>
-                        2026
-                    </span>
-
-                    <span>
-                        <i class="fa-solid fa-star"></i>
-                        8.1
-                    </span>
-
-                </div>
-
-            </div>
-
-        </article>
-
-
-
-        <!-- MOVIE 03 -->
-
-        <article class="movie-card">
-
-            <div class="movie-poster poster-3">
-
-                <span class="content-badge">
-                    4K
-                </span>
-
-                <button
-                    class="poster-play"
-                    type="button"
-                >
-
-                    <i class="fa-solid fa-play"></i>
-
-                </button>
-
-            </div>
-
-
-            <div class="card-info">
-
-                <span class="card-category">
-                    MOVIE
-                </span>
-
-                <h3>
-                    The Last Story
-                </h3>
-
-                <p>
-                    Mystery and adventure
-                </p>
-
-                <div class="card-meta">
-
-                    <span>
-                        2026
-                    </span>
-
-                    <span>
-                        <i class="fa-solid fa-star"></i>
-                        8.7
-                    </span>
-
-                </div>
-
-            </div>
-
-        </article>
-
-
-
-        <!-- MOVIE 04 -->
-
-        <article class="movie-card">
-
-            <div class="movie-poster poster-4">
-
-                <span class="content-badge">
-                    NEW
-                </span>
-
-                <button
-                    class="poster-play"
-                    type="button"
-                >
-
-                    <i class="fa-solid fa-play"></i>
-
-                </button>
-
-            </div>
-
-
-            <div class="card-info">
-
-                <span class="card-category">
-                    MOVIE
-                </span>
-
-                <h3>
-                    Beyond The Night
-                </h3>
-
-                <p>
-                    Drama and emotion
-                </p>
-
-                <div class="card-meta">
-
-                    <span>
-                        2026
-                    </span>
-
-                    <span>
-                        <i class="fa-solid fa-star"></i>
-                        8.3
-                    </span>
-
-                </div>
-
-            </div>
-
-        </article>
-
+    <div
+        class="content-grid"
+        id="moviesGrid"
+    >
+
+        <div class="database-loading">
+            Loading movies...
+        </div>
 
     </div>
 
 </section>
 
 
-
 <!-- =====================================================
-     NATOK SECTION
+     NATOK
 ===================================================== -->
 
 <section
@@ -662,9 +415,7 @@
     id="natok"
 >
 
-
     <div class="section-heading">
-
 
         <div class="heading-left">
 
@@ -684,252 +435,25 @@
 
         </div>
 
-
-        <button
-            class="view-all-button"
-            type="button"
-        >
-
-            View All
-
-            <i class="fa-solid fa-arrow-right"></i>
-
-        </button>
-
-
     </div>
 
 
-    <div class="content-grid">
-
-
-        <!-- NATOK 01 -->
-
-        <article class="movie-card">
-
-            <div class="movie-poster natok-1">
-
-                <span class="content-badge">
-                    NEW
-                </span>
-
-                <button
-                    class="poster-play"
-                    type="button"
-                >
-
-                    <i class="fa-solid fa-play"></i>
-
-                </button>
-
-            </div>
-
-
-            <div class="card-info">
-
-                <span class="card-category">
-                    NATOK
-                </span>
-
-                <h3>
-                    Tomake Chai
-                </h3>
-
-                <p>
-                    A new emotional Bangla natok
-                </p>
-
-                <div class="card-meta">
-
-                    <span>
-                        2026
-                    </span>
-
-                    <span>
-                        <i class="fa-solid fa-star"></i>
-                        8.6
-                    </span>
-
-                </div>
-
-            </div>
-
-        </article>
-
-
-
-        <!-- NATOK 02 -->
-
-        <article class="movie-card">
-
-            <div class="movie-poster natok-2">
-
-                <span class="content-badge">
-                    HD
-                </span>
-
-                <button
-                    class="poster-play"
-                    type="button"
-                >
-
-                    <i class="fa-solid fa-play"></i>
-
-                </button>
-
-            </div>
-
-
-            <div class="card-info">
-
-                <span class="card-category">
-                    NATOK
-                </span>
-
-                <h3>
-                    Moner Kotha
-                </h3>
-
-                <p>
-                    Love and relationship drama
-                </p>
-
-                <div class="card-meta">
-
-                    <span>
-                        2026
-                    </span>
-
-                    <span>
-                        <i class="fa-solid fa-star"></i>
-                        8.2
-                    </span>
-
-                </div>
-
-            </div>
-
-        </article>
-
-
-
-        <!-- NATOK 03 -->
-
-        <article class="movie-card">
-
-            <div class="movie-poster natok-3">
-
-                <span class="content-badge">
-                    NEW
-                </span>
-
-                <button
-                    class="poster-play"
-                    type="button"
-                >
-
-                    <i class="fa-solid fa-play"></i>
-
-                </button>
-
-            </div>
-
-
-            <div class="card-info">
-
-                <span class="card-category">
-                    NATOK
-                </span>
-
-                <h3>
-                    Oporajita
-                </h3>
-
-                <p>
-                    A story of life and hope
-                </p>
-
-                <div class="card-meta">
-
-                    <span>
-                        2026
-                    </span>
-
-                    <span>
-                        <i class="fa-solid fa-star"></i>
-                        8.4
-                    </span>
-
-                </div>
-
-            </div>
-
-        </article>
-
-
-
-        <!-- NATOK 04 -->
-
-        <article class="movie-card">
-
-            <div class="movie-poster natok-4">
-
-                <span class="content-badge">
-                    HD
-                </span>
-
-                <button
-                    class="poster-play"
-                    type="button"
-                >
-
-                    <i class="fa-solid fa-play"></i>
-
-                </button>
-
-            </div>
-
-
-            <div class="card-info">
-
-                <span class="card-category">
-                    NATOK
-                </span>
-
-                <h3>
-                    Shesh Dekha
-                </h3>
-
-                <p>
-                    A beautiful dramatic story
-                </p>
-
-                <div class="card-meta">
-
-                    <span>
-                        2026
-                    </span>
-
-                    <span>
-                        <i class="fa-solid fa-star"></i>
-                        8.0
-                    </span>
-
-                </div>
-
-            </div>
-
-        </article>
-
+    <div
+        class="content-grid"
+        id="natokGrid"
+    >
+
+        <div class="database-loading">
+            Loading natok...
+        </div>
 
     </div>
 
 </section>
 
 
-
 <!-- =====================================================
-     WEB SERIES SECTION
+     WEB SERIES
 ===================================================== -->
 
 <section
@@ -937,9 +461,7 @@
     id="webseries"
 >
 
-
     <div class="section-heading">
-
 
         <div class="heading-left">
 
@@ -959,252 +481,25 @@
 
         </div>
 
-
-        <button
-            class="view-all-button"
-            type="button"
-        >
-
-            View All
-
-            <i class="fa-solid fa-arrow-right"></i>
-
-        </button>
-
-
     </div>
 
 
-    <div class="content-grid">
-
-
-        <!-- SERIES 01 -->
-
-        <article class="movie-card">
-
-            <div class="movie-poster series-1">
-
-                <span class="content-badge">
-                    SERIES
-                </span>
-
-                <button
-                    class="poster-play"
-                    type="button"
-                >
-
-                    <i class="fa-solid fa-play"></i>
-
-                </button>
-
-            </div>
-
-
-            <div class="card-info">
-
-                <span class="card-category">
-                    WEB SERIES
-                </span>
-
-                <h3>
-                    Dark City
-                </h3>
-
-                <p>
-                    Mystery and thriller series
-                </p>
-
-                <div class="card-meta">
-
-                    <span>
-                        S01
-                    </span>
-
-                    <span>
-                        <i class="fa-solid fa-star"></i>
-                        8.8
-                    </span>
-
-                </div>
-
-            </div>
-
-        </article>
-
-
-
-        <!-- SERIES 02 -->
-
-        <article class="movie-card">
-
-            <div class="movie-poster series-2">
-
-                <span class="content-badge">
-                    NEW
-                </span>
-
-                <button
-                    class="poster-play"
-                    type="button"
-                >
-
-                    <i class="fa-solid fa-play"></i>
-
-                </button>
-
-            </div>
-
-
-            <div class="card-info">
-
-                <span class="card-category">
-                    WEB SERIES
-                </span>
-
-                <h3>
-                    The Unknown
-                </h3>
-
-                <p>
-                    An unexpected journey
-                </p>
-
-                <div class="card-meta">
-
-                    <span>
-                        S01
-                    </span>
-
-                    <span>
-                        <i class="fa-solid fa-star"></i>
-                        8.5
-                    </span>
-
-                </div>
-
-            </div>
-
-        </article>
-
-
-
-        <!-- SERIES 03 -->
-
-        <article class="movie-card">
-
-            <div class="movie-poster series-3">
-
-                <span class="content-badge">
-                    HD
-                </span>
-
-                <button
-                    class="poster-play"
-                    type="button"
-                >
-
-                    <i class="fa-solid fa-play"></i>
-
-                </button>
-
-            </div>
-
-
-            <div class="card-info">
-
-                <span class="card-category">
-                    WEB SERIES
-                </span>
-
-                <h3>
-                    Hidden Truth
-                </h3>
-
-                <p>
-                    Crime and investigation
-                </p>
-
-                <div class="card-meta">
-
-                    <span>
-                        S02
-                    </span>
-
-                    <span>
-                        <i class="fa-solid fa-star"></i>
-                        8.9
-                    </span>
-
-                </div>
-
-            </div>
-
-        </article>
-
-
-
-        <!-- SERIES 04 -->
-
-        <article class="movie-card">
-
-            <div class="movie-poster series-4">
-
-                <span class="content-badge">
-                    TOP
-                </span>
-
-                <button
-                    class="poster-play"
-                    type="button"
-                >
-
-                    <i class="fa-solid fa-play"></i>
-
-                </button>
-
-            </div>
-
-
-            <div class="card-info">
-
-                <span class="card-category">
-                    WEB SERIES
-                </span>
-
-                <h3>
-                    The Journey
-                </h3>
-
-                <p>
-                    Adventure and drama
-                </p>
-
-                <div class="card-meta">
-
-                    <span>
-                        S01
-                    </span>
-
-                    <span>
-                        <i class="fa-solid fa-star"></i>
-                        8.3
-                    </span>
-
-                </div>
-
-            </div>
-
-        </article>
-
+    <div
+        class="content-grid"
+        id="webseriesGrid"
+    >
+
+        <div class="database-loading">
+            Loading web series...
+        </div>
 
     </div>
 
 </section>
 
 
-
 <!-- =====================================================
-     UPCOMING SECTION
+     UPCOMING
 ===================================================== -->
 
 <section
@@ -1212,9 +507,7 @@
     id="upcoming"
 >
 
-
     <div class="section-heading">
-
 
         <div class="heading-left">
 
@@ -1234,164 +527,25 @@
 
         </div>
 
-
-        <button
-            class="view-all-button"
-            type="button"
-        >
-
-            View All
-
-            <i class="fa-solid fa-arrow-right"></i>
-
-        </button>
-
-
     </div>
 
 
-    <div class="upcoming-grid">
+    <div
+        class="upcoming-grid"
+        id="upcomingGrid"
+    >
 
-
-        <!-- UPCOMING 01 -->
-
-        <article class="upcoming-card">
-
-            <div class="upcoming-poster upcoming-1">
-
-                <span class="coming-badge">
-                    COMING SOON
-                </span>
-
-            </div>
-
-
-            <div class="upcoming-info">
-
-                <span>
-                    RELEASE DATE
-                </span>
-
-                <h3>
-                    August 2026
-                </h3>
-
-                <p>
-                    Coming soon to Cinema Mella.
-                </p>
-
-            </div>
-
-        </article>
-
-
-
-        <!-- UPCOMING 02 -->
-
-        <article class="upcoming-card">
-
-            <div class="upcoming-poster upcoming-2">
-
-                <span class="coming-badge">
-                    COMING SOON
-                </span>
-
-            </div>
-
-
-            <div class="upcoming-info">
-
-                <span>
-                    RELEASE DATE
-                </span>
-
-                <h3>
-                    September 2026
-                </h3>
-
-                <p>
-                    Stay tuned for the latest update.
-                </p>
-
-            </div>
-
-        </article>
-
-
-
-        <!-- UPCOMING 03 -->
-
-        <article class="upcoming-card">
-
-            <div class="upcoming-poster upcoming-3">
-
-                <span class="coming-badge">
-                    SOON
-                </span>
-
-            </div>
-
-
-            <div class="upcoming-info">
-
-                <span>
-                    RELEASE DATE
-                </span>
-
-                <h3>
-                    October 2026
-                </h3>
-
-                <p>
-                    More details coming soon.
-                </p>
-
-            </div>
-
-        </article>
-
-
-
-        <!-- UPCOMING 04 -->
-
-        <article class="upcoming-card">
-
-            <div class="upcoming-poster upcoming-4">
-
-                <span class="coming-badge">
-                    SOON
-                </span>
-
-            </div>
-
-
-            <div class="upcoming-info">
-
-                <span>
-                    RELEASE DATE
-                </span>
-
-                <h3>
-                    Coming Soon
-                </h3>
-
-                <p>
-                    Watch this space for updates.
-                </p>
-
-            </div>
-
-        </article>
-
+        <div class="database-loading">
+            Loading upcoming content...
+        </div>
 
     </div>
 
 </section>
 
 
-
 <!-- =====================================================
-     STORIES SECTION
+     STORIES
 ===================================================== -->
 
 <section
@@ -1399,9 +553,7 @@
     id="stories"
 >
 
-
     <div class="section-heading">
-
 
         <div class="heading-left">
 
@@ -1421,220 +573,25 @@
 
         </div>
 
-
-        <button
-            class="view-all-button"
-            type="button"
-        >
-
-            View All
-
-            <i class="fa-solid fa-arrow-right"></i>
-
-        </button>
-
-
     </div>
 
 
-    <div class="stories-grid">
-
-
-        <!-- STORY 01 -->
-
-        <article class="story-card">
-
-            <div
-                class="story-image story-image-1"
-            >
-
-                <span class="story-badge">
-                    STORY
-                </span>
-
-            </div>
-
-
-            <div class="story-info">
-
-                <span class="story-date">
-                    AUG 2026
-                </span>
-
-                <h3>
-                    শেষ বিকেলের গল্প
-                </h3>
-
-                <p>
-                    কিছু গল্প শেষ হয় না,
-                    শুধু সময়ের সাথে বদলে যায়।
-                </p>
-
-                <button
-                    class="story-button"
-                    type="button"
-                >
-
-                    Read Story
-
-                    <i class="fa-solid fa-arrow-right"></i>
-
-                </button>
-
-            </div>
-
-        </article>
-
-
-
-        <!-- STORY 02 -->
-
-        <article class="story-card">
-
-            <div
-                class="story-image story-image-2"
-            >
-
-                <span class="story-badge">
-                    STORY
-                </span>
-
-            </div>
-
-
-            <div class="story-info">
-
-                <span class="story-date">
-                    AUG 2026
-                </span>
-
-                <h3>
-                    শেষ চিঠি
-                </h3>
-
-                <p>
-                    কিছু চিঠি কখনো পাঠানো হয় না,
-                    কিন্তু গল্প হয়ে থেকে যায়।
-                </p>
-
-                <button
-                    class="story-button"
-                    type="button"
-                >
-
-                    Read Story
-
-                    <i class="fa-solid fa-arrow-right"></i>
-
-                </button>
-
-            </div>
-
-        </article>
-
-
-
-        <!-- STORY 03 -->
-
-        <article class="story-card">
-
-            <div
-                class="story-image story-image-3"
-            >
-
-                <span class="story-badge">
-                    FEATURED
-                </span>
-
-            </div>
-
-
-            <div class="story-info">
-
-                <span class="story-date">
-                    JUL 2026
-                </span>
-
-                <h3>
-                    The Last Evening
-                </h3>
-
-                <p>
-                    One evening, one decision
-                    and a story that changed everything.
-                </p>
-
-                <button
-                    class="story-button"
-                    type="button"
-                >
-
-                    Read Story
-
-                    <i class="fa-solid fa-arrow-right"></i>
-
-                </button>
-
-            </div>
-
-        </article>
-
-
-
-        <!-- STORY 04 -->
-
-        <article class="story-card">
-
-            <div
-                class="story-image story-image-4"
-            >
-
-                <span class="story-badge">
-                    NEW
-                </span>
-
-            </div>
-
-
-            <div class="story-info">
-
-                <span class="story-date">
-                    JUL 2026
-                </span>
-
-                <h3>
-                    A Story Without An End
-                </h3>
-
-                <p>
-                    Every ending can become
-                    the beginning of another story.
-                </p>
-
-                <button
-                    class="story-button"
-                    type="button"
-                >
-
-                    Read Story
-
-                    <i class="fa-solid fa-arrow-right"></i>
-
-                </button>
-
-            </div>
-
-        </article>
-
+    <div
+        class="stories-grid"
+        id="storiesGrid"
+    >
+
+        <div class="database-loading">
+            Loading stories...
+        </div>
 
     </div>
 
 </section>
 
 
-
 <!-- =====================================================
-     BOOKS SECTION
+     BOOKS
 ===================================================== -->
 
 <section
@@ -1642,9 +599,7 @@
     id="books"
 >
 
-
     <div class="section-heading">
-
 
         <div class="heading-left">
 
@@ -1664,211 +619,17 @@
 
         </div>
 
-
-        <button
-            class="view-all-button"
-            type="button"
-        >
-
-            View All
-
-            <i class="fa-solid fa-arrow-right"></i>
-
-        </button>
-
-
     </div>
 
 
-    <div class="books-grid">
-
-
-        <!-- BOOK 01 -->
-
-        <article class="book-card">
-
-            <div
-                class="book-cover book-cover-1"
-            >
-
-                <span class="book-badge">
-                    NEW
-                </span>
-
-            </div>
-
-
-            <div class="book-info">
-
-                <span class="book-category">
-                    NOVEL
-                </span>
-
-                <h3>
-                    The Silent Moon
-                </h3>
-
-                <p>
-                    A mysterious journey filled with
-                    love, memories and hidden secrets.
-                </p>
-
-                <button
-                    class="book-button"
-                    type="button"
-                >
-
-                    Read More
-
-                    <i class="fa-solid fa-arrow-right"></i>
-
-                </button>
-
-            </div>
-
-        </article>
-
-
-
-        <!-- BOOK 02 -->
-
-        <article class="book-card">
-
-            <div
-                class="book-cover book-cover-2"
-            >
-
-                <span class="book-badge">
-                    FEATURED
-                </span>
-
-            </div>
-
-
-            <div class="book-info">
-
-                <span class="book-category">
-                    FICTION
-                </span>
-
-                <h3>
-                    Last Chapter
-                </h3>
-
-                <p>
-                    A cinematic story about life,
-                    friendship and unexpected moments.
-                </p>
-
-                <button
-                    class="book-button"
-                    type="button"
-                >
-
-                    Read More
-
-                    <i class="fa-solid fa-arrow-right"></i>
-
-                </button>
-
-            </div>
-
-        </article>
-
-
-
-        <!-- BOOK 03 -->
-
-        <article class="book-card">
-
-            <div
-                class="book-cover book-cover-3"
-            >
-
-                <span class="book-badge">
-                    NEW
-                </span>
-
-            </div>
-
-
-            <div class="book-info">
-
-                <span class="book-category">
-                    DRAMA
-                </span>
-
-                <h3>
-                    Midnight Story
-                </h3>
-
-                <p>
-                    A dark and emotional story
-                    that begins after midnight.
-                </p>
-
-                <button
-                    class="book-button"
-                    type="button"
-                >
-
-                    Read More
-
-                    <i class="fa-solid fa-arrow-right"></i>
-
-                </button>
-
-            </div>
-
-        </article>
-
-
-
-        <!-- BOOK 04 -->
-
-        <article class="book-card">
-
-            <div
-                class="book-cover book-cover-4"
-            >
-
-                <span class="book-badge">
-                    POPULAR
-                </span>
-
-            </div>
-
-
-            <div class="book-info">
-
-                <span class="book-category">
-                    ROMANCE
-                </span>
-
-                <h3>
-                    Before We Forget
-                </h3>
-
-                <p>
-                    Some memories disappear,
-                    but some stories never end.
-                </p>
-
-                <button
-                    class="book-button"
-                    type="button"
-                >
-
-                    Read More
-
-                    <i class="fa-solid fa-arrow-right"></i>
-
-                </button>
-
-            </div>
-
-        </article>
-
+    <div
+        class="books-grid"
+        id="booksGrid"
+    >
+
+        <div class="database-loading">
+            Loading books...
+        </div>
 
     </div>
 
@@ -1878,18 +639,16 @@
 </main>
 
 
-
 <!-- =====================================================
      FOOTER
 ===================================================== -->
 
 <footer class="footer">
 
-
     <div class="footer-container">
 
 
-        <!-- FOOTER BRAND -->
+        <!-- BRAND -->
 
         <div class="footer-brand">
 
@@ -1910,9 +669,11 @@
 
 
             <p>
+
                 Your entertainment destination for
                 movies, natok, web series, stories
                 and books.
+
             </p>
 
 
@@ -1962,8 +723,7 @@
         </div>
 
 
-
-        <!-- FOOTER LINKS -->
+        <!-- EXPLORE -->
 
         <div class="footer-column">
 
@@ -1990,8 +750,7 @@
         </div>
 
 
-
-        <!-- FOOTER CONTENT -->
+        <!-- MORE -->
 
         <div class="footer-column">
 
@@ -2014,8 +773,7 @@
         </div>
 
 
-
-        <!-- FOOTER INFO -->
+        <!-- INFO -->
 
         <div class="footer-column">
 
@@ -2024,35 +782,42 @@
             </h3>
 
             <p>
+
                 Watch and discover your favorite
                 entertainment anytime.
+
             </p>
 
         </div>
 
-
     </div>
 
-
-
-    <!-- FOOTER BOTTOM -->
 
     <div class="footer-bottom">
 
         <p>
+
             © 2026 Cinema Mella & Hub.
             All Rights Reserved.
+
         </p>
 
     </div>
 
-
 </footer>
 
 
+<!-- =====================================================
+     SUPABASE
+===================================================== -->
+
+<script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+></script>
+
 
 <!-- =====================================================
-     JAVASCRIPT
+     MAIN JS
 ===================================================== -->
 
 <script src="script.js"></script>
