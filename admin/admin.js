@@ -1738,3 +1738,49 @@ document.addEventListener(
 
     }
 );
+/* =====================================================
+   LOGO ANIMATION
+===================================================== */
+
+const logoWords = [
+    "MELLA",
+    "HUB"
+    
+];
+
+
+let logoIndex = 0;
+
+
+const changingLogo =
+    document.querySelectorAll(".logo-changing");
+
+
+setInterval(() => {
+
+    logoIndex++;
+
+    if (logoIndex >= logoWords.length) {
+        logoIndex = 0;
+    }
+
+
+    changingLogo.forEach(logo => {
+
+        logo.style.opacity = "0";
+
+
+        setTimeout(() => {
+
+            logo.textContent =
+                logoWords[logoIndex];
+
+
+            logo.style.opacity = "1";
+
+        }, 300);
+
+    });
+
+
+}, 2500);
