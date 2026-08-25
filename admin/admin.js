@@ -1784,3 +1784,598 @@ setInterval(() => {
 
 
 }, 2500);
+/* =====================================================
+   EDUCATION MANAGEMENT
+===================================================== */
+
+
+/* ===============================
+   LOAD EDUCATION CATEGORIES
+================================ */
+
+async function loadEducationCategories() {
+
+    const list =
+        document.getElementById(
+            "educationCategoryList"
+        );
+
+
+    const select =
+        document.getElementById(
+            "educationVideoCategory"
+        );
+
+
+    if (!list || !select) return;
+
+
+    const {
+        data,
+        error
+    } =
+    await supabaseClient
+        .from("education_categories")
+        .select("*")
+        .order(
+            "created_at",
+            {
+                ascending:false
+            }
+        );
+
+
+    if(error){
+
+        console.error(error);
+        return;
+
+    }
+
+
+    list.innerHTML = "";
+
+    select.innerHTML =
+    `
+        <option value="">
+            Select Category
+        </option>
+    `;
+
+
+    data.forEach(category=>{
+
+
+        /* category list */
+
+        list.innerHTML +=
+        `
+
+        <div class="education-category-item">
+
+            <span>
+                ${category.category_name}
+            </span>
+
+
+            <button
+                onclick="deleteEducationCategory(${category.id})"
+                class="delete-button"
+            >
+
+                Delete
+
+            </button>
+
+        </div>
+
+        `;
+
+
+
+        /* dropdown */
+
+        select.innerHTML +=
+
+        `
+        <option value="${category.id}">
+            ${category.category_name}
+        </option>
+        `;
+
+
+    });
+
+
+}
+
+
+
+/* ===============================
+   ADD CATEGORY
+================================ */
+
+
+const educationCategoryForm =
+document.getElementById(
+    "educationCategoryForm"
+);
+
+
+
+if(educationCategoryForm){
+
+
+educationCategoryForm.addEventListener(
+"submit",
+async(e)=>{
+
+
+e.preventDefault();
+
+
+
+const name =
+document.getElementById(
+    "educationCategoryName"
+).value.trim();
+
+
+
+if(!name) return;
+
+
+
+const {
+    error
+}
+
+=
+await supabaseClient
+
+.from(
+    "education_categories"
+)
+
+.insert({
+
+    category_name:name
+
+});
+
+
+
+if(error){
+
+alert(error.message);
+
+return;
+
+}
+
+
+
+document.getElementById(
+    "educationCategoryName"
+).value="";
+
+
+
+loadEducationCategories();
+
+
+
+});
+
+}
+
+
+
+/* ===============================
+   DELETE CATEGORY
+================================ */
+
+
+async function deleteEducationCategory(id){
+
+
+const confirmDelete =
+confirm(
+"Delete this category?"
+);
+
+
+if(!confirmDelete)
+return;
+
+
+
+const {
+error
+}
+
+=
+await supabaseClient
+
+.from(
+"education_categories"
+)
+
+.delete()
+
+.eq(
+"id",
+id
+);
+
+
+
+if(error){
+
+alert(error.message);
+
+return;
+
+}
+
+
+
+loadEducationCategories();
+
+
+}
+
+
+
+/* ===============================
+   ADD VIDEO
+================================ */
+
+
+const educationVideoForm =
+document.getElementById(
+    "educationVideoForm"
+);
+
+
+
+if(educationVideoForm){
+
+
+educationVideoForm.addEventListener(
+"submit",
+async(e)=>{
+
+
+e.preventDefault();
+
+
+
+const category_id =
+document.getElementById(
+"educationVideoCategory"
+).value;
+
+
+
+const title =
+document.getElementById(
+"educationVideoTitle"
+).value;
+
+
+
+const description =
+document.getElementById(
+"educationVideoDescription"
+).value;
+
+
+
+const video_url =
+document.getElementById(
+"educationVideoUrl"
+).value;
+
+
+
+const download_url =
+document.getElementById(
+"educationDownloadUrl"
+).value;
+
+
+
+if(!category_id || !title){
+
+alert(
+"Category and title required"
+);
+
+return;
+
+}
+
+
+
+const {
+error
+}
+
+=
+await supabaseClient
+
+.from(
+"education_videos"
+)
+
+.insert({
+
+category_id,
+
+title,
+
+description,
+
+video_url,
+
+download_url
+
+});
+
+
+
+if(error){
+
+alert(error.message);
+
+return;
+
+}
+
+
+
+alert(
+"Education video added successfully"
+);
+
+
+
+educationVideoForm.reset();
+
+
+
+loadEducationVideos();
+
+
+
+});
+
+}
+
+
+
+
+
+/* ===============================
+   LOAD VIDEOS
+================================ */
+
+
+async function loadEducationVideos(){
+
+
+const table =
+document.getElementById(
+"educationVideoTableBody"
+);
+
+
+
+if(!table)
+return;
+
+
+
+const {
+
+data,
+
+error
+
+}
+
+=
+await supabaseClient
+
+.from(
+"education_videos"
+)
+
+.select(
+`
+*,
+education_categories(
+category_name
+)
+`
+)
+
+.order(
+"created_at",
+{
+ascending:false
+}
+);
+
+
+
+if(error){
+
+console.error(error);
+
+return;
+
+}
+
+
+
+table.innerHTML="";
+
+
+
+data.forEach(video=>{
+
+
+table.innerHTML +=
+
+`
+
+<tr>
+
+
+<td>
+
+${video.title}
+
+</td>
+
+
+<td>
+
+${
+
+video.education_categories?.category_name
+
+|| ""
+
+}
+
+</td>
+
+
+<td>
+
+<a href="${video.video_url}"
+target="_blank">
+
+Watch
+
+</a>
+
+</td>
+
+
+<td>
+
+<a href="${video.download_url}"
+target="_blank">
+
+Download
+
+</a>
+
+</td>
+
+
+<td>
+
+<button
+class="delete-button"
+onclick="deleteEducationVideo(${video.id})"
+>
+
+Delete
+
+</button>
+
+</td>
+
+
+</tr>
+
+`;
+
+});
+
+
+}
+
+
+
+/* ===============================
+ DELETE VIDEO
+================================ */
+
+
+async function deleteEducationVideo(id){
+
+
+const confirmDelete =
+confirm(
+"Delete this video?"
+);
+
+
+
+if(!confirmDelete)
+return;
+
+
+
+const {
+
+error
+
+}
+
+=
+await supabaseClient
+
+.from(
+"education_videos"
+)
+
+.delete()
+
+.eq(
+"id",
+id
+);
+
+
+
+if(error){
+
+alert(error.message);
+
+return;
+
+}
+
+
+
+loadEducationVideos();
+
+
+}
+
+
+
+
+/* ===============================
+ START EDUCATION
+================================ */
+
+
+document.addEventListener(
+"DOMContentLoaded",
+()=>{
+
+
+loadEducationCategories();
+
+loadEducationVideos();
+
+
+});
