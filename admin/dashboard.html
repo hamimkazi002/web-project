@@ -70,6 +70,7 @@
                 <i class="fa-solid fa-book"></i>
                 Books
             </button>
+
             <button class="admin-menu-item">
                 <i class="fa-solid fa-graduation-cap"></i>
                 Education
@@ -232,6 +233,7 @@
                             <option value="book">
                                 Book
                             </option>
+
                             <option value="education">
                                 Education
                             </option>
@@ -511,24 +513,26 @@
                         ></div>
 
                     </div>
+
+
                     <!-- EDUCATION DOWNLOAD -->
 
-<div
-    class="admin-form-group type-field"
-    data-types="education"
->
+                    <div
+                        class="admin-form-group type-field"
+                        data-types="education"
+                    >
 
-    <label>
-        Download URL
-    </label>
+                        <label>
+                            Download URL
+                        </label>
 
-    <input
-        type="url"
-        id="educationDownloadUrl"
-        placeholder="Direct download link"
-    >
+                        <input
+                            type="url"
+                            id="educationDownloadUrl"
+                            placeholder="Direct download link"
+                        >
 
-</div>
+                    </div>
 
 
                     <!-- STATUS -->
@@ -626,376 +630,6 @@
             </form>
 
         </section>
-        <!-- =====================================================
-     EDUCATION MANAGEMENT
-===================================================== -->
-
-<section
-    class="content-form-section"
-    id="educationManagement"
->
-
-    <div class="section-title">
-
-        <div>
-
-            <h2>
-                Education Management
-            </h2>
-
-            <p>
-                Create education categories and add tutorial videos.
-            </p>
-
-        </div>
-
-    </div>
-
-
-    <!-- =================================================
-         ADD EDUCATION CATEGORY
-    ================================================== -->
-
-    <div class="education-category-section">
-
-        <h3>
-            Add Education Category
-        </h3>
-
-        <p class="education-help-text">
-            Create categories such as Web Design, SEO,
-            Digital Marketing, Programming or anything else.
-        </p>
-
-
-        <form id="educationCategoryForm">
-
-            <input
-                type="hidden"
-                id="educationCategoryId"
-            >
-
-
-            <div class="form-grid">
-
-                <div class="admin-form-group full-width">
-
-                    <label>
-                        Category Name *
-                    </label>
-
-                    <input
-                        type="text"
-                        id="educationCategoryName"
-                        placeholder="Example: Web Design"
-                        required
-                    >
-
-                </div>
-
-            </div>
-
-
-            <div class="form-actions">
-
-                <button
-                    type="submit"
-                    id="saveEducationCategoryButton"
-                    class="save-content-button"
-                >
-
-                    <i class="fa-solid fa-folder-plus"></i>
-
-                    Save Category
-
-                </button>
-
-
-                <button
-                    type="button"
-                    id="cancelEducationCategoryEdit"
-                    class="cancel-button"
-                >
-
-                    Cancel Edit
-
-                </button>
-
-            </div>
-
-
-            <p id="educationCategoryMessage"></p>
-
-        </form>
-
-
-        <!-- CATEGORY LIST -->
-
-        <div class="education-category-list-wrapper">
-
-            <h3>
-                Education Categories
-            </h3>
-
-
-            <div
-                id="educationCategoryList"
-                class="education-category-list"
-            >
-
-                <p>
-                    Loading categories...
-                </p>
-
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <!-- =================================================
-         ADD EDUCATION VIDEO
-    ================================================== -->
-
-    <div class="education-video-section">
-
-        <h3>
-            Add Tutorial Video
-        </h3>
-
-        <p class="education-help-text">
-            Select a category and add tutorial videos inside it.
-        </p>
-
-
-        <form id="educationVideoForm">
-
-            <input
-                type="hidden"
-                id="educationVideoId"
-            >
-
-            <input
-                type="hidden"
-                id="currentEducationThumbnailUrl"
-            >
-
-
-            <div class="form-grid">
-
-
-                <!-- CATEGORY -->
-
-                <div class="admin-form-group">
-
-                    <label>
-                        Category *
-                    </label>
-
-                    <select
-                        id="educationVideoCategory"
-                        required
-                    >
-
-                        <option value="">
-                            Select Category
-                        </option>
-
-                    </select>
-
-                </div>
-
-
-                <!-- TITLE -->
-
-                <div class="admin-form-group">
-
-                    <label>
-                        Video Title *
-                    </label>
-
-                    <input
-                        type="text"
-                        id="educationVideoTitle"
-                        placeholder="Example: HTML Basic Class"
-                        required
-                    >
-
-                </div>
-
-
-                <!-- DESCRIPTION -->
-
-                <div class="admin-form-group full-width">
-
-                    <label>
-                        Description
-                    </label>
-
-                    <textarea
-                        id="educationVideoDescription"
-                        placeholder="Short description about this tutorial..."
-                    ></textarea>
-
-                </div>
-
-
-                <!-- THUMBNAIL -->
-
-                <div class="admin-form-group">
-
-                    <label>
-                        Thumbnail Image
-                    </label>
-
-                    <input
-                        type="file"
-                        id="educationThumbnailFile"
-                        accept="image/*"
-                    >
-
-                    <div
-                        class="upload-preview"
-                        id="educationThumbnailPreview"
-                    ></div>
-
-                </div>
-
-
-                <!-- VIDEO URL -->
-
-                <div class="admin-form-group">
-
-                    <label>
-                        Video / Watch URL *
-                    </label>
-
-                    <input
-                        type="url"
-                        id="educationVideoUrl"
-                        placeholder="https://..."
-                        required
-                    >
-
-                </div>
-
-
-                <!-- DOWNLOAD URL -->
-
-                <div class="admin-form-group full-width">
-
-                    <label>
-                        Download URL
-                    </label>
-
-                    <input
-                        type="url"
-                        id="educationDownloadUrl"
-                        placeholder="Direct download link"
-                    >
-
-                </div>
-
-            </div>
-
-
-            <div class="form-actions">
-
-                <button
-                    type="submit"
-                    id="saveEducationVideoButton"
-                    class="save-content-button"
-                >
-
-                    <i class="fa-solid fa-video"></i>
-
-                    Save Video
-
-                </button>
-
-
-                <button
-                    type="button"
-                    id="cancelEducationVideoEdit"
-                    class="cancel-button"
-                >
-
-                    Cancel Edit
-
-                </button>
-
-            </div>
-
-
-            <p id="educationVideoMessage"></p>
-
-        </form>
-
-    </div>
-
-
-    <!-- =================================================
-         EDUCATION VIDEO LIST
-    ================================================== -->
-
-    <div class="education-video-list-section">
-
-        <div class="section-title">
-
-            <div>
-
-                <h3>
-                    Tutorial Videos
-                </h3>
-
-                <p>
-                    Manage all education videos.
-                </p>
-
-            </div>
-
-        </div>
-
-
-        <div class="admin-table-wrapper">
-
-            <table class="admin-table">
-
-                <thead>
-
-                    <tr>
-
-                        <th>Video</th>
-                        <th>Category</th>
-                        <th>Watch</th>
-                        <th>Download</th>
-                        <th>Actions</th>
-
-                    </tr>
-
-                </thead>
-
-
-                <tbody id="educationVideoTableBody">
-
-                    <tr>
-
-                        <td colspan="5">
-                            Loading education videos...
-                        </td>
-
-                    </tr>
-
-                </tbody>
-
-            </table>
-
-        </div>
-
-    </div>
-
-</section>
 
 
         <!-- CONTENT LIST -->

@@ -284,6 +284,9 @@ const bannerPreview =
 const bookFileStatus =
     document.getElementById("bookFileStatus");
 
+const educationDownloadUrl =
+    document.getElementById("educationDownloadUrl");
+
 const saveContentButton =
     document.getElementById("saveContentButton");
 
@@ -411,10 +414,10 @@ function updateDynamicForm() {
 
         else if (type === "education") {
 
-    titleLabel.textContent =
-        "Course Title *";
+            titleLabel.textContent =
+                "Course Title *";
 
-}
+        }
 
         else {
 
@@ -826,7 +829,8 @@ if (contentForm) {
                             "movie",
                             "natok",
                             "series",
-                            "book"
+                            "book",
+                            "education"
                         ].includes(type) &&
                         contentYear.value
                             ? Number(contentYear.value)
@@ -912,6 +916,14 @@ if (contentForm) {
                     file_url:
                         type === "book"
                             ? pdfUrl
+                            : null,
+
+                    download_url:
+                        type === "education"
+                            ? (
+                                educationDownloadUrl.value.trim()
+                                || null
+                            )
                             : null,
 
                     featured:
@@ -1227,6 +1239,9 @@ window.editContent =
 
         releaseDate.value =
             item.release_date || "";
+
+        educationDownloadUrl.value =
+            item.download_url || "";
 
         contentStatus.value =
             item.status || "published";
@@ -1578,7 +1593,10 @@ const filterMap = {
         "story",
 
     "Books":
-        "book"
+        "book",
+
+    "Education":
+        "education"
 
 };
 
@@ -1645,7 +1663,7 @@ function formatType(type) {
 
         book: "Book",
 
-        education: "education"
+        education: "Education"
 
     };
 
@@ -1749,6 +1767,8 @@ document.addEventListener(
 
     }
 );
+
+
 /* =====================================================
    LOGO ANIMATION
 ===================================================== */
@@ -1756,7 +1776,6 @@ document.addEventListener(
 const logoWords = [
     "MELLA",
     "HUB"
-    
 ];
 
 
@@ -1795,230 +1814,3 @@ setInterval(() => {
 
 
 }, 2500);
-
-
-
-
-
-/* ===============================
-   LOAD VIDEOS
-================================ */
-
-
-async function loadEducationVideos(){
-
-
-const table =
-document.getElementById(
-"educationVideoTableBody"
-);
-
-
-
-if(!table)
-return;
-
-
-
-const {
-
-data,
-
-error
-
-}
-
-=
-await supabaseClient
-
-.from(
-"education_videos"
-)
-
-.select(
-`
-*,
-education_categories(
-category_name
-)
-`
-)
-
-.order(
-"created_at",
-{
-ascending:false
-}
-);
-
-
-
-if(error){
-
-console.error(error);
-
-return;
-
-}
-
-
-
-table.innerHTML="";
-
-
-
-data.forEach(video=>{
-
-
-table.innerHTML +=
-
-`
-
-<tr>
-
-
-<td>
-
-${video.title}
-
-</td>
-
-
-<td>
-
-${
-
-video.education_categories?.category_name
-
-|| ""
-
-}
-
-</td>
-
-
-<td>
-
-<a href="${video.video_url}"
-target="_blank">
-
-Watch
-
-</a>
-
-</td>
-
-
-<td>
-
-<a href="${video.download_url}"
-target="_blank">
-
-Download
-
-</a>
-
-</td>
-
-
-<td>
-
-<button
-class="delete-button"
-onclick="deleteEducationVideo(${video.id})"
->
-
-Delete
-
-</button>
-
-</td>
-
-
-</tr>
-
-`;
-
-});
-
-
-}
-
-
-
-/* ===============================
- DELETE VIDEO
-================================ */
-
-
-async function deleteEducationVideo(id){
-
-
-const confirmDelete =
-confirm(
-"Delete this video?"
-);
-
-
-
-if(!confirmDelete)
-return;
-
-
-
-const {
-
-error
-
-}
-
-=
-await supabaseClient
-
-.from(
-"education_videos"
-)
-
-.delete()
-
-.eq(
-"id",
-id
-);
-
-
-
-if(error){
-
-alert(error.message);
-
-return;
-
-}
-
-
-
-loadEducationVideos();
-
-
-}
-
-
-
-
-/* ===============================
- START EDUCATION
-================================ */
-
-
-document.addEventListener(
-"DOMContentLoaded",
-()=>{
-
-
-loadEducationCategories();
-
-loadEducationVideos();
-
-
-});
