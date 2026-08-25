@@ -409,6 +409,8 @@ async function loadWebsiteContents() {
 
         renderBooks();
 
+        renderEducation();
+
 
         console.log(
             "Database content loaded:",
@@ -1258,6 +1260,202 @@ function renderBooks() {
 
 
 /* =====================================================
+   EDUCATION
+===================================================== */
+
+function renderEducation() {
+
+    const grid =
+        document.getElementById(
+            "educationGrid"
+        );
+
+
+    if (!grid) {
+        return;
+    }
+
+
+    const education =
+        databaseContents.filter(
+            item =>
+                item.type ===
+                "education"
+        );
+
+
+    if (
+        education.length === 0
+    ) {
+
+        grid.innerHTML =
+            emptyMessage(
+                "No education content added yet."
+            );
+
+        return;
+
+    }
+
+
+    grid.innerHTML =
+        education
+            .map(item =>
+                createEducationCard(item)
+            )
+            .join("");
+
+}
+
+
+function createEducationCard(item) {
+
+    const posterStyle =
+        item.poster_url
+            ? `
+                background-image:
+                url("${escapeAttribute(
+                    item.poster_url
+                )}");
+            `
+            : "";
+
+
+    return `
+
+        <article
+            class="movie-card"
+            data-content-id="${item.id}"
+        >
+
+            <div
+                class="movie-poster"
+                style='${posterStyle}'
+            >
+
+
+                ${
+                    item.genre
+                        ? `
+
+                            <span
+                                class="content-badge"
+                            >
+
+                                ${escapeHTML(
+                                    item.genre
+                                )}
+
+                            </span>
+
+                        `
+                        : ""
+                }
+
+
+                ${
+                    item.video_url
+                        ? `
+
+                            <button
+                                class="poster-play dynamic-play"
+                                type="button"
+                                data-video="${escapeAttribute(
+                                    item.video_url
+                                )}"
+                            >
+
+                                <i
+                                    class="fa-solid fa-play"
+                                ></i>
+
+                            </button>
+
+                        `
+                        : ""
+                }
+
+            </div>
+
+
+            <div class="card-info">
+
+
+                <span class="card-category">
+                    EDUCATION
+                </span>
+
+
+                <h3>
+
+                    ${escapeHTML(
+                        item.title ||
+                        "Untitled"
+                    )}
+
+                </h3>
+
+
+                <p>
+
+                    ${escapeHTML(
+                        item.description ||
+                        ""
+                    )}
+
+                </p>
+
+
+                <div class="card-meta">
+
+                    <span>
+
+                        ${escapeHTML(
+                            item.year || ""
+                        )}
+
+                    </span>
+
+                    <span></span>
+
+                </div>
+
+
+                ${
+                    item.download_url
+                        ? `
+
+                            <button
+                                class="book-button dynamic-book"
+                                type="button"
+                                data-file="${escapeAttribute(
+                                    item.download_url
+                                )}"
+                                style="margin-top: 12px;"
+                            >
+
+                                Download
+
+                                <i
+                                    class="fa-solid fa-download"
+                                ></i>
+
+                            </button>
+
+                        `
+                        : ""
+                }
+
+            </div>
+
+        </article>
+
+    `;
+
+}
+
+
+/* =====================================================
    DYNAMIC BUTTON CLICK
 ===================================================== */
 
@@ -1339,7 +1537,7 @@ document.addEventListener(
         }
 
 
-        /* BOOK */
+        /* BOOK / DOWNLOAD */
 
         const bookButton =
             event.target.closest(
@@ -2290,7 +2488,8 @@ function showDatabaseError() {
         "webseriesGrid",
         "upcomingGrid",
         "storiesGrid",
-        "booksGrid"
+        "booksGrid",
+        "educationGrid"
 
     ];
 
@@ -2341,7 +2540,10 @@ function formatType(type) {
             "Story",
 
         book:
-            "Book"
+            "Book",
+
+        education:
+            "Education"
 
     };
 
@@ -2379,7 +2581,10 @@ function getSectionFromType(type) {
             "stories",
 
         book:
-            "books"
+            "books",
+
+        education:
+            "education"
 
     };
 
@@ -2416,7 +2621,10 @@ function getTypeIcon(type) {
             "fa-solid fa-book-open",
 
         book:
-            "fa-solid fa-book"
+            "fa-solid fa-book",
+
+        education:
+            "fa-solid fa-graduation-cap"
 
     };
 
