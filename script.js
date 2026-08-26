@@ -409,7 +409,7 @@ async function loadWebsiteContents() {
 
         renderBooks();
 
-        renderEducation();
+        renderTutorial();
 
 
         console.log(
@@ -1260,14 +1260,14 @@ function renderBooks() {
 
 
 /* =====================================================
-   EDUCATION
+   TUTORIAL
 ===================================================== */
 
-function renderEducation() {
+function renderTutorial() {
 
     const grid =
         document.getElementById(
-            "educationGrid"
+            "tutorialGrid"
         );
 
 
@@ -1276,21 +1276,21 @@ function renderEducation() {
     }
 
 
-    const education =
+    const tutorial =
         databaseContents.filter(
             item =>
                 item.type ===
-                "education"
+                "Tutorial"
         );
 
 
     if (
-        education.length === 0
+        Tutorial.length === 0
     ) {
 
         grid.innerHTML =
             emptyMessage(
-                "No education content added yet."
+                "No Tutorial content added yet."
             );
 
         return;
@@ -1299,16 +1299,16 @@ function renderEducation() {
 
 
     grid.innerHTML =
-        education
+        Tutorial
             .map(item =>
-                createEducationCard(item)
+                createTutorialCard(item)
             )
             .join("");
 
 }
 
 
-function createEducationCard(item) {
+function createTutorialCard(item) {
 
     const posterStyle =
         item.poster_url
@@ -1382,7 +1382,7 @@ function createEducationCard(item) {
 
 
                 <span class="card-category">
-                    EDUCATION
+                    TUTORIAL
                 </span>
 
 
@@ -2489,7 +2489,7 @@ function showDatabaseError() {
         "upcomingGrid",
         "storiesGrid",
         "booksGrid",
-        "educationGrid"
+        "tutorialGrid"
 
     ];
 
@@ -2542,8 +2542,8 @@ function formatType(type) {
         book:
             "Book",
 
-        education:
-            "Education"
+        tutorial:
+            "Tutorial"
 
     };
 
@@ -2583,8 +2583,8 @@ function getSectionFromType(type) {
         book:
             "books",
 
-        education:
-            "education"
+        tutorial:
+            "tutorial"
 
     };
 
@@ -2623,7 +2623,7 @@ function getTypeIcon(type) {
         book:
             "fa-solid fa-book",
 
-        education:
+        tutorial:
             "fa-solid fa-graduation-cap"
 
     };

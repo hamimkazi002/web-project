@@ -284,8 +284,8 @@ const bannerPreview =
 const bookFileStatus =
     document.getElementById("bookFileStatus");
 
-const educationDownloadUrl =
-    document.getElementById("educationDownloadUrl");
+const tutorialDownloadUrl =
+    document.getElementById("tutorialDownloadUrl");
 
 const saveContentButton =
     document.getElementById("saveContentButton");
@@ -412,7 +412,7 @@ function updateDynamicForm() {
 
         }
 
-        else if (type === "education") {
+        else if (type === "tutorial") {
 
             titleLabel.textContent =
                 "Course Title *";
@@ -816,7 +816,7 @@ if (contentForm) {
                             "movie",
                             "natok",
                             "series",
-                            "education"
+                            "tutorial"
                         ].includes(type)
                             ? (
                                 videoUrl.value.trim()
@@ -830,7 +830,7 @@ if (contentForm) {
                             "natok",
                             "series",
                             "book",
-                            "education"
+                            "tutorial"
                         ].includes(type) &&
                         contentYear.value
                             ? Number(contentYear.value)
@@ -853,7 +853,7 @@ if (contentForm) {
                             "series",
                             "upcoming",
                             "book",
-                            "education"
+                            "tutorial"
                         ].includes(type)
                             ? (
                                 contentGenre.value.trim()
@@ -919,9 +919,9 @@ if (contentForm) {
                             : null,
 
                     download_url:
-                        type === "education"
+                        type === "tutorial"
                             ? (
-                                educationDownloadUrl.value.trim()
+                                tutorialDownloadUrl.value.trim()
                                 || null
                             )
                             : null,
@@ -1240,7 +1240,7 @@ window.editContent =
         releaseDate.value =
             item.release_date || "";
 
-        educationDownloadUrl.value =
+        tutorialDownloadUrl.value =
             item.download_url || "";
 
         contentStatus.value =
@@ -1594,11 +1594,11 @@ function updateStats() {
 
 
     document.getElementById(
-        "totalEducation"
+        "totalTutorial"
     ).textContent =
         allContents.filter(
             item =>
-                item.type === "education"
+                item.type === "tutorial"
         ).length;
 
 }
@@ -1631,8 +1631,8 @@ const filterMap = {
     "Books":
         "book",
 
-    "Education":
-        "education"
+    "Tutorial":
+        "tutorial"
 
 };
 
@@ -1699,7 +1699,7 @@ function formatType(type) {
 
         book: "Book",
 
-        education: "Education"
+        tutorial: "Tutorial"
 
     };
 
