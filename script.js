@@ -1280,17 +1280,17 @@ function renderTutorial() {
         databaseContents.filter(
             item =>
                 item.type ===
-                "Tutorial"
+                "tutorial"
         );
 
 
     if (
-        Tutorial.length === 0
+        tutorial.length === 0
     ) {
 
         grid.innerHTML =
             emptyMessage(
-                "No Tutorial content added yet."
+                "No tutorial content added yet."
             );
 
         return;
@@ -1299,7 +1299,7 @@ function renderTutorial() {
 
 
     grid.innerHTML =
-        Tutorial
+        tutorial
             .map(item =>
                 createTutorialCard(item)
             )
