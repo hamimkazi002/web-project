@@ -1565,6 +1565,42 @@ function updateStats() {
                 item.type === "series"
         ).length;
 
+
+    document.getElementById(
+        "totalUpcoming"
+    ).textContent =
+        allContents.filter(
+            item =>
+                item.type === "upcoming"
+        ).length;
+
+
+    document.getElementById(
+        "totalStories"
+    ).textContent =
+        allContents.filter(
+            item =>
+                item.type === "story"
+        ).length;
+
+
+    document.getElementById(
+        "totalBooks"
+    ).textContent =
+        allContents.filter(
+            item =>
+                item.type === "book"
+        ).length;
+
+
+    document.getElementById(
+        "totalEducation"
+    ).textContent =
+        allContents.filter(
+            item =>
+                item.type === "education"
+        ).length;
+
 }
 
 
@@ -1799,6 +1835,8 @@ setInterval(() => {
 
         logo.style.opacity = "0";
 
+        logo.style.transform = "translateY(5px)";
+
 
         setTimeout(() => {
 
@@ -1807,6 +1845,8 @@ setInterval(() => {
 
 
             logo.style.opacity = "1";
+
+            logo.style.transform = "translateY(0)";
 
         }, 300);
 
