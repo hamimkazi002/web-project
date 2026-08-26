@@ -90,7 +90,7 @@ header.navbar {
     color: #ff1b2d;
     display: inline-block;
     min-width: 55px;
-    margin-left: 2px;
+    margin-left: 0;
     transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
