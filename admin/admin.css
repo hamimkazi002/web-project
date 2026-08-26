@@ -247,11 +247,13 @@ textarea {
 
     margin-bottom: 38px;
 
-    font-size: 23px;
+    font-size: 25px;
 
     font-weight: 900;
 
-    letter-spacing: -0.8px;
+    letter-spacing: -1px;
+
+    white-space: nowrap;
 }
 
 
@@ -1140,7 +1142,14 @@ textarea {
     }
 
 }
+
+/* =====================================================
+   LOGO (matches public site spacing)
+===================================================== */
+
 .logo-changing {
     display: inline-block;
-    transition: 0.4s ease;
+    min-width: 55px;
+    margin-left: 0;
+    transition: opacity 0.3s ease, transform 0.3s ease;
 }
