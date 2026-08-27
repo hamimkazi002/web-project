@@ -1,24 +1,8 @@
 /* =========================================================
-   CINEMA MELLA / CINEMA HUB
-   PUBLIC WEBSITE - FINAL SCRIPT
+   CINEMA MELLA / HUB
+   PUBLIC WEBSITE - FINAL SCRIPT.JS
 
-   DATABASE CHANGE = NO
-
-   FEATURES
-   ---------------------------------------------------------
-   1. Header MELLA <-> HUB animation
-   2. Footer logo static
-   3. Category dropdown from existing genre field
-   4. Rating 8+ Featured slider
-   5. Description only on hover
-   6. Hero uses banner_url ONLY
-   7. Hero sequence:
-      Movie -> Natok -> Series -> Upcoming
-      -> Story -> Book -> Tutorial -> Repeat
-   8. Movie/Natok/Series/Tutorial Download button
-   9. Story reader
-   10. Book PDF open
-   11. Search
+   DATABASE CHANGE: NONE
 ========================================================= */
 
 
@@ -33,7 +17,7 @@ const SUPABASE_PUBLISHABLE_KEY =
     "sb_publishable_ed-PGIvnw8yN2OwI2264IA_f1FOdWrp";
 
 
-const publicSupabase =
+const db =
     window.supabase.createClient(
         SUPABASE_URL,
         SUPABASE_PUBLISHABLE_KEY
@@ -41,17 +25,32 @@ const publicSupabase =
 
 
 /* =========================================================
-   GLOBAL CONTENT
+   GLOBAL DATA
 ========================================================= */
 
-let databaseContents = [];
+let contents = [];
+
+
+/* HERO */
+
+let heroSlides = [];
+let heroIndex = 0;
+let heroTimer = null;
+let heroZoomAnimation = null;
+
+
+/* FEATURED */
+
+let featuredItems = [];
+let featuredIndex = 0;
+let featuredTimer = null;
 
 
 /* =========================================================
-   TYPE LABELS
+   TYPE SETTINGS
 ========================================================= */
 
-const TYPE_LABELS = {
+const TYPE_LABEL = {
 
     movie: "Movie",
 
@@ -70,11 +69,7 @@ const TYPE_LABELS = {
 };
 
 
-/* =========================================================
-   SECTION MAP
-========================================================= */
-
-const TYPE_SECTIONS = {
+const TYPE_SECTION = {
 
     movie: "movies",
 
@@ -93,11 +88,30 @@ const TYPE_SECTIONS = {
 };
 
 
+const TYPE_GRID = {
+
+    movie: "moviesGrid",
+
+    natok: "natokGrid",
+
+    series: "webseriesGrid",
+
+    upcoming: "upcomingGrid",
+
+    story: "storiesGrid",
+
+    book: "booksGrid",
+
+    tutorial: "tutorialGrid"
+
+};
+
+
 /* =========================================================
    HERO ORDER
 ========================================================= */
 
-const HERO_SEQUENCE = [
+const HERO_ORDER = [
 
     "movie",
 
@@ -117,10 +131,10 @@ const HERO_SEQUENCE = [
 
 
 /* =========================================================
-   CATEGORY FILTER STATE
+   ACTIVE CATEGORY
 ========================================================= */
 
-const activeGenreFilters = {
+const selectedGenre = {
 
     movie: "all",
 
@@ -140,28 +154,6 @@ const activeGenreFilters = {
 
 
 /* =========================================================
-   HERO STATE
-========================================================= */
-
-let heroSlides = [];
-
-let heroIndex = 0;
-
-let heroTimer = null;
-
-
-/* =========================================================
-   FEATURED STATE
-========================================================= */
-
-let featuredItems = [];
-
-let featuredIndex = 0;
-
-let featuredTimer = null;
-
-
-/* =========================================================
    DOM
 ========================================================= */
 
@@ -171,7 +163,7 @@ const heroBackground =
     );
 
 
-const heroDotsContainer =
+const heroDots =
     document.getElementById(
         "heroDots"
     );
@@ -220,68 +212,69 @@ const mobileNav =
 
 
 /* =========================================================
-   HEADER LOGO ANIMATION ONLY
+   HEADER LOGO ANIMATION
+
+   ONLY HEADER:
+   CINEMA MELLA
+   CINEMA HUB
 
    FOOTER WILL NOT ANIMATE
 ========================================================= */
 
-const headerChangingLogo =
+const headerLogo =
     document.getElementById(
         "logoChangingText"
     );
 
 
-const headerLogoWords = [
-
+const logoWords = [
     "MELLA",
-
     "HUB"
-
 ];
 
 
-let headerLogoIndex = 0;
+let logoIndex = 0;
 
 
-if (headerChangingLogo) {
+if (headerLogo) {
 
     setInterval(
         () => {
 
-            headerLogoIndex =
+            logoIndex =
                 (
-                    headerLogoIndex + 1
+                    logoIndex + 1
                 )
                 %
-                headerLogoWords.length;
+                logoWords.length;
 
 
-            headerChangingLogo.style.opacity =
+            headerLogo.style.opacity =
                 "0";
 
 
-            headerChangingLogo.style.transform =
+            headerLogo.style.transform =
                 "translateY(5px)";
 
 
             setTimeout(
                 () => {
 
-                    headerChangingLogo.textContent =
-                        headerLogoWords[
-                            headerLogoIndex
+                    headerLogo.textContent =
+                        logoWords[
+                            logoIndex
                         ];
 
 
-                    headerChangingLogo.style.opacity =
+                    headerLogo.style.opacity =
                         "1";
 
 
-                    headerChangingLogo.style.transform =
+                    headerLogo.style.transform =
                         "translateY(0)";
 
                 },
-                300
+                250
             );
 
         },
@@ -292,10 +285,10 @@ if (headerChangingLogo) {
 
 
 /* =========================================================
-   LOAD CONTENT
+   LOAD CONTENT FROM SUPABASE
 ========================================================= */
 
-async function loadWebsiteContents() {
+async function loadContents() {
 
     try {
 
@@ -303,7 +296,7 @@ async function loadWebsiteContents() {
             data,
             error
         } =
-            await publicSupabase
+            await db
                 .from("contents")
                 .select("*")
                 .eq(
@@ -313,7 +306,8 @@ async function loadWebsiteContents() {
                 .order(
                     "created_at",
                     {
-                        ascending: false
+                        ascending:
+                            false
                     }
                 );
 
@@ -325,38 +319,35 @@ async function loadWebsiteContents() {
         }
 
 
-        databaseContents =
+        contents =
             data || [];
 
 
-        createNavbarDropdowns();
+        createDropdowns();
 
-
-        renderNavbarCategories();
-
-
-        createFeaturedSection();
-
+        renderDropdownCategories();
 
         renderAllSections();
 
+        createFeaturedSection();
 
-        setupFeaturedSlider();
+        setupFeatured();
 
+        setupHero();
 
-        setupDynamicHero();
+        updateActiveNav();
 
     }
 
     catch (error) {
 
         console.error(
-            "Unable to load Cinema Mella:",
+            "Cinema Mella load error:",
             error
         );
 
 
-        showDatabaseError();
+        showLoadError();
 
     }
 
@@ -364,7 +355,7 @@ async function loadWebsiteContents() {
 
 
 /* =========================================================
-   GENRE SPLITTER
+   GENRE HELPERS
 ========================================================= */
 
 function splitGenres(value) {
@@ -374,8 +365,8 @@ function splitGenres(value) {
     )
         .split(",")
         .map(
-            genre =>
-                genre.trim()
+            item =>
+                item.trim()
         )
         .filter(Boolean);
 
@@ -383,15 +374,15 @@ function splitGenres(value) {
 
 
 /* =========================================================
-   GET UNIQUE CATEGORIES FROM EXISTING CONTENT
+   GET UNIQUE GENRES
 ========================================================= */
 
-function getGenresForType(type) {
+function getGenres(type) {
 
-    const genres = [];
+    const result = [];
 
 
-    databaseContents
+    contents
         .filter(
             item =>
                 item.type === type
@@ -406,9 +397,9 @@ function getGenresForType(type) {
                         genre => {
 
                             const exists =
-                                genres.some(
-                                    oldGenre =>
-                                        oldGenre
+                                result.some(
+                                    old =>
+                                        old
                                             .toLowerCase()
                                         ===
                                         genre
@@ -418,7 +409,7 @@ function getGenresForType(type) {
 
                             if (!exists) {
 
-                                genres.push(
+                                result.push(
                                     genre
                                 );
 
@@ -431,40 +422,39 @@ function getGenresForType(type) {
         );
 
 
-    genres.sort(
+    return result.sort(
         (
             a,
             b
         ) =>
-            a.localeCompare(b)
+            a.localeCompare(
+                b
+            )
     );
-
-
-    return genres;
 
 }
 
 
 /* =========================================================
-   CREATE CATEGORY DROPDOWN WRAPPERS
+   CREATE HEADER DROPDOWNS
 ========================================================= */
 
-function createNavbarDropdowns() {
+function createDropdowns() {
 
-    const navMenu =
+    const nav =
         document.querySelector(
             ".nav-menu"
         );
 
 
-    if (!navMenu) {
+    if (!nav) {
 
         return;
 
     }
 
 
-    const dropdownMap = {
+    const map = {
 
         "#movies":
             "movie",
@@ -492,7 +482,7 @@ function createNavbarDropdowns() {
 
     Object
         .entries(
-            dropdownMap
+            map
         )
         .forEach(
             (
@@ -503,7 +493,7 @@ function createNavbarDropdowns() {
             ) => {
 
                 const link =
-                    navMenu.querySelector(
+                    nav.querySelector(
                         `a.nav-link[href="${href}"]`
                     );
 
@@ -516,13 +506,12 @@ function createNavbarDropdowns() {
 
 
                 /*
-                   Already wrapped hole duplicate korbe na
+                   Already wrapped?
                 */
 
                 if (
-                    link.parentElement &&
                     link.parentElement
-                        .classList
+                        ?.classList
                         .contains(
                             "nav-category-dropdown"
                         )
@@ -543,7 +532,7 @@ function createNavbarDropdowns() {
                     "nav-category-dropdown";
 
 
-                wrapper.dataset.contentType =
+                wrapper.dataset.type =
                     type;
 
 
@@ -564,7 +553,9 @@ function createNavbarDropdowns() {
                     >
 
                         ${escapeHTML(
-                            TYPE_LABELS[type]
+                            TYPE_LABEL[
+                                type
+                            ]
                         )}
 
                     </div>
@@ -600,10 +591,10 @@ function createNavbarDropdowns() {
 
 
 /* =========================================================
-   RENDER CATEGORY DROPDOWNS
+   RENDER HEADER CATEGORIES
 ========================================================= */
 
-function renderNavbarCategories() {
+function renderDropdownCategories() {
 
     document
         .querySelectorAll(
@@ -613,11 +604,10 @@ function renderNavbarCategories() {
             wrapper => {
 
                 const type =
-                    wrapper.dataset
-                        .contentType;
+                    wrapper.dataset.type;
 
 
-                const dynamicBox =
+                const box =
                     wrapper.querySelector(
                         ".genre-menu-dynamic"
                     );
@@ -625,7 +615,7 @@ function renderNavbarCategories() {
 
                 if (
                     !type ||
-                    !dynamicBox
+                    !box
                 ) {
 
                     return;
@@ -633,25 +623,17 @@ function renderNavbarCategories() {
                 }
 
 
-                const genres =
-                    getGenresForType(
-                        type
-                    );
-
-
                 let html = `
 
                     <button
                         type="button"
                         class="genre-menu-item active"
-                        data-content-type="${escapeAttribute(
-                            type
-                        )}"
+                        data-type="${type}"
                         data-genre="all"
                     >
 
                         All ${escapeHTML(
-                            TYPE_LABELS[
+                            TYPE_LABEL[
                                 type
                             ]
                         )}
@@ -661,35 +643,36 @@ function renderNavbarCategories() {
                 `;
 
 
-                genres.forEach(
-                    genre => {
+                getGenres(
+                    type
+                )
+                    .forEach(
+                        genre => {
 
-                        html += `
+                            html += `
 
-                            <button
-                                type="button"
-                                class="genre-menu-item"
-                                data-content-type="${escapeAttribute(
-                                    type
-                                )}"
-                                data-genre="${escapeAttribute(
-                                    genre
-                                )}"
-                            >
+                                <button
+                                    type="button"
+                                    class="genre-menu-item"
+                                    data-type="${type}"
+                                    data-genre="${escapeAttribute(
+                                        genre
+                                    )}"
+                                >
 
-                                ${escapeHTML(
-                                    genre
-                                )}
+                                    ${escapeHTML(
+                                        genre
+                                    )}
 
-                            </button>
+                                </button>
 
-                        `;
+                            `;
 
-                    }
-                );
+                        }
+                    );
 
 
-                dynamicBox.innerHTML =
+                box.innerHTML =
                     html;
 
             }
@@ -699,7 +682,7 @@ function renderNavbarCategories() {
 
 
 /* =========================================================
-   CATEGORY BUTTON CLICK
+   CATEGORY CLICK
 ========================================================= */
 
 document.addEventListener(
@@ -725,23 +708,19 @@ document.addEventListener(
 
 
         const type =
-            button.dataset
-                .contentType;
+            button.dataset.type;
 
 
         const genre =
-            button.dataset
-                .genre
-            ||
+            button.dataset.genre ||
             "all";
 
 
         if (
             !type ||
-            !(
-                type in
-                activeGenreFilters
-            )
+            !TYPE_GRID[
+                type
+            ]
         ) {
 
             return;
@@ -749,7 +728,7 @@ document.addEventListener(
         }
 
 
-        activeGenreFilters[
+        selectedGenre[
             type
         ] =
             genre;
@@ -761,23 +740,19 @@ document.addEventListener(
             );
 
 
-        if (wrapper) {
+        wrapper
+            ?.querySelectorAll(
+                ".genre-menu-item"
+            )
+            .forEach(
+                item => {
 
-            wrapper
-                .querySelectorAll(
-                    ".genre-menu-item"
-                )
-                .forEach(
-                    menuButton => {
+                    item.classList.remove(
+                        "active"
+                    );
 
-                        menuButton.classList.remove(
-                            "active"
-                        );
-
-                    }
-                );
-
-        }
+                }
+            );
 
 
         button.classList.add(
@@ -785,121 +760,74 @@ document.addEventListener(
         );
 
 
-        renderSectionByType(
+        renderType(
             type
         );
 
 
-        const section =
-            document.getElementById(
-                TYPE_SECTIONS[
+        document
+            .getElementById(
+                TYPE_SECTION[
                     type
                 ]
-            );
+            )
+            ?.scrollIntoView({
+                behavior:
+                    "smooth",
 
-
-        if (section) {
-
-            section.scrollIntoView(
-                {
-                    behavior:
-                        "smooth",
-
-                    block:
-                        "start"
-                }
-            );
-
-        }
+                block:
+                    "start"
+            });
 
     }
 );
 
 
 /* =========================================================
-   CATEGORY MATCH
-========================================================= */
-
-function itemMatchesGenre(
-    item,
-    selectedGenre
-) {
-
-    if (
-        !selectedGenre ||
-        selectedGenre === "all"
-    ) {
-
-        return true;
-
-    }
-
-
-    return splitGenres(
-        item.genre
-    )
-        .some(
-            genre =>
-                genre
-                    .toLowerCase()
-                ===
-                selectedGenre
-                    .toLowerCase()
-        );
-
-}
-
-
-/* =========================================================
    FILTER CONTENT
 ========================================================= */
 
-function getFilteredContents(type) {
+function getItems(type) {
 
-    return databaseContents
+    const genre =
+        selectedGenre[
+            type
+        ]
+        ||
+        "all";
+
+
+    return contents
         .filter(
             item =>
                 item.type === type
         )
         .filter(
-            item =>
-                itemMatchesGenre(
-                    item,
-                    activeGenreFilters[
-                        type
-                    ]
+            item => {
+
+                if (
+                    genre === "all"
+                ) {
+
+                    return true;
+
+                }
+
+
+                return splitGenres(
+                    item.genre
                 )
+                    .some(
+                        current =>
+                            current
+                                .toLowerCase()
+                            ===
+                            genre
+                                .toLowerCase()
+                    );
+
+            }
         );
-
-}
-
-
-/* =========================================================
-   EMPTY CATEGORY TEXT
-========================================================= */
-
-function getEmptyText(
-    type,
-    normalText
-) {
-
-    const category =
-        activeGenreFilters[
-            type
-        ];
-
-
-    if (
-        !category ||
-        category === "all"
-    ) {
-
-        return normalText;
-
-    }
-
-
-    return `No ${category} content found.`;
 
 }
 
@@ -910,132 +838,34 @@ function getEmptyText(
 
 function renderAllSections() {
 
-    renderMovies();
+    HERO_ORDER
+        .forEach(
+            type => {
 
-    renderNatok();
+                renderType(
+                    type
+                );
 
-    renderSeries();
-
-    renderUpcoming();
-
-    renderStories();
-
-    renderBooks();
-
-    renderTutorial();
+            }
+        );
 
 }
 
 
 /* =========================================================
-   RENDER SECTION BY TYPE
+   RENDER SECTION
+
+   IMPORTANT:
+   ALL SECTIONS USE SAME CARD STRUCTURE
 ========================================================= */
 
-function renderSectionByType(type) {
-
-    const rendererMap = {
-
-        movie:
-            renderMovies,
-
-        natok:
-            renderNatok,
-
-        series:
-            renderSeries,
-
-        upcoming:
-            renderUpcoming,
-
-        story:
-            renderStories,
-
-        book:
-            renderBooks,
-
-        tutorial:
-            renderTutorial
-
-    };
-
-
-    if (
-        rendererMap[
-            type
-        ]
-    ) {
-
-        rendererMap[
-            type
-        ]();
-
-    }
-
-}
-
-
-/* =========================================================
-   MOVIES
-========================================================= */
-
-function renderMovies() {
-
-    renderVideoGrid(
-        "moviesGrid",
-        "movie",
-        "MOVIE",
-        "No movies added yet."
-    );
-
-}
-
-
-/* =========================================================
-   NATOK
-========================================================= */
-
-function renderNatok() {
-
-    renderVideoGrid(
-        "natokGrid",
-        "natok",
-        "NATOK",
-        "No natok added yet."
-    );
-
-}
-
-
-/* =========================================================
-   SERIES
-========================================================= */
-
-function renderSeries() {
-
-    renderVideoGrid(
-        "webseriesGrid",
-        "series",
-        "WEB SERIES",
-        "No web series added yet."
-    );
-
-}
-
-
-/* =========================================================
-   MOVIE / NATOK / SERIES GRID
-========================================================= */
-
-function renderVideoGrid(
-    gridId,
-    type,
-    label,
-    emptyText
-) {
+function renderType(type) {
 
     const grid =
         document.getElementById(
-            gridId
+            TYPE_GRID[
+                type
+            ]
         );
 
 
@@ -1046,21 +876,38 @@ function renderVideoGrid(
     }
 
 
+    /*
+       Force same class for all grids.
+    */
+
+    grid.classList.add(
+        "uniform-content-grid"
+    );
+
+
     const items =
-        getFilteredContents(
+        getItems(
             type
         );
 
 
     if (!items.length) {
 
-        grid.innerHTML =
-            emptyMessage(
-                getEmptyText(
-                    type,
-                    emptyText
-                )
-            );
+        grid.innerHTML = `
+
+            <div
+                class="database-loading"
+            >
+
+                No ${escapeHTML(
+                    TYPE_LABEL[
+                        type
+                    ]
+                )} content found.
+
+            </div>
+
+        `;
 
 
         return;
@@ -1071,11 +918,7 @@ function renderVideoGrid(
     grid.innerHTML =
         items
             .map(
-                item =>
-                    createVideoCard(
-                        item,
-                        label
-                    )
+                createStandardCard
             )
             .join("");
 
@@ -1083,61 +926,53 @@ function renderVideoGrid(
 
 
 /* =========================================================
-   MOVIE / NATOK / SERIES CARD
+   SAME CARD FOR EVERYTHING
 
-   IMPORTANT:
-   DOWNLOAD BUTTON IS HERE
+   MOVIE
+   NATOK
+   WEB SERIES
+   UPCOMING
+   STORY
+   BOOK
+   TUTORIAL
 ========================================================= */
 
-function createVideoCard(
-    item,
-    label
-) {
+function createStandardCard(item) {
 
     const poster =
         item.poster_url ||
         "";
 
 
-    let leftMeta =
-        item.year ||
-        "";
-
-
-    if (
-        item.type === "series" &&
-        item.season
-    ) {
-
-        leftMeta =
-            `S${String(
-                item.season
-            ).padStart(
-                2,
-                "0"
-            )}`;
-
-    }
+    const typeName =
+        TYPE_LABEL[
+            item.type
+        ]
+        ||
+        item.type;
 
 
     return `
 
         <article
-            class="movie-card"
+            class="movie-card uniform-content-card"
             data-content-id="${item.id}"
         >
 
+
+            <!-- POSTER -->
+
             <div
-                class="movie-poster"
-                style='${
+                class="movie-poster uniform-card-poster"
+                style="${
                     poster
                         ?
-                        `background-image:url("${escapeCssUrl(
+                        `background-image:url('${escapeCssUrl(
                             poster
-                        )}")`
+                        )}')`
                         :
                         ""
-                }'
+                }"
             >
 
 
@@ -1176,9 +1011,7 @@ function createVideoCard(
                                 type="button"
                                 class="poster-play content-video-button"
                                 data-content-id="${item.id}"
-                                aria-label="Watch ${escapeAttribute(
-                                    item.title
-                                )}"
+                                aria-label="Watch"
                             >
 
                                 <i
@@ -1192,18 +1025,25 @@ function createVideoCard(
                         ""
                 }
 
+
             </div>
 
 
+            <!-- INFO -->
+
             <div
-                class="card-info"
+                class="card-info uniform-card-info"
             >
+
 
                 <span
                     class="card-category"
                 >
 
-                    ${label}
+                    ${escapeHTML(
+                        typeName
+                            .toUpperCase()
+                    )}
 
                 </span>
 
@@ -1225,7 +1065,9 @@ function createVideoCard(
                     <span>
 
                         ${escapeHTML(
-                            leftMeta
+                            getCardMeta(
+                                item
+                            )
                         )}
 
                     </span>
@@ -1258,35 +1100,19 @@ function createVideoCard(
                 </div>
 
 
-                <!-- ======================================
-                     MOVIE / NATOK / SERIES DOWNLOAD
-                ======================================= -->
+                <div
+                    class="card-actions"
+                >
 
-                ${
-                    item.download_url
-                        ?
-                        `
+                    ${getCardButtons(
+                        item
+                    )}
 
-                            <button
-                                type="button"
-                                class="content-download-button"
-                                data-content-id="${item.id}"
-                            >
+                </div>
 
-                                <i
-                                    class="fa-solid fa-download"
-                                ></i>
-
-                                Download
-
-                            </button>
-
-                        `
-                        :
-                        ""
-                }
 
             </div>
+
 
         </article>
 
@@ -1296,712 +1122,246 @@ function createVideoCard(
 
 
 /* =========================================================
-   UPCOMING
+   CARD META
 ========================================================= */
 
-function renderUpcoming() {
+function getCardMeta(item) {
 
-    const grid =
-        document.getElementById(
-            "upcomingGrid"
-        );
+    /*
+       SERIES
+    */
 
+    if (
+        item.type ===
+        "series"
+        &&
+        item.season
+    ) {
 
-    if (!grid) {
-
-        return;
-
-    }
-
-
-    const items =
-        getFilteredContents(
-            "upcoming"
-        );
-
-
-    if (!items.length) {
-
-        grid.innerHTML =
-            emptyMessage(
-                getEmptyText(
-                    "upcoming",
-                    "No upcoming content."
-                )
-            );
-
-
-        return;
+        return `Season ${item.season}`;
 
     }
 
 
-    grid.innerHTML =
-        items
-            .map(
-                item => {
+    /*
+       UPCOMING
+    */
 
-                    const poster =
-                        item.poster_url ||
-                        "";
+    if (
+        item.type ===
+        "upcoming"
+        &&
+        item.release_date
+    ) {
 
-
-                    return `
-
-                        <article
-                            class="upcoming-card"
-                            data-content-id="${item.id}"
-                        >
-
-                            <div
-                                class="upcoming-poster"
-                                style='${
-                                    poster
-                                        ?
-                                        `background-image:url("${escapeCssUrl(
-                                            poster
-                                        )}")`
-                                        :
-                                        ""
-                                }'
-                            >
-
-                                <span
-                                    class="coming-badge"
-                                >
-
-                                    ${escapeHTML(
-                                        item.badge ||
-                                        "COMING SOON"
-                                    )}
-
-                                </span>
-
-
-                                ${createHoverOverlay(
-                                    item
-                                )}
-
-                            </div>
-
-
-                            <div
-                                class="upcoming-info"
-                            >
-
-                                <span>
-                                    RELEASE DATE
-                                </span>
-
-
-                                <h3>
-
-                                    ${escapeHTML(
-                                        item.title ||
-                                        ""
-                                    )}
-
-                                </h3>
-
-
-                                <p>
-
-                                    ${
-                                        item.release_date
-                                            ?
-                                            escapeHTML(
-                                                formatDate(
-                                                    item.release_date
-                                                )
-                                            )
-                                            :
-                                            "Coming Soon"
-                                    }
-
-                                </p>
-
-                            </div>
-
-                        </article>
-
-                    `;
-
-                }
-            )
-            .join("");
-
-}
-
-
-/* =========================================================
-   STORIES
-========================================================= */
-
-function renderStories() {
-
-    const grid =
-        document.getElementById(
-            "storiesGrid"
+        return formatDate(
+            item.release_date
         );
-
-
-    if (!grid) {
-
-        return;
 
     }
 
 
-    const items =
-        getFilteredContents(
+    /*
+       STORY / BOOK AUTHOR
+    */
+
+    if (
+        (
+            item.type ===
             "story"
-        );
-
-
-    if (!items.length) {
-
-        grid.innerHTML =
-            emptyMessage(
-                getEmptyText(
-                    "story",
-                    "No stories added yet."
-                )
-            );
-
-
-        return;
-
-    }
-
-
-    grid.innerHTML =
-        items
-            .map(
-                item => {
-
-                    const poster =
-                        item.poster_url ||
-                        "";
-
-
-                    return `
-
-                        <article
-                            class="story-card"
-                            data-content-id="${item.id}"
-                        >
-
-                            <div
-                                class="story-image"
-                                style='${
-                                    poster
-                                        ?
-                                        `background-image:url("${escapeCssUrl(
-                                            poster
-                                        )}")`
-                                        :
-                                        ""
-                                }'
-                            >
-
-                                <span
-                                    class="story-badge"
-                                >
-
-                                    ${
-                                        item.featured
-                                            ?
-                                            "FEATURED"
-                                            :
-                                            "STORY"
-                                    }
-
-                                </span>
-
-
-                                ${createHoverOverlay(
-                                    item
-                                )}
-
-                            </div>
-
-
-                            <div
-                                class="story-info"
-                            >
-
-                                <span
-                                    class="story-date"
-                                >
-
-                                    ${
-                                        item.release_date
-                                            ?
-                                            escapeHTML(
-                                                formatDate(
-                                                    item.release_date
-                                                )
-                                            )
-                                            :
-                                            ""
-                                    }
-
-                                </span>
-
-
-                                <h3>
-
-                                    ${escapeHTML(
-                                        item.title ||
-                                        ""
-                                    )}
-
-                                </h3>
-
-
-                                ${
-                                    item.author
-                                        ?
-                                        `
-
-                                            <p>
-
-                                                By ${escapeHTML(
-                                                    item.author
-                                                )}
-
-                                            </p>
-
-                                        `
-                                        :
-                                        ""
-                                }
-
-
-                                <button
-                                    type="button"
-                                    class="story-button content-story-button"
-                                    data-content-id="${item.id}"
-                                >
-
-                                    Read Story
-
-                                    <i
-                                        class="fa-solid fa-arrow-right"
-                                    ></i>
-
-                                </button>
-
-                            </div>
-
-                        </article>
-
-                    `;
-
-                }
-            )
-            .join("");
-
-}
-
-
-/* =========================================================
-   BOOKS
-========================================================= */
-
-function renderBooks() {
-
-    const grid =
-        document.getElementById(
-            "booksGrid"
-        );
-
-
-    if (!grid) {
-
-        return;
-
-    }
-
-
-    const items =
-        getFilteredContents(
+            ||
+            item.type ===
             "book"
-        );
+        )
+        &&
+        item.author
+    ) {
 
-
-    if (!items.length) {
-
-        grid.innerHTML =
-            emptyMessage(
-                getEmptyText(
-                    "book",
-                    "No books added yet."
-                )
-            );
-
-
-        return;
+        return item.author;
 
     }
 
 
-    grid.innerHTML =
-        items
-            .map(
-                item => {
+    /*
+       DEFAULT
+    */
 
-                    const poster =
-                        item.poster_url ||
-                        "";
-
-
-                    return `
-
-                        <article
-                            class="book-card"
-                            data-content-id="${item.id}"
-                        >
-
-                            <div
-                                class="book-cover"
-                                style='${
-                                    poster
-                                        ?
-                                        `background-image:url("${escapeCssUrl(
-                                            poster
-                                        )}")`
-                                        :
-                                        ""
-                                }'
-                            >
-
-                                <span
-                                    class="book-badge"
-                                >
-
-                                    ${
-                                        item.featured
-                                            ?
-                                            "FEATURED"
-                                            :
-                                            "BOOK"
-                                    }
-
-                                </span>
-
-
-                                ${createHoverOverlay(
-                                    item
-                                )}
-
-                            </div>
-
-
-                            <div
-                                class="book-info"
-                            >
-
-                                <span
-                                    class="book-category"
-                                >
-
-                                    ${escapeHTML(
-                                        item.genre ||
-                                        "BOOK"
-                                    )}
-
-                                </span>
-
-
-                                <h3>
-
-                                    ${escapeHTML(
-                                        item.title ||
-                                        ""
-                                    )}
-
-                                </h3>
-
-
-                                ${
-                                    item.author
-                                        ?
-                                        `
-
-                                            <p>
-
-                                                By ${escapeHTML(
-                                                    item.author
-                                                )}
-
-                                            </p>
-
-                                        `
-                                        :
-                                        ""
-                                }
-
-
-                                ${
-                                    item.file_url
-                                        ?
-                                        `
-
-                                            <button
-                                                type="button"
-                                                class="book-button content-book-button"
-                                                data-content-id="${item.id}"
-                                            >
-
-                                                Read Book
-
-                                                <i
-                                                    class="fa-solid fa-arrow-right"
-                                                ></i>
-
-                                            </button>
-
-                                        `
-                                        :
-                                        ""
-                                }
-
-                            </div>
-
-                        </article>
-
-                    `;
-
-                }
-            )
-            .join("");
+    return String(
+        item.year
+        ||
+        item.genre
+        ||
+        ""
+    );
 
 }
 
 
 /* =========================================================
-   TUTORIAL
-
-   DOWNLOAD BUTTON INCLUDED
+   CARD BUTTONS
 ========================================================= */
 
-function renderTutorial() {
-
-    const grid =
-        document.getElementById(
-            "tutorialGrid"
-        );
+function getCardButtons(item) {
 
 
-    if (!grid) {
+    /* =====================================================
+       MOVIE / NATOK / SERIES / TUTORIAL
 
-        return;
+       DOWNLOAD BUTTON
+    ===================================================== */
 
-    }
-
-
-    const items =
-        getFilteredContents(
+    if (
+        [
+            "movie",
+            "natok",
+            "series",
             "tutorial"
-        );
+        ].includes(
+            item.type
+        )
+    ) {
 
+        return `
 
-    if (!items.length) {
+            <button
+                type="button"
+                class="content-download-button ${
+                    !item.download_url
+                        ?
+                        "is-disabled"
+                        :
+                        ""
+                }"
+                data-content-id="${item.id}"
+            >
 
-        grid.innerHTML =
-            emptyMessage(
-                getEmptyText(
-                    "tutorial",
-                    "No tutorial content added yet."
-                )
-            );
+                <i
+                    class="fa-solid fa-download"
+                ></i>
 
+                Download
 
-        return;
+            </button>
+
+        `;
 
     }
 
 
-    grid.innerHTML =
-        items
-            .map(
-                item => {
+    /* =====================================================
+       STORY
 
-                    const poster =
-                        item.poster_url ||
-                        "";
+       READ
+       DOWNLOAD PDF
+    ===================================================== */
 
+    if (
+        item.type ===
+        "story"
+    ) {
 
-                    return `
+        return `
 
-                        <article
-                            class="movie-card"
-                            data-content-id="${item.id}"
-                        >
+            <button
+                type="button"
+                class="story-button content-story-button"
+                data-content-id="${item.id}"
+            >
 
-                            <div
-                                class="movie-poster"
-                                style='${
-                                    poster
-                                        ?
-                                        `background-image:url("${escapeCssUrl(
-                                            poster
-                                        )}")`
-                                        :
-                                        ""
-                                }'
-                            >
+                <i
+                    class="fa-solid fa-book-open"
+                ></i>
+
+                Read
+
+            </button>
 
 
-                                ${
-                                    item.genre
-                                        ?
-                                        `
+            <button
+                type="button"
+                class="content-download-button story-pdf-download"
+                data-content-id="${item.id}"
+            >
 
-                                            <span
-                                                class="content-badge"
-                                            >
+                <i
+                    class="fa-solid fa-file-pdf"
+                ></i>
 
-                                                ${escapeHTML(
-                                                    item.genre
-                                                )}
+                Download PDF
 
-                                            </span>
+            </button>
 
-                                        `
-                                        :
-                                        ""
-                                }
+        `;
+
+    }
 
 
-                                ${createHoverOverlay(
-                                    item
-                                )}
+    /* =====================================================
+       BOOK
+
+       READ BOOK INSIDE WEBSITE
+       DOWNLOAD PDF
+    ===================================================== */
+
+    if (
+        item.type ===
+        "book"
+    ) {
+
+        return `
+
+            <button
+                type="button"
+                class="book-button content-book-button ${
+                    !item.file_url
+                        ?
+                        "is-disabled"
+                        :
+                        ""
+                }"
+                data-content-id="${item.id}"
+            >
+
+                <i
+                    class="fa-solid fa-book-open"
+                ></i>
+
+                Read Book
+
+            </button>
 
 
-                                ${
-                                    item.video_url
-                                        ?
-                                        `
+            <button
+                type="button"
+                class="content-download-button book-pdf-download ${
+                    !item.file_url
+                        ?
+                        "is-disabled"
+                        :
+                        ""
+                }"
+                data-content-id="${item.id}"
+            >
 
-                                            <button
-                                                type="button"
-                                                class="poster-play content-video-button"
-                                                data-content-id="${item.id}"
-                                            >
+                <i
+                    class="fa-solid fa-file-pdf"
+                ></i>
 
-                                                <i
-                                                    class="fa-solid fa-play"
-                                                ></i>
+                Download PDF
 
-                                            </button>
+            </button>
 
-                                        `
-                                        :
-                                        ""
-                                }
+        `;
 
-                            </div>
-
-
-                            <div
-                                class="card-info"
-                            >
-
-                                <span
-                                    class="card-category"
-                                >
-
-                                    TUTORIAL
-
-                                </span>
+    }
 
 
-                                <h3>
+    /*
+       UPCOMING =
+       no extra button
+    */
 
-                                    ${escapeHTML(
-                                        item.title ||
-                                        "Untitled"
-                                    )}
-
-                                </h3>
-
-
-                                <div
-                                    class="card-meta"
-                                >
-
-                                    <span>
-
-                                        ${escapeHTML(
-                                            item.year ||
-                                            ""
-                                        )}
-
-                                    </span>
-
-
-                                    <span>
-
-                                        ${
-                                            hasRating(
-                                                item
-                                            )
-                                                ?
-                                                `
-
-                                                    <i
-                                                        class="fa-solid fa-star"
-                                                    ></i>
-
-                                                    ${escapeHTML(
-                                                        item.rating
-                                                    )}
-
-                                                `
-                                                :
-                                                ""
-                                        }
-
-                                    </span>
-
-                                </div>
-
-
-                                ${
-                                    item.download_url
-                                        ?
-                                        `
-
-                                            <button
-                                                type="button"
-                                                class="content-download-button"
-                                                data-content-id="${item.id}"
-                                            >
-
-                                                <i
-                                                    class="fa-solid fa-download"
-                                                ></i>
-
-                                                Download
-
-                                            </button>
-
-                                        `
-                                        :
-                                        ""
-                                }
-
-                            </div>
-
-                        </article>
-
-                    `;
-
-                }
-            )
-            .join("");
+    return "";
 
 }
 
@@ -2043,7 +1403,7 @@ function createHoverOverlay(item) {
             >
 
                 ${escapeHTML(
-                    getActionText(
+                    getHoverText(
                         item
                     )
                 )}
@@ -2062,20 +1422,14 @@ function createHoverOverlay(item) {
 
 
 /* =========================================================
-   ACTION TEXT
+   HOVER TEXT
 ========================================================= */
 
-function getActionText(item) {
-
-    if (!item) {
-
-        return "Open";
-
-    }
-
+function getHoverText(item) {
 
     if (
-        item.type === "story"
+        item.type ===
+        "story"
     ) {
 
         return "Read Story";
@@ -2084,7 +1438,8 @@ function getActionText(item) {
 
 
     if (
-        item.type === "book"
+        item.type ===
+        "book"
     ) {
 
         return "Read Book";
@@ -2093,34 +1448,8 @@ function getActionText(item) {
 
 
     if (
-        item.type === "tutorial"
-    ) {
-
-        if (
-            item.video_url
-        ) {
-
-            return "Watch Tutorial";
-
-        }
-
-
-        if (
-            item.download_url
-        ) {
-
-            return "Download";
-
-        }
-
-
-        return "View Tutorial";
-
-    }
-
-
-    if (
-        item.type === "upcoming"
+        item.type ===
+        "upcoming"
     ) {
 
         return "Coming Soon";
@@ -2128,18 +1457,27 @@ function getActionText(item) {
     }
 
 
-    return "Watch Now";
+    if (
+        item.video_url
+    ) {
+
+        return "Watch Now";
+
+    }
+
+
+    return "View";
 
 }
 
 
 /* =========================================================
-   FIND CONTENT BY ID
+   FIND ITEM
 ========================================================= */
 
-function findContentById(id) {
+function findItem(id) {
 
-    return databaseContents.find(
+    return contents.find(
         item =>
             String(
                 item.id
@@ -2154,7 +1492,93 @@ function findContentById(id) {
 
 
 /* =========================================================
-   VIDEO CLICK
+   MOVIE / NATOK / SERIES / TUTORIAL DOWNLOAD
+========================================================= */
+
+document.addEventListener(
+    "click",
+    event => {
+
+        const button =
+            event.target.closest(
+                ".content-download-button"
+            );
+
+
+        if (!button) {
+
+            return;
+
+        }
+
+
+        /*
+           Story এবং Book PDF
+           আলাদা handler
+        */
+
+        if (
+            button.classList
+                .contains(
+                    "story-pdf-download"
+                )
+            ||
+            button.classList
+                .contains(
+                    "book-pdf-download"
+                )
+        ) {
+
+            return;
+
+        }
+
+
+        event.preventDefault();
+
+        event.stopPropagation();
+
+
+        const item =
+            findItem(
+                button.dataset
+                    .contentId
+            );
+
+
+        if (!item) {
+
+            return;
+
+        }
+
+
+        if (
+            !item.download_url
+        ) {
+
+            alert(
+                "Download link has not been added yet."
+            );
+
+
+            return;
+
+        }
+
+
+        window.open(
+            item.download_url,
+            "_blank",
+            "noopener,noreferrer"
+        );
+
+    }
+);
+
+
+/* =========================================================
+   VIDEO / WATCH BUTTON
 ========================================================= */
 
 document.addEventListener(
@@ -2180,15 +1604,14 @@ document.addEventListener(
 
 
         const item =
-            findContentById(
+            findItem(
                 button.dataset
                     .contentId
             );
 
 
         if (
-            item &&
-            item.video_url
+            item?.video_url
         ) {
 
             window.open(
@@ -2204,65 +1627,7 @@ document.addEventListener(
 
 
 /* =========================================================
-   DOWNLOAD CLICK
-
-   MOVIE
-   NATOK
-   SERIES
-   TUTORIAL
-========================================================= */
-
-document.addEventListener(
-    "click",
-    event => {
-
-        const button =
-            event.target.closest(
-                ".content-download-button"
-            );
-
-
-        if (!button) {
-
-            return;
-
-        }
-
-
-        event.preventDefault();
-
-        event.stopPropagation();
-
-
-        const item =
-            findContentById(
-                button.dataset
-                    .contentId
-            );
-
-
-        if (
-            !item ||
-            !item.download_url
-        ) {
-
-            return;
-
-        }
-
-
-        window.open(
-            item.download_url,
-            "_blank",
-            "noopener,noreferrer"
-        );
-
-    }
-);
-
-
-/* =========================================================
-   STORY BUTTON
+   STORY READ
 ========================================================= */
 
 document.addEventListener(
@@ -2287,17 +1652,17 @@ document.addEventListener(
         event.stopPropagation();
 
 
-        const story =
-            findContentById(
+        const item =
+            findItem(
                 button.dataset
                     .contentId
             );
 
 
-        if (story) {
+        if (item) {
 
             openStoryReader(
-                story
+                item
             );
 
         }
@@ -2307,7 +1672,9 @@ document.addEventListener(
 
 
 /* =========================================================
-   BOOK BUTTON
+   BOOK READ
+
+   BOOK PDF OPENS INSIDE WEBSITE
 ========================================================= */
 
 document.addEventListener(
@@ -2332,23 +1699,440 @@ document.addEventListener(
         event.stopPropagation();
 
 
-        const item =
-            findContentById(
+        const book =
+            findItem(
                 button.dataset
                     .contentId
             );
 
 
         if (
-            item &&
-            item.file_url
+            !book ||
+            !book.file_url
         ) {
 
+            alert(
+                "Book PDF has not been uploaded yet."
+            );
+
+
+            return;
+
+        }
+
+
+        openBookReader(
+            book
+        );
+
+    }
+);
+
+
+/* =========================================================
+   OPEN BOOK READER
+========================================================= */
+
+function openBookReader(book) {
+
+    /*
+       Remove old modal
+    */
+
+    closeBookReader();
+
+
+    const modal =
+        document.createElement(
+            "div"
+        );
+
+
+    modal.id =
+        "bookReaderModal";
+
+
+    modal.innerHTML = `
+
+        <div
+            class="book-reader-overlay"
+        >
+
+            <div
+                class="book-reader-box"
+            >
+
+
+                <!-- HEADER -->
+
+                <div
+                    class="book-reader-header"
+                >
+
+
+                    <div
+                        class="book-reader-title"
+                    >
+
+                        <h2>
+
+                            ${escapeHTML(
+                                book.title ||
+                                "Book"
+                            )}
+
+                        </h2>
+
+
+                        ${
+                            book.author
+                                ?
+                                `
+
+                                    <p>
+
+                                        By ${escapeHTML(
+                                            book.author
+                                        )}
+
+                                    </p>
+
+                                `
+                                :
+                                ""
+                        }
+
+                    </div>
+
+
+                    <div
+                        class="book-reader-actions"
+                    >
+
+
+                        <button
+                            type="button"
+                            class="book-reader-download-button"
+                            id="readerBookDownload"
+                        >
+
+                            <i
+                                class="fa-solid fa-download"
+                            ></i>
+
+                            Download
+
+                        </button>
+
+
+                        <button
+                            type="button"
+                            class="book-reader-close-button"
+                            id="closeBookReader"
+                        >
+
+                            <i
+                                class="fa-solid fa-xmark"
+                            ></i>
+
+                        </button>
+
+
+                    </div>
+
+
+                </div>
+
+
+                <!-- PDF -->
+
+                <div
+                    class="book-reader-content"
+                >
+
+                    <iframe
+                        src="${escapeAttribute(
+                            book.file_url
+                        )}"
+                        title="${escapeAttribute(
+                            book.title ||
+                            "Book PDF"
+                        )}"
+                    ></iframe>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+    `;
+
+
+    document.body
+        .appendChild(
+            modal
+        );
+
+
+    document.body.style.overflow =
+        "hidden";
+
+
+    /*
+       CLOSE BUTTON
+    */
+
+    modal
+        .querySelector(
+            "#closeBookReader"
+        )
+        ?.addEventListener(
+            "click",
+            closeBookReader
+        );
+
+
+    /*
+       CLICK OUTSIDE
+    */
+
+    modal
+        .querySelector(
+            ".book-reader-overlay"
+        )
+        ?.addEventListener(
+            "click",
+            event => {
+
+                if (
+                    event.target
+                        .classList
+                        .contains(
+                            "book-reader-overlay"
+                        )
+                ) {
+
+                    closeBookReader();
+
+                }
+
+            }
+        );
+
+
+    /*
+       DOWNLOAD INSIDE READER
+    */
+
+    modal
+        .querySelector(
+            "#readerBookDownload"
+        )
+        ?.addEventListener(
+            "click",
+            async event => {
+
+                const button =
+                    event.currentTarget;
+
+
+                const oldHTML =
+                    button.innerHTML;
+
+
+                button.disabled =
+                    true;
+
+
+                button.innerHTML = `
+
+                    <i
+                        class="fa-solid fa-spinner fa-spin"
+                    ></i>
+
+                    Downloading...
+
+                `;
+
+
+                try {
+
+                    await forceFileDownload(
+
+                        book.file_url,
+
+                        `${safeFileName(
+                            book.title ||
+                            "book"
+                        )}.pdf`
+
+                    );
+
+                }
+
+                catch (error) {
+
+                    console.error(
+                        error
+                    );
+
+
+                    window.open(
+                        book.file_url,
+                        "_blank",
+                        "noopener,noreferrer"
+                    );
+
+                }
+
+                finally {
+
+                    button.disabled =
+                        false;
+
+
+                    button.innerHTML =
+                        oldHTML;
+
+                }
+
+            }
+        );
+
+}
+
+
+/* =========================================================
+   CLOSE BOOK READER
+========================================================= */
+
+function closeBookReader() {
+
+    document
+        .getElementById(
+            "bookReaderModal"
+        )
+        ?.remove();
+
+
+    document.body.style.overflow =
+        "";
+
+}
+
+
+/* =========================================================
+   BOOK PDF DOWNLOAD
+========================================================= */
+
+document.addEventListener(
+    "click",
+    async event => {
+
+        const button =
+            event.target.closest(
+                ".book-pdf-download"
+            );
+
+
+        if (!button) {
+
+            return;
+
+        }
+
+
+        event.preventDefault();
+
+        event.stopPropagation();
+
+
+        const book =
+            findItem(
+                button.dataset
+                    .contentId
+            );
+
+
+        if (
+            !book ||
+            !book.file_url
+        ) {
+
+            alert(
+                "Book PDF has not been uploaded yet."
+            );
+
+
+            return;
+
+        }
+
+
+        const oldHTML =
+            button.innerHTML;
+
+
+        button.disabled =
+            true;
+
+
+        button.innerHTML = `
+
+            <i
+                class="fa-solid fa-spinner fa-spin"
+            ></i>
+
+            Downloading...
+
+        `;
+
+
+        try {
+
+            await forceFileDownload(
+
+                book.file_url,
+
+                `${safeFileName(
+                    book.title ||
+                    "book"
+                )}.pdf`
+
+            );
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "Book download error:",
+                error
+            );
+
+
+            /*
+               Browser fallback
+            */
+
             window.open(
-                item.file_url,
+                book.file_url,
                 "_blank",
                 "noopener,noreferrer"
             );
+
+        }
+
+        finally {
+
+            button.disabled =
+                false;
+
+
+            button.innerHTML =
+                oldHTML;
 
         }
 
@@ -2357,7 +2141,843 @@ document.addEventListener(
 
 
 /* =========================================================
+   STORY PDF DOWNLOAD
+
+   ADMIN FULL STORY TEXT
+   AUTOMATICALLY BECOMES PDF
+========================================================= */
+
+document.addEventListener(
+    "click",
+    async event => {
+
+        const button =
+            event.target.closest(
+                ".story-pdf-download"
+            );
+
+
+        if (!button) {
+
+            return;
+
+        }
+
+
+        event.preventDefault();
+
+        event.stopPropagation();
+
+
+        const story =
+            findItem(
+                button.dataset
+                    .contentId
+            );
+
+
+        if (!story) {
+
+            return;
+
+        }
+
+
+        if (
+            !story.full_content
+        ) {
+
+            alert(
+                "Story content has not been added yet."
+            );
+
+
+            return;
+
+        }
+
+
+        const oldHTML =
+            button.innerHTML;
+
+
+        button.disabled =
+            true;
+
+
+        button.innerHTML = `
+
+            <i
+                class="fa-solid fa-spinner fa-spin"
+            ></i>
+
+            Creating PDF...
+
+        `;
+
+
+        try {
+
+            await downloadStoryAsPDF(
+                story
+            );
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "Story PDF error:",
+                error
+            );
+
+
+            alert(
+                "Unable to create PDF. Please try again."
+            );
+
+        }
+
+        finally {
+
+            button.disabled =
+                false;
+
+
+            button.innerHTML =
+                oldHTML;
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   LOAD EXTERNAL SCRIPT
+========================================================= */
+
+function loadExternalScript(
+    src,
+    globalCheck
+) {
+
+    return new Promise(
+        (
+            resolve,
+            reject
+        ) => {
+
+            /*
+               Already loaded
+            */
+
+            if (
+                globalCheck()
+            ) {
+
+                resolve();
+
+                return;
+
+            }
+
+
+            /*
+               Existing loading script
+            */
+
+            const existing =
+                document.querySelector(
+                    `script[src="${src}"]`
+                );
+
+
+            if (existing) {
+
+                existing.addEventListener(
+                    "load",
+                    resolve,
+                    {
+                        once: true
+                    }
+                );
+
+
+                existing.addEventListener(
+                    "error",
+                    reject,
+                    {
+                        once: true
+                    }
+                );
+
+
+                return;
+
+            }
+
+
+            const script =
+                document.createElement(
+                    "script"
+                );
+
+
+            script.src =
+                src;
+
+
+            script.onload =
+                resolve;
+
+
+            script.onerror =
+                reject;
+
+
+            document.head
+                .appendChild(
+                    script
+                );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   LOAD PDF LIBRARIES
+========================================================= */
+
+async function loadPDFLibraries() {
+
+    /*
+       html2canvas:
+       browser rendered Bangla -> image
+    */
+
+    await loadExternalScript(
+
+        "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js",
+
+        () =>
+            Boolean(
+                window.html2canvas
+            )
+
+    );
+
+
+    /*
+       jsPDF
+    */
+
+    await loadExternalScript(
+
+        "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js",
+
+        () =>
+            Boolean(
+                window.jspdf
+            )
+
+    );
+
+}
+
+
+/* =========================================================
+   STORY -> PDF
+========================================================= */
+
+async function downloadStoryAsPDF(
+    story
+) {
+
+    await loadPDFLibraries();
+
+
+    /*
+       Create printable hidden document
+    */
+
+    const pdfArea =
+        document.createElement(
+            "div"
+        );
+
+
+    pdfArea.style.cssText = `
+
+        position: fixed;
+
+        left: -12000px;
+
+        top: 0;
+
+        width: 794px;
+
+        padding: 60px;
+
+        background: #ffffff;
+
+        color: #111111;
+
+        font-family:
+            Arial,
+            "Noto Sans Bengali",
+            "Noto Sans",
+            sans-serif;
+
+        font-size: 18px;
+
+        line-height: 1.85;
+
+        z-index: -9999;
+
+    `;
+
+
+    pdfArea.innerHTML = `
+
+        <h1
+            style="
+                margin:0 0 10px;
+                padding:0;
+                font-size:32px;
+                line-height:1.35;
+                color:#111111;
+            "
+        >
+
+            ${escapeHTML(
+                story.title ||
+                "Story"
+            )}
+
+        </h1>
+
+
+        ${
+            story.author
+                ?
+                `
+
+                    <p
+                        style="
+                            margin:0 0 28px;
+                            color:#666666;
+                            font-size:16px;
+                        "
+                    >
+
+                        By ${escapeHTML(
+                            story.author
+                        )}
+
+                    </p>
+
+                `
+                :
+                ""
+        }
+
+
+        <div
+            style="
+                white-space:pre-wrap;
+                overflow-wrap:anywhere;
+                word-break:normal;
+            "
+        >
+
+            ${escapeHTML(
+                story.full_content
+            )}
+
+        </div>
+
+
+        <div
+            style="
+                margin-top:50px;
+                padding-top:15px;
+                border-top:1px solid #dddddd;
+                color:#888888;
+                font-size:12px;
+            "
+        >
+
+            Cinema Mella & Hub
+
+        </div>
+
+    `;
+
+
+    document.body
+        .appendChild(
+            pdfArea
+        );
+
+
+    /*
+       Wait fonts
+    */
+
+    if (
+        document.fonts?.ready
+    ) {
+
+        await document.fonts.ready;
+
+    }
+
+
+    /*
+       Browser HTML -> Canvas
+    */
+
+    const canvas =
+        await window.html2canvas(
+            pdfArea,
+            {
+                scale:
+                    2,
+
+                backgroundColor:
+                    "#ffffff",
+
+                useCORS:
+                    true,
+
+                logging:
+                    false,
+
+                windowWidth:
+                    794
+            }
+        );
+
+
+    pdfArea.remove();
+
+
+    const {
+        jsPDF
+    } =
+        window.jspdf;
+
+
+    /*
+       A4
+    */
+
+    const pdf =
+        new jsPDF(
+            {
+                orientation:
+                    "portrait",
+
+                unit:
+                    "mm",
+
+                format:
+                    "a4",
+
+                compress:
+                    true
+            }
+        );
+
+
+    const imageData =
+        canvas.toDataURL(
+            "image/jpeg",
+            0.92
+        );
+
+
+    const pageWidth =
+        210;
+
+
+    const pageHeight =
+        297;
+
+
+    const margin =
+        10;
+
+
+    const usableWidth =
+        pageWidth
+        -
+        (
+            margin * 2
+        );
+
+
+    const usableHeight =
+        pageHeight
+        -
+        (
+            margin * 2
+        );
+
+
+    const imageHeight =
+        canvas.height
+        *
+        usableWidth
+        /
+        canvas.width;
+
+
+    let heightLeft =
+        imageHeight;
+
+
+    let position =
+        margin;
+
+
+    /*
+       First page
+    */
+
+    pdf.addImage(
+        imageData,
+        "JPEG",
+        margin,
+        position,
+        usableWidth,
+        imageHeight
+    );
+
+
+    heightLeft -=
+        usableHeight;
+
+
+    /*
+       More pages
+    */
+
+    while (
+        heightLeft > 0
+    ) {
+
+        position =
+            margin
+            -
+            (
+                imageHeight
+                -
+                heightLeft
+            );
+
+
+        pdf.addPage();
+
+
+        pdf.addImage(
+            imageData,
+            "JPEG",
+            margin,
+            position,
+            usableWidth,
+            imageHeight
+        );
+
+
+        heightLeft -=
+            usableHeight;
+
+    }
+
+
+    /*
+       Download
+    */
+
+    pdf.save(
+
+        `${safeFileName(
+            story.title ||
+            "story"
+        )}.pdf`
+
+    );
+
+}
+
+
+/* =========================================================
+   FORCE PDF / FILE DOWNLOAD
+========================================================= */
+
+async function forceFileDownload(
+    url,
+    fileName
+) {
+
+    const response =
+        await fetch(
+            url
+        );
+
+
+    if (
+        !response.ok
+    ) {
+
+        throw new Error(
+            "File download failed."
+        );
+
+    }
+
+
+    const blob =
+        await response.blob();
+
+
+    const blobUrl =
+        URL.createObjectURL(
+            blob
+        );
+
+
+    const link =
+        document.createElement(
+            "a"
+        );
+
+
+    link.href =
+        blobUrl;
+
+
+    link.download =
+        fileName;
+
+
+    link.style.display =
+        "none";
+
+
+    document.body
+        .appendChild(
+            link
+        );
+
+
+    link.click();
+
+
+    link.remove();
+
+
+    setTimeout(
+        () => {
+
+            URL.revokeObjectURL(
+                blobUrl
+            );
+
+        },
+        1500
+    );
+
+}
+
+
+/* =========================================================
+   STORY READER
+========================================================= */
+
+function openStoryReader(story) {
+
+    closeStoryReader();
+
+
+    const modal =
+        document.createElement(
+            "div"
+        );
+
+
+    modal.id =
+        "storyReaderModal";
+
+
+    modal.innerHTML = `
+
+        <div
+            class="story-reader-overlay"
+        >
+
+            <div
+                class="story-reader-box"
+            >
+
+
+                <div
+                    class="story-reader-header"
+                >
+
+                    <div>
+
+                        <h2>
+
+                            ${escapeHTML(
+                                story.title ||
+                                "Story"
+                            )}
+
+                        </h2>
+
+
+                        ${
+                            story.author
+                                ?
+                                `
+
+                                    <p>
+
+                                        By ${escapeHTML(
+                                            story.author
+                                        )}
+
+                                    </p>
+
+                                `
+                                :
+                                ""
+                        }
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        id="closeStoryReader"
+                        class="story-reader-close"
+                    >
+
+                        <i
+                            class="fa-solid fa-xmark"
+                        ></i>
+
+                    </button>
+
+                </div>
+
+
+                <div
+                    class="story-reader-body"
+                >
+
+                    ${escapeHTML(
+                        story.full_content
+                        ||
+                        "Story content is not available."
+                    )}
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+    `;
+
+
+    document.body
+        .appendChild(
+            modal
+        );
+
+
+    document.body.style.overflow =
+        "hidden";
+
+
+    modal
+        .querySelector(
+            "#closeStoryReader"
+        )
+        ?.addEventListener(
+            "click",
+            closeStoryReader
+        );
+
+
+    modal
+        .querySelector(
+            ".story-reader-overlay"
+        )
+        ?.addEventListener(
+            "click",
+            event => {
+
+                if (
+                    event.target
+                        .classList
+                        .contains(
+                            "story-reader-overlay"
+                        )
+                ) {
+
+                    closeStoryReader();
+
+                }
+
+            }
+        );
+
+}
+
+
+/* =========================================================
+   CLOSE STORY
+========================================================= */
+
+function closeStoryReader() {
+
+    document
+        .getElementById(
+            "storyReaderModal"
+        )
+        ?.remove();
+
+
+    if (
+        !document.getElementById(
+            "bookReaderModal"
+        )
+    ) {
+
+        document.body.style.overflow =
+            "";
+
+    }
+
+}
+
+
+/* =========================================================
    CARD CLICK
+
+   CLICKING CARD:
+   Story -> Reader
+   Book -> Book Reader
+   Video -> Video
+   Download fallback
 ========================================================= */
 
 document.addEventListener(
@@ -2365,7 +2985,7 @@ document.addEventListener(
     event => {
 
         /*
-           Button click hole card click trigger korbe na
+           Button handled separately
         */
 
         if (
@@ -2381,7 +3001,7 @@ document.addEventListener(
 
         const card =
             event.target.closest(
-                ".movie-card, .story-card, .book-card, .upcoming-card, .featured-card"
+                ".uniform-content-card, .featured-card"
             );
 
 
@@ -2393,19 +3013,22 @@ document.addEventListener(
 
 
         const item =
-            findContentById(
+            findItem(
                 card.dataset
                     .contentId
             );
 
 
-        if (item) {
+        if (!item) {
 
-            openContent(
-                item
-            );
+            return;
 
         }
+
+
+        openContent(
+            item
+        );
 
     }
 );
@@ -2417,17 +3040,13 @@ document.addEventListener(
 
 function openContent(item) {
 
-    if (!item) {
-
-        return;
-
-    }
-
-
-    /* STORY */
+    /*
+       STORY
+    */
 
     if (
-        item.type === "story"
+        item.type ===
+        "story"
     ) {
 
         openStoryReader(
@@ -2440,20 +3059,29 @@ function openContent(item) {
     }
 
 
-    /* BOOK */
+    /*
+       BOOK
+    */
 
     if (
-        item.type === "book"
+        item.type ===
+        "book"
     ) {
 
         if (
             item.file_url
         ) {
 
-            window.open(
-                item.file_url,
-                "_blank",
-                "noopener,noreferrer"
+            openBookReader(
+                item
+            );
+
+        }
+
+        else {
+
+            alert(
+                "Book PDF has not been uploaded yet."
             );
 
         }
@@ -2464,7 +3092,9 @@ function openContent(item) {
     }
 
 
-    /* VIDEO FIRST */
+    /*
+       VIDEO
+    */
 
     if (
         item.video_url
@@ -2482,7 +3112,9 @@ function openContent(item) {
     }
 
 
-    /* DOWNLOAD FALLBACK */
+    /*
+       DOWNLOAD
+    */
 
     if (
         item.download_url
@@ -2500,188 +3132,479 @@ function openContent(item) {
 
 
 /* =========================================================
-   STORY READER
+   HERO BUILD
+
+   IMPORTANT:
+   USES ALL BANNER IMAGES
+
+   ORDER:
+   Movie 1
+   Natok 1
+   Series 1
+   Upcoming 1
+   Story 1
+   Book 1
+   Tutorial 1
+
+   then second items...
 ========================================================= */
 
-function openStoryReader(story) {
+function buildHeroSlides() {
 
-    const existingModal =
-        document.getElementById(
-            "storyReaderModal"
-        );
+    const groups = {};
 
 
-    if (
-        existingModal
-    ) {
+    HERO_ORDER
+        .forEach(
+            type => {
 
-        existingModal.remove();
-
-    }
-
-
-    const modal =
-        document.createElement(
-            "div"
-        );
-
-
-    modal.id =
-        "storyReaderModal";
-
-
-    modal.innerHTML = `
-
-        <div
-            class="story-reader-overlay"
-            style="
-                position:fixed;
-                inset:0;
-                z-index:99999;
-                display:flex;
-                align-items:center;
-                justify-content:center;
-                padding:20px;
-                background:rgba(0,0,0,.9);
-            "
-        >
-
-            <div
-                style="
-                    position:relative;
-                    width:min(760px,100%);
-                    max-height:86vh;
-                    overflow-y:auto;
-                    padding:32px;
-                    background:#101116;
-                    border:1px solid rgba(255,255,255,.10);
-                    border-radius:16px;
-                "
-            >
-
-                <button
-                    type="button"
-                    id="closeStoryReader"
-                    style="
-                        position:absolute;
-                        top:18px;
-                        right:18px;
-                        width:38px;
-                        height:38px;
-                        border:none;
-                        border-radius:50%;
-                        background:#ef1024;
-                        color:#fff;
-                        cursor:pointer;
-                    "
-                >
-
-                    <i
-                        class="fa-solid fa-xmark"
-                    ></i>
-
-                </button>
-
-
-                <h2
-                    style="
-                        padding-right:55px;
-                        margin-bottom:8px;
-                    "
-                >
-
-                    ${escapeHTML(
-                        story.title ||
-                        "Untitled Story"
-                    )}
-
-                </h2>
-
-
-                ${
-                    story.author
-                        ?
-                        `
-
-                            <p
-                                style="
-                                    margin-bottom:24px;
-                                    color:#ff1b2d;
-                                "
-                            >
-
-                                By ${escapeHTML(
-                                    story.author
-                                )}
-
-                            </p>
-
-                        `
-                        :
-                        ""
-                }
-
-
-                <div
-                    style="
-                        white-space:pre-wrap;
-                        color:rgba(255,255,255,.80);
-                        line-height:1.9;
-                        font-size:15px;
-                    "
-                >
-
-                    ${escapeHTML(
-                        story.full_content ||
-                        "Story content is not available."
-                    )}
-
-                </div>
-
-            </div>
-
-        </div>
-
-    `;
-
-
-    document.body.appendChild(
-        modal
-    );
-
-
-    modal
-        .querySelector(
-            "#closeStoryReader"
-        )
-        ?.addEventListener(
-            "click",
-            () => {
-
-                modal.remove();
+                groups[
+                    type
+                ] =
+                    contents.filter(
+                        item =>
+                            item.type ===
+                            type
+                            &&
+                            Boolean(
+                                item.banner_url
+                            )
+                    );
 
             }
         );
 
 
-    modal
-        .querySelector(
-            ".story-reader-overlay"
-        )
-        ?.addEventListener(
-            "click",
-            event => {
+    const maxLength =
+        Math.max(
+            0,
 
-                if (
-                    event.target.classList
-                        .contains(
-                            "story-reader-overlay"
-                        )
-                ) {
+            ...HERO_ORDER
+                .map(
+                    type =>
+                        groups[
+                            type
+                        ].length
+                )
+        );
 
-                    modal.remove();
+
+    const slides = [];
+
+
+    for (
+        let index = 0;
+        index < maxLength;
+        index++
+    ) {
+
+        HERO_ORDER
+            .forEach(
+                type => {
+
+                    const item =
+                        groups[
+                            type
+                        ][
+                            index
+                        ];
+
+
+                    if (item) {
+
+                        slides.push(
+                            item
+                        );
+
+                    }
 
                 }
+            );
+
+    }
+
+
+    return slides;
+
+}
+
+
+/* =========================================================
+   HERO SETUP
+========================================================= */
+
+function setupHero() {
+
+    if (
+        !heroBackground
+    ) {
+
+        return;
+
+    }
+
+
+    heroSlides =
+        buildHeroSlides();
+
+
+    if (
+        !heroSlides.length
+    ) {
+
+        heroBackground.style
+            .backgroundImage =
+            "linear-gradient(120deg,#11001f,#2a075c,#4d0c79)";
+
+
+        return;
+
+    }
+
+
+    heroIndex =
+        0;
+
+
+    renderHeroDots();
+
+
+    /*
+       First image also zooms
+    */
+
+    showHeroSlide(
+        0,
+        false
+    );
+
+
+    restartHeroTimer();
+
+}
+
+
+/* =========================================================
+   SHOW HERO SLIDE
+
+   EVERY IMAGE:
+   SCALE 1 -> 1.10
+========================================================= */
+
+function showHeroSlide(
+    index,
+    fade = true
+) {
+
+    const item =
+        heroSlides[
+            index
+        ];
+
+
+    if (
+        !item
+        ||
+        !item.banner_url
+        ||
+        !heroBackground
+    ) {
+
+        return;
+
+    }
+
+
+    heroIndex =
+        index;
+
+
+    /*
+       Stop previous zoom
+    */
+
+    if (
+        heroZoomAnimation
+    ) {
+
+        heroZoomAnimation.cancel();
+
+
+        heroZoomAnimation =
+            null;
+
+    }
+
+
+    const applySlide =
+        () => {
+
+            /*
+               New image
+            */
+
+            heroBackground.style
+                .backgroundImage =
+                `url("${escapeCssUrl(
+                    item.banner_url
+                )}")`;
+
+
+            heroBackground.style
+                .backgroundSize =
+                "cover";
+
+
+            heroBackground.style
+                .backgroundPosition =
+                "center";
+
+
+            heroBackground.style.opacity =
+                "1";
+
+
+            /*
+               VERY IMPORTANT:
+               EACH BANNER GETS NEW ZOOM
+            */
+
+            heroZoomAnimation =
+                heroBackground.animate(
+                    [
+
+                        {
+                            transform:
+                                "scale(1)"
+                        },
+
+                        {
+                            transform:
+                                "scale(1.10)"
+                        }
+
+                    ],
+                    {
+                        duration:
+                            3000,
+
+                        easing:
+                            "ease-out",
+
+                        fill:
+                            "forwards"
+                    }
+                );
+
+
+            updateHeroDots();
+
+        };
+
+
+    /*
+       First image
+    */
+
+    if (!fade) {
+
+        applySlide();
+
+
+        return;
+
+    }
+
+
+    /*
+       Fade old
+    */
+
+    heroBackground.style.opacity =
+        "0";
+
+
+    setTimeout(
+        applySlide,
+        280
+    );
+
+}
+
+
+/* =========================================================
+   HERO TIMER
+========================================================= */
+
+function restartHeroTimer() {
+
+    if (
+        heroTimer
+    ) {
+
+        clearInterval(
+            heroTimer
+        );
+
+    }
+
+
+    if (
+        heroSlides.length <=
+        1
+    ) {
+
+        return;
+
+    }
+
+
+    /*
+       3 sec zoom
+       little gap for transition
+    */
+
+    heroTimer =
+        setInterval(
+            () => {
+
+                heroIndex =
+                    (
+                        heroIndex + 1
+                    )
+                    %
+                    heroSlides.length;
+
+
+                showHeroSlide(
+                    heroIndex,
+                    true
+                );
+
+            },
+            3600
+        );
+
+}
+
+
+/* =========================================================
+   HERO DOTS
+========================================================= */
+
+function renderHeroDots() {
+
+    if (
+        !heroDots
+    ) {
+
+        return;
+
+    }
+
+
+    heroDots.innerHTML =
+        heroSlides
+            .map(
+                (
+                    item,
+                    index
+                ) => `
+
+                    <button
+                        type="button"
+                        class="hero-dot ${
+                            index === 0
+                                ?
+                                "active"
+                                :
+                                ""
+                        }"
+                        data-index="${index}"
+                        aria-label="${escapeAttribute(
+                            TYPE_LABEL[
+                                item.type
+                            ]
+                            ||
+                            "Slide"
+                        )}"
+                    ></button>
+
+                `
+            )
+            .join("");
+
+
+    heroDots
+        .querySelectorAll(
+            ".hero-dot"
+        )
+        .forEach(
+            dot => {
+
+                dot.addEventListener(
+                    "click",
+                    () => {
+
+                        const index =
+                            Number(
+                                dot.dataset
+                                    .index
+                            );
+
+
+                        if (
+                            !Number.isFinite(
+                                index
+                            )
+                        ) {
+
+                            return;
+
+                        }
+
+
+                        showHeroSlide(
+                            index,
+                            true
+                        );
+
+
+                        restartHeroTimer();
+
+                    }
+                );
+
+            }
+        );
+
+}
+
+
+/* =========================================================
+   HERO ACTIVE DOT
+========================================================= */
+
+function updateHeroDots() {
+
+    heroDots
+        ?.querySelectorAll(
+            ".hero-dot"
+        )
+        .forEach(
+            (
+                dot,
+                index
+            ) => {
+
+                dot.classList.toggle(
+
+                    "active",
+
+                    index ===
+                    heroIndex
+
+                );
 
             }
         );
@@ -2695,10 +3618,6 @@ function openStoryReader(story) {
 
 function createFeaturedSection() {
 
-    /*
-       Already ache hole abar create korbe na
-    */
-
     if (
         document.getElementById(
             "featured"
@@ -2710,13 +3629,13 @@ function createFeaturedSection() {
     }
 
 
-    const moviesSection =
+    const movieSection =
         document.getElementById(
             "movies"
         );
 
 
-    if (!moviesSection) {
+    if (!movieSection) {
 
         return;
 
@@ -2743,6 +3662,7 @@ function createFeaturedSection() {
             class="section-heading"
         >
 
+
             <div
                 class="heading-left"
             >
@@ -2760,7 +3680,7 @@ function createFeaturedSection() {
 
 
                     <p>
-                        Top rated content
+                        Rating 8.0 or higher
                     </p>
 
                 </div>
@@ -2799,6 +3719,7 @@ function createFeaturedSection() {
 
             </div>
 
+
         </div>
 
 
@@ -2817,22 +3738,21 @@ function createFeaturedSection() {
     `;
 
 
-    moviesSection
+    movieSection
         .parentNode
         .insertBefore(
             section,
-            moviesSection
+            movieSection
         );
 
 }
 
 
 /* =========================================================
-   FEATURED SLIDER
-   RATING 8+
+   FEATURED
 ========================================================= */
 
-function setupFeaturedSlider() {
+function setupFeatured() {
 
     const track =
         document.getElementById(
@@ -2848,29 +3768,18 @@ function setupFeaturedSlider() {
 
 
     featuredItems =
-        databaseContents
+        contents
             .filter(
-                item => {
-
-                    const rating =
-                        Number(
-                            item.rating
-                        );
-
-
-                    return (
-                        Number.isFinite(
-                            rating
-                        )
-                        &&
-                        rating >= 8
-                        &&
-                        Boolean(
-                            item.poster_url
-                        )
-                    );
-
-                }
+                item =>
+                    Number(
+                        item.rating
+                    )
+                    >=
+                    8
+                    &&
+                    Boolean(
+                        item.poster_url
+                    )
             )
             .sort(
                 (
@@ -2887,7 +3796,9 @@ function setupFeaturedSlider() {
             );
 
 
-    if (!featuredItems.length) {
+    if (
+        !featuredItems.length
+    ) {
 
         track.innerHTML = `
 
@@ -2895,7 +3806,7 @@ function setupFeaturedSlider() {
                 class="database-loading"
             >
 
-                No content with rating 8.0 or higher yet.
+                No rating 8+ content yet.
 
             </div>
 
@@ -2917,12 +3828,14 @@ function setupFeaturedSlider() {
                         data-content-id="${item.id}"
                     >
 
+
                         <div
                             class="featured-card-poster"
-                            style='background-image:url("${escapeCssUrl(
+                            style="background-image:url('${escapeCssUrl(
                                 item.poster_url
-                            )}")'
+                            )}')"
                         >
+
 
                             <span
                                 class="featured-badge"
@@ -2952,6 +3865,7 @@ function setupFeaturedSlider() {
                                 item
                             )}
 
+
                         </div>
 
 
@@ -2959,14 +3873,17 @@ function setupFeaturedSlider() {
                             class="featured-card-info"
                         >
 
+
                             <span
                                 class="featured-type"
                             >
 
                                 ${escapeHTML(
-                                    formatType(
+                                    TYPE_LABEL[
                                         item.type
-                                    )
+                                    ]
+                                    ||
+                                    item.type
                                 )}
 
                             </span>
@@ -2982,17 +3899,8 @@ function setupFeaturedSlider() {
                             </h3>
 
 
-                            <p>
-
-                                ${escapeHTML(
-                                    getFeaturedMeta(
-                                        item
-                                    )
-                                )}
-
-                            </p>
-
                         </div>
+
 
                     </article>
 
@@ -3005,10 +3913,7 @@ function setupFeaturedSlider() {
         0;
 
 
-    updateFeaturedPosition();
-
-
-    startFeaturedAutoPlay();
+    updateFeatured();
 
 
     document
@@ -3019,9 +3924,9 @@ function setupFeaturedSlider() {
             "click",
             () => {
 
-                featuredGoNext();
+                featuredNext();
 
-                startFeaturedAutoPlay();
+                startFeaturedTimer();
 
             }
         );
@@ -3035,9 +3940,9 @@ function setupFeaturedSlider() {
             "click",
             () => {
 
-                featuredGoPrev();
+                featuredPrev();
 
-                startFeaturedAutoPlay();
+                startFeaturedTimer();
 
             }
         );
@@ -3049,70 +3954,34 @@ function setupFeaturedSlider() {
         );
 
 
-    viewport?.addEventListener(
-        "mouseenter",
-        stopFeaturedAutoPlay
-    );
+    viewport
+        ?.addEventListener(
+            "mouseenter",
+            stopFeaturedTimer
+        );
 
 
-    viewport?.addEventListener(
-        "mouseleave",
-        startFeaturedAutoPlay
-    );
-
-}
-
-
-/* =========================================================
-   FEATURED META
-========================================================= */
-
-function getFeaturedMeta(item) {
-
-    if (
-        item.type === "series"
-        &&
-        item.season
-    ) {
-
-        return `Season ${item.season}`;
-
-    }
+    viewport
+        ?.addEventListener(
+            "mouseleave",
+            startFeaturedTimer
+        );
 
 
-    if (
-        [
-            "story",
-            "book"
-        ].includes(
-            item.type
-        )
-        &&
-        item.author
-    ) {
-
-        return item.author;
-
-    }
-
-
-    return (
-        item.year ||
-        item.genre ||
-        ""
-    );
+    startFeaturedTimer();
 
 }
 
 
 /* =========================================================
-   FEATURED VISIBLE COUNT
+   FEATURED RESPONSIVE
 ========================================================= */
 
-function getFeaturedVisibleCount() {
+function featuredVisibleCount() {
 
     if (
-        window.innerWidth <= 760
+        window.innerWidth <=
+        760
     ) {
 
         return 2;
@@ -3121,7 +3990,8 @@ function getFeaturedVisibleCount() {
 
 
     if (
-        window.innerWidth <= 1000
+        window.innerWidth <=
+        1000
     ) {
 
         return 4;
@@ -3135,10 +4005,10 @@ function getFeaturedVisibleCount() {
 
 
 /* =========================================================
-   FEATURED MAX INDEX
+   FEATURED MAX
 ========================================================= */
 
-function getFeaturedMaxIndex() {
+function featuredMaxIndex() {
 
     return Math.max(
 
@@ -3146,7 +4016,7 @@ function getFeaturedMaxIndex() {
 
         featuredItems.length
         -
-        getFeaturedVisibleCount()
+        featuredVisibleCount()
 
     );
 
@@ -3157,7 +4027,7 @@ function getFeaturedMaxIndex() {
    FEATURED POSITION
 ========================================================= */
 
-function updateFeaturedPosition() {
+function updateFeatured() {
 
     const track =
         document.getElementById(
@@ -3165,15 +4035,16 @@ function updateFeaturedPosition() {
         );
 
 
-    const firstCard =
+    const card =
         track?.querySelector(
             ".featured-card"
         );
 
 
     if (
-        !track ||
-        !firstCard
+        !track
+        ||
+        !card
     ) {
 
         return;
@@ -3181,47 +4052,47 @@ function updateFeaturedPosition() {
     }
 
 
-    const trackStyle =
-        getComputedStyle(
-            track
-        );
-
-
     const gap =
         parseFloat(
-            trackStyle.gap ||
-            "0"
+            getComputedStyle(
+                track
+            ).gap
         )
         ||
         0;
 
 
-    const cardWidth =
-        firstCard
+    const width =
+        card
             .getBoundingClientRect()
             .width;
 
 
-    const step =
-        cardWidth + gap;
-
-
-    const maxIndex =
-        getFeaturedMaxIndex();
+    const max =
+        featuredMaxIndex();
 
 
     if (
-        featuredIndex > maxIndex
+        featuredIndex >
+        max
     ) {
 
         featuredIndex =
-            maxIndex;
+            max;
 
     }
 
 
     track.style.transform =
-        `translateX(-${featuredIndex * step}px)`;
+        `translateX(-${
+            featuredIndex
+            *
+            (
+                width
+                +
+                gap
+            )
+        }px)`;
 
 }
 
@@ -3230,14 +4101,14 @@ function updateFeaturedPosition() {
    FEATURED NEXT
 ========================================================= */
 
-function featuredGoNext() {
+function featuredNext() {
 
-    const maxIndex =
-        getFeaturedMaxIndex();
+    const max =
+        featuredMaxIndex();
 
 
     if (
-        maxIndex <= 0
+        max <= 0
     ) {
 
         return;
@@ -3246,30 +4117,30 @@ function featuredGoNext() {
 
 
     featuredIndex =
-        featuredIndex >= maxIndex
+        featuredIndex >= max
             ?
             0
             :
             featuredIndex + 1;
 
 
-    updateFeaturedPosition();
+    updateFeatured();
 
 }
 
 
 /* =========================================================
-   FEATURED PREVIOUS
+   FEATURED PREV
 ========================================================= */
 
-function featuredGoPrev() {
+function featuredPrev() {
 
-    const maxIndex =
-        getFeaturedMaxIndex();
+    const max =
+        featuredMaxIndex();
 
 
     if (
-        maxIndex <= 0
+        max <= 0
     ) {
 
         return;
@@ -3280,28 +4151,38 @@ function featuredGoPrev() {
     featuredIndex =
         featuredIndex <= 0
             ?
-            maxIndex
+            max
             :
             featuredIndex - 1;
 
 
-    updateFeaturedPosition();
+    updateFeatured();
 
 }
 
 
 /* =========================================================
-   FEATURED AUTO PLAY
+   FEATURED TIMER
 ========================================================= */
 
-function startFeaturedAutoPlay() {
+function startFeaturedTimer() {
 
-    stopFeaturedAutoPlay();
+    stopFeaturedTimer();
+
+
+    if (
+        featuredMaxIndex() <=
+        0
+    ) {
+
+        return;
+
+    }
 
 
     featuredTimer =
         setInterval(
-            featuredGoNext,
+            featuredNext,
             4000
         );
 
@@ -3312,7 +4193,7 @@ function startFeaturedAutoPlay() {
    STOP FEATURED
 ========================================================= */
 
-function stopFeaturedAutoPlay() {
+function stopFeaturedTimer() {
 
     if (
         featuredTimer
@@ -3331,376 +4212,14 @@ function stopFeaturedAutoPlay() {
 }
 
 
+/* =========================================================
+   RESIZE
+========================================================= */
+
 window.addEventListener(
     "resize",
-    updateFeaturedPosition
+    updateFeatured
 );
-
-
-/* =========================================================
-   HERO SETUP
-
-   IMPORTANT:
-   HERO USES banner_url ONLY
-   poster_url NEVER USED HERE
-========================================================= */
-
-function setupDynamicHero() {
-
-    if (!heroBackground) {
-
-        return;
-
-    }
-
-
-    heroSlides =
-        HERO_SEQUENCE
-            .map(
-                type => {
-
-                    return databaseContents.find(
-                        item =>
-                            item.type === type
-                            &&
-                            Boolean(
-                                item.banner_url
-                            )
-                    );
-
-                }
-            )
-            .filter(Boolean);
-
-
-    if (!heroSlides.length) {
-
-        heroBackground.style
-            .backgroundImage =
-            "linear-gradient(120deg,#11001f 0%,#2a075c 48%,#4d0c79 100%)";
-
-
-        return;
-
-    }
-
-
-    heroIndex =
-        0;
-
-
-    renderHeroDots();
-
-
-    showHeroSlide(
-        0,
-        false
-    );
-
-
-    restartHeroTimer();
-
-}
-
-
-/* =========================================================
-   SHOW HERO SLIDE
-========================================================= */
-
-function showHeroSlide(
-    index,
-    animate = true
-) {
-
-    const item =
-        heroSlides[
-            index
-        ];
-
-
-    if (
-        !heroBackground ||
-        !item ||
-        !item.banner_url
-    ) {
-
-        return;
-
-    }
-
-
-    heroIndex =
-        index;
-
-
-    const banner =
-        item.banner_url;
-
-
-    const applyBanner =
-        () => {
-
-            heroBackground
-                .classList
-                .remove(
-                    "zoom"
-                );
-
-
-            heroBackground.style
-                .backgroundImage =
-                `url("${escapeCssUrl(
-                    banner
-                )}")`;
-
-
-            heroBackground.style
-                .backgroundSize =
-                "cover";
-
-
-            heroBackground.style
-                .backgroundPosition =
-                "center";
-
-
-            heroBackground.style.opacity =
-                "1";
-
-
-            /*
-               Restart zoom animation
-            */
-
-            void heroBackground
-                .offsetWidth;
-
-
-            requestAnimationFrame(
-                () => {
-
-                    requestAnimationFrame(
-                        () => {
-
-                            heroBackground
-                                .classList
-                                .add(
-                                    "zoom"
-                                );
-
-                        }
-                    );
-
-                }
-            );
-
-
-            updateHeroDots();
-
-        };
-
-
-    if (!animate) {
-
-        applyBanner();
-
-
-        return;
-
-    }
-
-
-    heroBackground.style.opacity =
-        "0";
-
-
-    setTimeout(
-        applyBanner,
-        350
-    );
-
-}
-
-
-/* =========================================================
-   HERO TIMER
-========================================================= */
-
-function restartHeroTimer() {
-
-    if (
-        heroTimer
-    ) {
-
-        clearInterval(
-            heroTimer
-        );
-
-    }
-
-
-    if (
-        heroSlides.length <= 1
-    ) {
-
-        return;
-
-    }
-
-
-    heroTimer =
-        setInterval(
-            () => {
-
-                heroIndex =
-                    (
-                        heroIndex + 1
-                    )
-                    %
-                    heroSlides.length;
-
-
-                showHeroSlide(
-                    heroIndex,
-                    true
-                );
-
-            },
-            3800
-        );
-
-}
-
-
-/* =========================================================
-   HERO DOTS
-========================================================= */
-
-function renderHeroDots() {
-
-    if (
-        !heroDotsContainer
-    ) {
-
-        return;
-
-    }
-
-
-    heroDotsContainer.innerHTML =
-        heroSlides
-            .map(
-                (
-                    item,
-                    index
-                ) => `
-
-                    <button
-                        type="button"
-                        class="hero-dot ${
-                            index === 0
-                                ?
-                                "active"
-                                :
-                                ""
-                        }"
-                        data-hero-index="${index}"
-                        aria-label="${escapeAttribute(
-                            formatType(
-                                item.type
-                            )
-                        )}"
-                    ></button>
-
-                `
-            )
-            .join("");
-
-
-    heroDotsContainer
-        .querySelectorAll(
-            ".hero-dot"
-        )
-        .forEach(
-            dot => {
-
-                dot.addEventListener(
-                    "click",
-                    () => {
-
-                        const index =
-                            Number(
-                                dot.dataset
-                                    .heroIndex
-                            );
-
-
-                        if (
-                            !Number.isFinite(
-                                index
-                            )
-                        ) {
-
-                            return;
-
-                        }
-
-
-                        showHeroSlide(
-                            index,
-                            true
-                        );
-
-
-                        restartHeroTimer();
-
-                    }
-                );
-
-            }
-        );
-
-}
-
-
-/* =========================================================
-   HERO ACTIVE DOT
-========================================================= */
-
-function updateHeroDots() {
-
-    if (
-        !heroDotsContainer
-    ) {
-
-        return;
-
-    }
-
-
-    heroDotsContainer
-        .querySelectorAll(
-            ".hero-dot"
-        )
-        .forEach(
-            (
-                dot,
-                index
-            ) => {
-
-                dot.classList.toggle(
-
-                    "active",
-
-                    index ===
-                    heroIndex
-
-                );
-
-            }
-        );
-
-}
 
 
 /* =========================================================
@@ -3709,24 +4228,18 @@ function updateHeroDots() {
 
 function openSearch() {
 
-    if (
-        !searchBox
-    ) {
-
-        return;
-
-    }
-
-
-    searchBox.classList.add(
-        "active"
-    );
+    searchBox
+        ?.classList
+        .add(
+            "active"
+        );
 
 
     setTimeout(
         () => {
 
-            searchInput?.focus();
+            searchInput
+                ?.focus();
 
         },
         100
@@ -3741,18 +4254,11 @@ function openSearch() {
 
 function closeSearch() {
 
-    if (
-        !searchBox
-    ) {
-
-        return;
-
-    }
-
-
-    searchBox.classList.remove(
-        "active"
-    );
+    searchBox
+        ?.classList
+        .remove(
+            "active"
+        );
 
 
     if (
@@ -3781,11 +4287,8 @@ function closeSearch() {
    SEARCH BUTTON
 ========================================================= */
 
-if (
-    searchToggle
-) {
-
-    searchToggle.addEventListener(
+searchToggle
+    ?.addEventListener(
         "click",
         event => {
 
@@ -3793,8 +4296,8 @@ if (
 
 
             if (
-                searchBox &&
-                searchBox.classList
+                searchBox
+                    ?.classList
                     .contains(
                         "active"
                     )
@@ -3813,18 +4316,13 @@ if (
         }
     );
 
-}
-
 
 /* =========================================================
    SEARCH CLOSE BUTTON
 ========================================================= */
 
-if (
-    searchClose
-) {
-
-    searchClose.addEventListener(
+searchClose
+    ?.addEventListener(
         "click",
         event => {
 
@@ -3836,18 +4334,13 @@ if (
         }
     );
 
-}
-
 
 /* =========================================================
    SEARCH INPUT
 ========================================================= */
 
-if (
-    searchInput
-) {
-
-    searchInput.addEventListener(
+searchInput
+    ?.addEventListener(
         "input",
         event => {
 
@@ -3858,11 +4351,9 @@ if (
         }
     );
 
-}
-
 
 /* =========================================================
-   SEARCH FUNCTION
+   SEARCH
 ========================================================= */
 
 function performSearch(keyword) {
@@ -3877,7 +4368,9 @@ function performSearch(keyword) {
 
 
     const text =
-        keyword
+        String(
+            keyword || ""
+        )
             .trim()
             .toLowerCase();
 
@@ -3893,12 +4386,12 @@ function performSearch(keyword) {
     }
 
 
-    const results =
-        databaseContents
+    const result =
+        contents
             .filter(
                 item => {
 
-                    const searchableText = [
+                    const searchable = [
 
                         item.title,
 
@@ -3906,7 +4399,7 @@ function performSearch(keyword) {
 
                         item.author,
 
-                        TYPE_LABELS[
+                        TYPE_LABEL[
                             item.type
                         ]
 
@@ -3916,15 +4409,22 @@ function performSearch(keyword) {
                         .toLowerCase();
 
 
-                    return searchableText.includes(
-                        text
-                    );
+                    return searchable
+                        .includes(
+                            text
+                        );
 
                 }
+            )
+            .slice(
+                0,
+                8
             );
 
 
-    if (!results.length) {
+    if (
+        !result.length
+    ) {
 
         searchResults.innerHTML = `
 
@@ -3966,19 +4466,13 @@ function performSearch(keyword) {
 
 
     searchResults.innerHTML =
-        results
-            .slice(
-                0,
-                8
-            )
+        result
             .map(
                 item => `
 
                     <div
-                        class="search-result-item dynamic-search-result"
-                        data-type="${escapeAttribute(
-                            item.type
-                        )}"
+                        class="search-result-item"
+                        data-search-id="${item.id}"
                     >
 
                         <div
@@ -4009,9 +4503,11 @@ function performSearch(keyword) {
                             <p>
 
                                 ${escapeHTML(
-                                    formatType(
+                                    TYPE_LABEL[
                                         item.type
-                                    )
+                                    ]
+                                    ||
+                                    item.type
                                 )}
 
                             </p>
@@ -4031,17 +4527,14 @@ function performSearch(keyword) {
    SEARCH RESULT CLICK
 ========================================================= */
 
-if (
-    searchResults
-) {
-
-    searchResults.addEventListener(
+searchResults
+    ?.addEventListener(
         "click",
         event => {
 
             const result =
                 event.target.closest(
-                    ".dynamic-search-result"
+                    "[data-search-id]"
                 );
 
 
@@ -4052,41 +4545,39 @@ if (
             }
 
 
-            const type =
-                result.dataset.type;
+            const item =
+                findItem(
+                    result.dataset
+                        .searchId
+                );
+
+
+            if (!item) {
+
+                return;
+
+            }
 
 
             closeSearch();
 
 
-            const section =
-                document.getElementById(
-                    TYPE_SECTIONS[
-                        type
+            document
+                .getElementById(
+                    TYPE_SECTION[
+                        item.type
                     ]
-                );
+                )
+                ?.scrollIntoView({
+                    behavior:
+                        "smooth",
 
-
-            if (
-                section
-            ) {
-
-                section.scrollIntoView(
-                    {
-                        behavior:
-                            "smooth",
-
-                        block:
-                            "start"
-                    }
-                );
-
-            }
+                    block:
+                        "start"
+                });
 
         }
     );
-
-}
 
 
 /* =========================================================
@@ -4106,22 +4597,24 @@ document.addEventListener(
         }
 
 
-        const insideSearch =
+        const clickedInside =
             searchBox.contains(
                 event.target
             );
 
 
-        const clickedSearchButton =
-            searchToggle &&
+        const clickedButton =
+            searchToggle
+            &&
             searchToggle.contains(
                 event.target
             );
 
 
         if (
-            !insideSearch &&
-            !clickedSearchButton
+            !clickedInside
+            &&
+            !clickedButton
         ) {
 
             closeSearch();
@@ -4136,74 +4629,19 @@ document.addEventListener(
    MOBILE MENU
 ========================================================= */
 
-function closeMobileMenu() {
-
-    if (
-        !mobileNav
-    ) {
-
-        return;
-
-    }
-
-
-    mobileNav.classList.remove(
-        "active"
-    );
-
-
-    const icon =
-        mobileMenuButton
-            ?.querySelector(
-                "i"
-            );
-
-
-    if (
-        icon
-    ) {
-
-        icon.classList.remove(
-            "fa-xmark"
-        );
-
-
-        icon.classList.add(
-            "fa-bars"
-        );
-
-    }
-
-}
-
-
-/* =========================================================
-   MOBILE MENU BUTTON
-========================================================= */
-
-if (
-    mobileMenuButton
-) {
-
-    mobileMenuButton.addEventListener(
+mobileMenuButton
+    ?.addEventListener(
         "click",
         event => {
 
             event.stopPropagation();
 
 
-            if (
-                !mobileNav
-            ) {
-
-                return;
-
-            }
-
-
-            mobileNav.classList.toggle(
-                "active"
-            );
+            mobileNav
+                ?.classList
+                .toggle(
+                    "active"
+                );
 
 
             const icon =
@@ -4220,8 +4658,9 @@ if (
             }
 
 
-            const open =
-                mobileNav.classList
+            const isOpen =
+                mobileNav
+                    ?.classList
                     .contains(
                         "active"
                     );
@@ -4229,105 +4668,41 @@ if (
 
             icon.classList.toggle(
                 "fa-bars",
-                !open
+                !isOpen
             );
 
 
             icon.classList.toggle(
                 "fa-xmark",
-                open
+                Boolean(
+                    isOpen
+                )
             );
 
         }
     );
 
-}
-
 
 /* =========================================================
-   MOBILE NAV LINKS
+   MOBILE LINKS
 ========================================================= */
 
-if (
-    mobileNav
-) {
-
-    mobileNav
-        .querySelectorAll(
-            "a"
-        )
-        .forEach(
-            link => {
-
-                link.addEventListener(
-                    "click",
-                    closeMobileMenu
-                );
-
-            }
-        );
-
-}
-
-
-/* =========================================================
-   SMOOTH SCROLL
-========================================================= */
-
-document
-    .querySelectorAll(
-        'a[href^="#"]'
+mobileNav
+    ?.querySelectorAll(
+        "a"
     )
     .forEach(
         link => {
 
             link.addEventListener(
                 "click",
-                event => {
+                () => {
 
-                    const href =
-                        link.getAttribute(
-                            "href"
+                    mobileNav
+                        .classList
+                        .remove(
+                            "active"
                         );
-
-
-                    if (
-                        !href ||
-                        href === "#"
-                    ) {
-
-                        return;
-
-                    }
-
-
-                    const target =
-                        document.querySelector(
-                            href
-                        );
-
-
-                    if (
-                        !target
-                    ) {
-
-                        return;
-
-                    }
-
-
-                    event.preventDefault();
-
-
-                    target.scrollIntoView(
-                        {
-                            behavior:
-                                "smooth",
-
-                            block:
-                                "start"
-                        }
-                    );
 
                 }
             );
@@ -4337,7 +4712,7 @@ document
 
 
 /* =========================================================
-   ACTIVE NAVBAR LINK
+   ACTIVE HEADER NAV
 ========================================================= */
 
 function updateActiveNav() {
@@ -4363,24 +4738,24 @@ function updateActiveNav() {
                 }
 
 
-                const sectionTop =
+                const top =
                     section.offsetTop
                     -
                     150;
 
 
-                const sectionBottom =
-                    sectionTop
+                const bottom =
+                    top
                     +
                     section.offsetHeight;
 
 
                 if (
                     window.scrollY >=
-                    sectionTop
+                    top
                     &&
                     window.scrollY <
-                    sectionBottom
+                    bottom
                 ) {
 
                     current =
@@ -4444,109 +4819,62 @@ document.addEventListener(
         closeSearch();
 
 
-        closeMobileMenu();
-
-
-        const storyModal =
-            document.getElementById(
-                "storyReaderModal"
+        mobileNav
+            ?.classList
+            .remove(
+                "active"
             );
 
 
-        if (
-            storyModal
-        ) {
+        closeStoryReader();
 
-            storyModal.remove();
 
-        }
+        closeBookReader();
 
     }
 );
 
 
 /* =========================================================
-   DATABASE ERROR
+   LOAD ERROR
 ========================================================= */
 
-function showDatabaseError() {
+function showLoadError() {
 
-    const gridIds = [
+    Object
+        .values(
+            TYPE_GRID
+        )
+        .forEach(
+            id => {
 
-        "moviesGrid",
-
-        "natokGrid",
-
-        "webseriesGrid",
-
-        "upcomingGrid",
-
-        "storiesGrid",
-
-        "booksGrid",
-
-        "tutorialGrid"
-
-    ];
-
-
-    gridIds.forEach(
-        id => {
-
-            const grid =
-                document.getElementById(
-                    id
-                );
-
-
-            if (
-                grid
-            ) {
-
-                grid.innerHTML =
-                    emptyMessage(
-                        "Unable to load content."
+                const grid =
+                    document.getElementById(
+                        id
                     );
 
+
+                if (!grid) {
+
+                    return;
+
+                }
+
+
+                grid.innerHTML = `
+
+                    <div
+                        class="database-loading"
+                    >
+
+                        Unable to load content.
+
+                    </div>
+
+                `;
+
             }
-
-        }
-    );
-
-}
-
-
-/* =========================================================
-   HAS RATING
-========================================================= */
-
-function hasRating(item) {
-
-    return (
-        item &&
-        item.rating !== null &&
-        item.rating !== undefined &&
-        item.rating !== ""
-    );
-
-}
-
-
-/* =========================================================
-   FORMAT TYPE
-========================================================= */
-
-function formatType(type) {
-
-    return (
-        TYPE_LABELS[
-            type
-        ]
-        ||
-        type
-        ||
-        ""
-    );
+        );
 
 }
 
@@ -4595,14 +4923,31 @@ function getTypeIcon(type) {
 
 
 /* =========================================================
-   FORMAT DATE
+   HAS RATING
 ========================================================= */
 
-function formatDate(date) {
+function hasRating(item) {
 
-    if (
-        !date
-    ) {
+    return (
+        item
+        &&
+        item.rating !== null
+        &&
+        item.rating !== undefined
+        &&
+        item.rating !== ""
+    );
+
+}
+
+
+/* =========================================================
+   DATE
+========================================================= */
+
+function formatDate(value) {
+
+    if (!value) {
 
         return "";
 
@@ -4612,7 +4957,7 @@ function formatDate(date) {
     try {
 
         return new Date(
-            `${date}T00:00:00`
+            `${value}T00:00:00`
         )
             .toLocaleDateString(
                 "en-US",
@@ -4632,7 +4977,7 @@ function formatDate(date) {
 
     catch (error) {
 
-        return date;
+        return value;
 
     }
 
@@ -4640,24 +4985,27 @@ function formatDate(date) {
 
 
 /* =========================================================
-   EMPTY MESSAGE
+   SAFE FILE NAME
 ========================================================= */
 
-function emptyMessage(message) {
+function safeFileName(value) {
 
-    return `
+    const name =
+        String(
+            value ||
+            "download"
+        )
+            .replace(
+                /[\\/:*?"<>|]+/g,
+                "-"
+            )
+            .trim();
 
-        <div
-            class="database-loading"
-        >
 
-            ${escapeHTML(
-                message
-            )}
-
-        </div>
-
-    `;
+    return (
+        name ||
+        "download"
+    );
 
 }
 
@@ -4668,40 +5016,26 @@ function emptyMessage(message) {
 
 function escapeHTML(value) {
 
-    if (
-        value === null ||
-        value === undefined
-    ) {
-
-        return "";
-
-    }
-
-
     return String(
-        value
+        value ??
+        ""
     )
-
         .replaceAll(
             "&",
             "&amp;"
         )
-
         .replaceAll(
             "<",
             "&lt;"
         )
-
         .replaceAll(
             ">",
             "&gt;"
         )
-
         .replaceAll(
             '"',
             "&quot;"
         )
-
         .replaceAll(
             "'",
             "&#039;"
@@ -4730,24 +5064,25 @@ function escapeAttribute(value) {
 function escapeCssUrl(value) {
 
     return String(
-        value || ""
+        value ||
+        ""
     )
-
         .replaceAll(
             "\\",
             "\\\\"
         )
-
         .replaceAll(
             '"',
             '\\"'
         )
-
+        .replaceAll(
+            "'",
+            "\\'"
+        )
         .replaceAll(
             "\n",
             ""
         )
-
         .replaceAll(
             "\r",
             ""
@@ -4765,7 +5100,7 @@ document.addEventListener(
     async () => {
 
         /*
-           Temporary fallback while DB loads
+           Hero fallback
         */
 
         if (
@@ -4774,7 +5109,7 @@ document.addEventListener(
 
             heroBackground.style
                 .backgroundImage =
-                "linear-gradient(120deg,#11001f 0%,#2a075c 48%,#4d0c79 100%)";
+                "linear-gradient(120deg,#11001f,#2a075c,#4d0c79)";
 
 
             heroBackground.style.opacity =
@@ -4783,10 +5118,11 @@ document.addEventListener(
         }
 
 
-        updateActiveNav();
+        /*
+           Load everything
+        */
 
-
-        await loadWebsiteContents();
+        await loadContents();
 
     }
 );
