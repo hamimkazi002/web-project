@@ -2837,3 +2837,120 @@ p {
     }
 
 }
+/* =========================================================
+   FINAL CARD COUNT + SMOOTH HERO FIX
+========================================================= */
+
+
+/* =========================
+   HERO
+   Prevent visible zoom-out
+========================= */
+
+.hero-background {
+    transform: scale(1.10);
+    transition: opacity 0.35s ease !important;
+    will-change: transform, opacity;
+}
+
+
+/* =========================
+   DESKTOP
+   4 CARDS
+========================= */
+
+.content-grid,
+.stories-grid,
+.books-grid,
+.upcoming-grid,
+.uniform-content-grid {
+    grid-template-columns:
+        repeat(
+            4,
+            minmax(0, 1fr)
+        ) !important;
+}
+
+
+/* =========================
+   FEATURED
+   4 CARDS
+========================= */
+
+.featured-card {
+    flex:
+        0 0
+        calc(
+            (100% - 42px) / 4
+        ) !important;
+}
+
+
+/* =========================
+   TABLET
+   3 CARDS
+========================= */
+
+@media (max-width: 850px) {
+
+    .content-grid,
+    .stories-grid,
+    .books-grid,
+    .upcoming-grid,
+    .uniform-content-grid {
+
+        grid-template-columns:
+            repeat(
+                3,
+                minmax(0, 1fr)
+            ) !important;
+
+    }
+
+
+    .featured-card {
+
+        flex:
+            0 0
+            calc(
+                (100% - 28px) / 3
+            ) !important;
+
+    }
+
+}
+
+
+/* =========================
+   PHONE
+   2 CARDS
+========================= */
+
+@media (max-width: 760px) {
+
+    .content-grid,
+    .stories-grid,
+    .books-grid,
+    .upcoming-grid,
+    .uniform-content-grid {
+
+        grid-template-columns:
+            repeat(
+                2,
+                minmax(0, 1fr)
+            ) !important;
+
+    }
+
+
+    .featured-card {
+
+        flex:
+            0 0
+            calc(
+                (100% - 10px) / 2
+            ) !important;
+
+    }
+
+}
