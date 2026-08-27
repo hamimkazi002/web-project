@@ -2,12 +2,19 @@
    CINEMA MELLA / HUB
    FINAL PUBLIC SCRIPT.JS
 
-   HERO = 4 SECONDS
-   DESKTOP FEATURED = 4 CARDS
-   TABLET = 3
-   MOBILE = 2
+   HERO:
+   - ALL BANNERS
+   - 4 SECOND INTERVAL
+   - SMOOTH CROSSFADE
+   - NO BLACK GAP
+   - SMOOTH ZOOM
 
-   NO DATABASE CHANGE
+   FEATURED:
+   - DESKTOP 4
+   - TABLET 3
+   - MOBILE 2
+
+   DATABASE CHANGE: NONE
 ========================================================= */
 
 
@@ -21,22 +28,36 @@ const SUPABASE_URL =
 const SUPABASE_PUBLISHABLE_KEY =
     "sb_publishable_ed-PGIvnw8yN2OwI2264IA_f1FOdWrp";
 
-const db = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_PUBLISHABLE_KEY
-);
+const db =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_PUBLISHABLE_KEY
+    );
 
 
 /* =========================================================
-   GLOBAL
+   GLOBAL DATA
 ========================================================= */
 
 let contents = [];
 
+
+/* HERO */
+
 let heroSlides = [];
 let heroIndex = 0;
 let heroTimer = null;
-let heroZoomAnimation = null;
+
+let heroLayers = [];
+let heroActiveLayer = 0;
+
+let heroLayerAnimations = [
+    null,
+    null
+];
+
+
+/* FEATURED */
 
 let featuredItems = [];
 let featuredIndex = 0;
@@ -48,53 +69,105 @@ let featuredTimer = null;
 ========================================================= */
 
 const TYPE_LABEL = {
+
     movie: "Movie",
+
     natok: "Natok",
+
     series: "Web Series",
+
     upcoming: "Upcoming",
+
     story: "Story",
+
     book: "Book",
+
     tutorial: "Tutorial"
+
 };
+
 
 const TYPE_SECTION = {
+
     movie: "movies",
+
     natok: "natok",
+
     series: "webseries",
+
     upcoming: "upcoming",
+
     story: "stories",
+
     book: "books",
+
     tutorial: "tutorial"
+
 };
+
 
 const TYPE_GRID = {
+
     movie: "moviesGrid",
+
     natok: "natokGrid",
+
     series: "webseriesGrid",
+
     upcoming: "upcomingGrid",
+
     story: "storiesGrid",
+
     book: "booksGrid",
+
     tutorial: "tutorialGrid"
+
 };
 
+
+/* =========================================================
+   HERO ORDER
+========================================================= */
+
 const HERO_ORDER = [
+
     "movie",
+
     "natok",
+
     "series",
+
     "upcoming",
+
     "story",
+
     "book",
+
     "tutorial"
+
 ];
 
+
+/* =========================================================
+   ACTIVE CATEGORY
+========================================================= */
+
 const selectedGenre = {
+
     movie: "all",
+
     natok: "all",
+
     series: "all",
+
     upcoming: "all",
+
     story: "all",
+
     book: "all",
+
     tutorial: "all"
+
 };
 
 
@@ -103,51 +176,83 @@ const selectedGenre = {
 ========================================================= */
 
 function $(id) {
-    return document.getElementById(id);
+
+    return document.getElementById(
+        id
+    );
+
 }
 
 
 /* =========================================================
-   HEADER LOGO
+   HEADER LOGO ANIMATION
 ========================================================= */
 
 function setupHeaderLogo() {
 
-    const logo = $("logoChangingText");
+    const logo =
+        $("logoChangingText");
 
-    if (!logo) return;
+
+    if (!logo) {
+
+        return;
+
+    }
+
 
     const words = [
         "MELLA",
         "HUB"
     ];
 
+
     let index = 0;
 
-    setInterval(() => {
 
-        index =
-            (index + 1) %
-            words.length;
+    setInterval(
+        () => {
 
-        logo.style.opacity = "0";
+            index =
+                (
+                    index + 1
+                )
+                %
+                words.length;
 
-        logo.style.transform =
-            "translateY(5px)";
 
-        setTimeout(() => {
+            logo.style.opacity =
+                "0";
 
-            logo.textContent =
-                words[index];
-
-            logo.style.opacity = "1";
 
             logo.style.transform =
-                "translateY(0)";
+                "translateY(5px)";
 
-        }, 250);
 
-    }, 2500);
+            setTimeout(
+                () => {
+
+                    logo.textContent =
+                        words[
+                            index
+                        ];
+
+
+                    logo.style.opacity =
+                        "1";
+
+
+                    logo.style.transform =
+                        "translateY(0)";
+
+                },
+                250
+            );
+
+        },
+        2500
+    );
+
 }
 
 
@@ -162,26 +267,33 @@ async function loadContents() {
         const {
             data,
             error
-        } = await db
-            .from("contents")
-            .select("*")
-            .eq(
-                "status",
-                "published"
-            )
-            .order(
-                "created_at",
-                {
-                    ascending: false
-                }
-            );
+        } =
+            await db
+                .from("contents")
+                .select("*")
+                .eq(
+                    "status",
+                    "published"
+                )
+                .order(
+                    "created_at",
+                    {
+                        ascending:
+                            false
+                    }
+                );
+
 
         if (error) {
+
             throw error;
+
         }
+
 
         contents =
             data || [];
+
 
         createDropdowns();
 
@@ -197,75 +309,106 @@ async function loadContents() {
 
         updateActiveNav();
 
-    } catch (error) {
+    }
+
+    catch (error) {
 
         console.error(
             "Content load error:",
             error
         );
 
+
         showLoadError();
+
     }
+
 }
 
 
 /* =========================================================
-   GENRE
+   GENRE HELPERS
 ========================================================= */
 
 function splitGenres(value) {
 
-    return String(value || "")
+    return String(
+        value || ""
+    )
         .split(",")
         .map(
-            item => item.trim()
+            item =>
+                item.trim()
         )
         .filter(Boolean);
+
 }
 
+
+/* =========================================================
+   GET UNIQUE GENRES
+========================================================= */
 
 function getGenres(type) {
 
     const result = [];
+
 
     contents
         .filter(
             item =>
                 item.type === type
         )
-        .forEach(item => {
+        .forEach(
+            item => {
 
-            splitGenres(
-                item.genre
-            )
-                .forEach(genre => {
+                splitGenres(
+                    item.genre
+                )
+                    .forEach(
+                        genre => {
 
-                    const exists =
-                        result.some(
-                            old =>
-                                old.toLowerCase()
-                                ===
-                                genre.toLowerCase()
-                        );
+                            const exists =
+                                result.some(
+                                    old =>
+                                        old
+                                            .toLowerCase()
+                                        ===
+                                        genre
+                                            .toLowerCase()
+                                );
 
-                    if (!exists) {
 
-                        result.push(
-                            genre
-                        );
-                    }
-                });
-        });
+                            if (!exists) {
+
+                                result.push(
+                                    genre
+                                );
+
+                            }
+
+                        }
+                    );
+
+            }
+        );
+
 
     return result.sort(
-        (a, b) =>
-            a.localeCompare(b)
+        (
+            a,
+            b
+        ) =>
+            a.localeCompare(
+                b
+            )
     );
+
 }
 
 
 /* =========================================================
-   NAVBAR DROPDOWNS
+   CREATE HEADER DROPDOWNS
 ========================================================= */
 
 function createDropdowns() {
@@ -275,29 +418,64 @@ function createDropdowns() {
             ".nav-menu"
         );
 
-    if (!nav) return;
+
+    if (!nav) {
+
+        return;
+
+    }
+
 
     const map = {
-        "#movies": "movie",
-        "#natok": "natok",
-        "#webseries": "series",
-        "#upcoming": "upcoming",
-        "#stories": "story",
-        "#books": "book",
-        "#tutorial": "tutorial"
+
+        "#movies":
+            "movie",
+
+        "#natok":
+            "natok",
+
+        "#webseries":
+            "series",
+
+        "#upcoming":
+            "upcoming",
+
+        "#stories":
+            "story",
+
+        "#books":
+            "book",
+
+        "#tutorial":
+            "tutorial"
+
     };
 
+
     Object
-        .entries(map)
+        .entries(
+            map
+        )
         .forEach(
-            ([href, type]) => {
+            (
+                [
+                    href,
+                    type
+                ]
+            ) => {
 
                 const link =
                     nav.querySelector(
                         `a.nav-link[href="${href}"]`
                     );
 
-                if (!link) return;
+
+                if (!link) {
+
+                    return;
+
+                }
+
 
                 if (
                     link.parentElement
@@ -306,35 +484,50 @@ function createDropdowns() {
                             "nav-category-dropdown"
                         )
                 ) {
+
                     return;
+
                 }
+
 
                 const wrapper =
                     document.createElement(
                         "div"
                     );
 
+
                 wrapper.className =
                     "nav-category-dropdown";
+
 
                 wrapper.dataset.type =
                     type;
 
-                const menu =
+
+                const dropdown =
                     document.createElement(
                         "div"
                     );
 
-                menu.className =
+
+                dropdown.className =
                     "genre-dropdown-menu";
 
-                menu.innerHTML = `
 
-                    <div class="genre-dropdown-head">
+                dropdown.innerHTML = `
+
+                    <div
+                        class="genre-dropdown-head"
+                    >
+
                         ${escapeHTML(
-                            TYPE_LABEL[type]
+                            TYPE_LABEL[
+                                type
+                            ]
                         )}
+
                     </div>
+
 
                     <div
                         class="genre-menu-dynamic"
@@ -342,25 +535,31 @@ function createDropdowns() {
 
                 `;
 
-                link.parentNode.insertBefore(
-                    wrapper,
-                    link
-                );
+
+                link.parentNode
+                    .insertBefore(
+                        wrapper,
+                        link
+                    );
+
 
                 wrapper.appendChild(
                     link
                 );
 
+
                 wrapper.appendChild(
-                    menu
+                    dropdown
                 );
+
             }
         );
+
 }
 
 
 /* =========================================================
-   CATEGORY MENU
+   RENDER HEADER CATEGORIES
 ========================================================= */
 
 function renderDropdownCategories() {
@@ -369,63 +568,84 @@ function renderDropdownCategories() {
         .querySelectorAll(
             ".nav-category-dropdown"
         )
-        .forEach(wrapper => {
+        .forEach(
+            wrapper => {
 
-            const type =
-                wrapper.dataset.type;
+                const type =
+                    wrapper.dataset.type;
 
-            const box =
-                wrapper.querySelector(
-                    ".genre-menu-dynamic"
-                );
 
-            if (!type || !box) {
-                return;
+                const box =
+                    wrapper.querySelector(
+                        ".genre-menu-dynamic"
+                    );
+
+
+                if (
+                    !type ||
+                    !box
+                ) {
+
+                    return;
+
+                }
+
+
+                let html = `
+
+                    <button
+                        type="button"
+                        class="genre-menu-item active"
+                        data-type="${type}"
+                        data-genre="all"
+                    >
+
+                        All ${escapeHTML(
+                            TYPE_LABEL[
+                                type
+                            ]
+                        )}
+
+                    </button>
+
+                `;
+
+
+                getGenres(
+                    type
+                )
+                    .forEach(
+                        genre => {
+
+                            html += `
+
+                                <button
+                                    type="button"
+                                    class="genre-menu-item"
+                                    data-type="${type}"
+                                    data-genre="${escapeAttribute(
+                                        genre
+                                    )}"
+                                >
+
+                                    ${escapeHTML(
+                                        genre
+                                    )}
+
+                                </button>
+
+                            `;
+
+                        }
+                    );
+
+
+                box.innerHTML =
+                    html;
+
             }
+        );
 
-            let html = `
-
-                <button
-                    type="button"
-                    class="genre-menu-item active"
-                    data-type="${type}"
-                    data-genre="all"
-                >
-
-                    All ${escapeHTML(
-                        TYPE_LABEL[type]
-                    )}
-
-                </button>
-
-            `;
-
-            getGenres(type)
-                .forEach(genre => {
-
-                    html += `
-
-                        <button
-                            type="button"
-                            class="genre-menu-item"
-                            data-type="${type}"
-                            data-genre="${escapeAttribute(
-                                genre
-                            )}"
-                        >
-
-                            ${escapeHTML(
-                                genre
-                            )}
-
-                        </button>
-
-                    `;
-                });
-
-            box.innerHTML =
-                html;
-        });
 }
 
 
@@ -442,142 +662,218 @@ document.addEventListener(
                 ".genre-menu-item"
             );
 
-        if (!button) return;
+
+        if (!button) {
+
+            return;
+
+        }
+
 
         event.preventDefault();
+
         event.stopPropagation();
+
 
         const type =
             button.dataset.type;
+
 
         const genre =
             button.dataset.genre ||
             "all";
 
-        if (!type) return;
 
-        selectedGenre[type] =
+        if (
+            !type ||
+            !TYPE_GRID[
+                type
+            ]
+        ) {
+
+            return;
+
+        }
+
+
+        selectedGenre[
+            type
+        ] =
             genre;
+
 
         const wrapper =
             button.closest(
                 ".nav-category-dropdown"
             );
 
+
         wrapper
             ?.querySelectorAll(
                 ".genre-menu-item"
             )
-            .forEach(item => {
+            .forEach(
+                item => {
 
-                item.classList.remove(
-                    "active"
-                );
-            });
+                    item.classList.remove(
+                        "active"
+                    );
+
+                }
+            );
+
 
         button.classList.add(
             "active"
         );
 
-        renderType(type);
+
+        renderType(
+            type
+        );
+
 
         $(
-            TYPE_SECTION[type]
+            TYPE_SECTION[
+                type
+            ]
         )
             ?.scrollIntoView({
-                behavior: "smooth",
-                block: "start"
+                behavior:
+                    "smooth",
+
+                block:
+                    "start"
             });
+
     }
 );
 
 
 /* =========================================================
-   FILTER
+   FILTER CONTENT
 ========================================================= */
 
 function getItems(type) {
 
     const genre =
-        selectedGenre[type] ||
+        selectedGenre[
+            type
+        ]
+        ||
         "all";
+
 
     return contents
         .filter(
             item =>
                 item.type === type
         )
-        .filter(item => {
+        .filter(
+            item => {
 
-            if (
-                genre === "all"
-            ) {
-                return true;
+                if (
+                    genre === "all"
+                ) {
+
+                    return true;
+
+                }
+
+
+                return splitGenres(
+                    item.genre
+                )
+                    .some(
+                        current =>
+                            current
+                                .toLowerCase()
+                            ===
+                            genre
+                                .toLowerCase()
+                    );
+
             }
+        );
 
-            return splitGenres(
-                item.genre
-            )
-                .some(
-                    current =>
-                        current.toLowerCase()
-                        ===
-                        genre.toLowerCase()
-                );
-        });
 }
 
 
 /* =========================================================
-   RENDER ALL
+   RENDER ALL SECTIONS
 ========================================================= */
 
 function renderAllSections() {
 
-    HERO_ORDER.forEach(
-        type => {
-            renderType(type);
-        }
-    );
+    HERO_ORDER
+        .forEach(
+            type => {
+
+                renderType(
+                    type
+                );
+
+            }
+        );
+
 }
 
 
 /* =========================================================
-   RENDER ONE SECTION
+   RENDER SECTION
 ========================================================= */
 
 function renderType(type) {
 
     const grid =
         $(
-            TYPE_GRID[type]
+            TYPE_GRID[
+                type
+            ]
         );
 
-    if (!grid) return;
+
+    if (!grid) {
+
+        return;
+
+    }
+
 
     grid.classList.add(
         "uniform-content-grid"
     );
 
+
     const items =
-        getItems(type);
+        getItems(
+            type
+        );
+
 
     if (!items.length) {
 
         grid.innerHTML = `
 
-            <div class="database-loading">
+            <div
+                class="database-loading"
+            >
 
                 No ${escapeHTML(
-                    TYPE_LABEL[type]
+                    TYPE_LABEL[
+                        type
+                    ]
                 )} content found.
 
             </div>
 
         `;
 
+
         return;
+
     }
+
 
     grid.innerHTML =
         items
@@ -585,11 +881,12 @@ function renderType(type) {
                 createStandardCard
             )
             .join("");
+
 }
 
 
 /* =========================================================
-   SAME CARD FOR ALL SECTIONS
+   SAME CARD FOR ALL CONTENT TYPES
 ========================================================= */
 
 function createStandardCard(item) {
@@ -598,9 +895,14 @@ function createStandardCard(item) {
         item.poster_url ||
         "";
 
+
     const typeName =
-        TYPE_LABEL[item.type] ||
+        TYPE_LABEL[
+            item.type
+        ]
+        ||
         item.type;
+
 
     return `
 
@@ -608,6 +910,7 @@ function createStandardCard(item) {
             class="movie-card uniform-content-card"
             data-content-id="${item.id}"
         >
+
 
             <div
                 class="movie-poster uniform-card-poster"
@@ -622,12 +925,15 @@ function createStandardCard(item) {
                 }"
             >
 
+
                 ${
                     item.badge
                         ?
                         `
 
-                            <span class="content-badge">
+                            <span
+                                class="content-badge"
+                            >
 
                                 ${escapeHTML(
                                     item.badge
@@ -640,9 +946,11 @@ function createStandardCard(item) {
                         ""
                 }
 
+
                 ${createHoverOverlay(
                     item
                 )}
+
 
                 ${
                     item.video_url
@@ -653,6 +961,7 @@ function createStandardCard(item) {
                                 type="button"
                                 class="poster-play content-video-button"
                                 data-content-id="${item.id}"
+                                aria-label="Watch"
                             >
 
                                 <i
@@ -666,6 +975,7 @@ function createStandardCard(item) {
                         ""
                 }
 
+
             </div>
 
 
@@ -673,10 +983,14 @@ function createStandardCard(item) {
                 class="card-info uniform-card-info"
             >
 
-                <span class="card-category">
+
+                <span
+                    class="card-category"
+                >
 
                     ${escapeHTML(
-                        typeName.toUpperCase()
+                        typeName
+                            .toUpperCase()
                     )}
 
                 </span>
@@ -692,7 +1006,10 @@ function createStandardCard(item) {
                 </h3>
 
 
-                <div class="card-meta">
+                <div
+                    class="card-meta"
+                >
+
 
                     <span>
 
@@ -708,7 +1025,9 @@ function createStandardCard(item) {
                     <span>
 
                         ${
-                            hasRating(item)
+                            hasRating(
+                                item
+                            )
                                 ?
                                 `
 
@@ -727,10 +1046,13 @@ function createStandardCard(item) {
 
                     </span>
 
+
                 </div>
 
 
-                <div class="card-actions">
+                <div
+                    class="card-actions"
+                >
 
                     ${getCardButtons(
                         item
@@ -738,11 +1060,14 @@ function createStandardCard(item) {
 
                 </div>
 
+
             </div>
+
 
         </article>
 
     `;
+
 }
 
 
@@ -753,16 +1078,20 @@ function createStandardCard(item) {
 function getCardMeta(item) {
 
     if (
-        item.type === "series"
+        item.type ===
+        "series"
         &&
         item.season
     ) {
 
         return `Season ${item.season}`;
+
     }
 
+
     if (
-        item.type === "upcoming"
+        item.type ===
+        "upcoming"
         &&
         item.release_date
     ) {
@@ -770,20 +1099,26 @@ function getCardMeta(item) {
         return formatDate(
             item.release_date
         );
+
     }
+
 
     if (
         (
-            item.type === "story"
+            item.type ===
+            "story"
             ||
-            item.type === "book"
+            item.type ===
+            "book"
         )
         &&
         item.author
     ) {
 
         return item.author;
+
     }
+
 
     return String(
         item.year
@@ -792,6 +1127,7 @@ function getCardMeta(item) {
         ||
         ""
     );
+
 }
 
 
@@ -800,6 +1136,7 @@ function getCardMeta(item) {
 ========================================================= */
 
 function getCardButtons(item) {
+
 
     /* MOVIE / NATOK / SERIES / TUTORIAL */
 
@@ -837,13 +1174,15 @@ function getCardButtons(item) {
             </button>
 
         `;
+
     }
 
 
     /* STORY */
 
     if (
-        item.type === "story"
+        item.type ===
+        "story"
     ) {
 
         return `
@@ -878,13 +1217,15 @@ function getCardButtons(item) {
             </button>
 
         `;
+
     }
 
 
     /* BOOK */
 
     if (
-        item.type === "book"
+        item.type ===
+        "book"
     ) {
 
         return `
@@ -931,9 +1272,12 @@ function getCardButtons(item) {
             </button>
 
         `;
+
     }
 
+
     return "";
+
 }
 
 
@@ -945,7 +1289,9 @@ function createHoverOverlay(item) {
 
     return `
 
-        <div class="card-hover-overlay">
+        <div
+            class="card-hover-overlay"
+        >
 
             <h4>
 
@@ -956,6 +1302,7 @@ function createHoverOverlay(item) {
 
             </h4>
 
+
             <p>
 
                 ${escapeHTML(
@@ -965,7 +1312,10 @@ function createHoverOverlay(item) {
 
             </p>
 
-            <span class="card-hover-action">
+
+            <span
+                class="card-hover-action"
+            >
 
                 ${escapeHTML(
                     getHoverText(
@@ -982,36 +1332,57 @@ function createHoverOverlay(item) {
         </div>
 
     `;
+
 }
 
+
+/* =========================================================
+   HOVER TEXT
+========================================================= */
 
 function getHoverText(item) {
 
     if (
-        item.type === "story"
+        item.type ===
+        "story"
     ) {
+
         return "Read Story";
+
     }
 
+
     if (
-        item.type === "book"
+        item.type ===
+        "book"
     ) {
+
         return "Read Book";
+
     }
 
+
     if (
-        item.type === "upcoming"
+        item.type ===
+        "upcoming"
     ) {
+
         return "Coming Soon";
+
     }
+
 
     if (
         item.video_url
     ) {
+
         return "Watch Now";
+
     }
 
+
     return "View";
+
 }
 
 
@@ -1023,10 +1394,15 @@ function findItem(id) {
 
     return contents.find(
         item =>
-            String(item.id)
+            String(
+                item.id
+            )
             ===
-            String(id)
+            String(
+                id
+            )
     );
+
 }
 
 
@@ -1043,29 +1419,49 @@ document.addEventListener(
                 ".content-download-button"
             );
 
-        if (!button) return;
 
-        if (
-            button.classList.contains(
-                "story-pdf-download"
-            )
-            ||
-            button.classList.contains(
-                "book-pdf-download"
-            )
-        ) {
+        if (!button) {
+
             return;
+
         }
 
+
+        if (
+            button.classList
+                .contains(
+                    "story-pdf-download"
+                )
+            ||
+            button.classList
+                .contains(
+                    "book-pdf-download"
+                )
+        ) {
+
+            return;
+
+        }
+
+
         event.preventDefault();
+
         event.stopPropagation();
+
 
         const item =
             findItem(
-                button.dataset.contentId
+                button.dataset
+                    .contentId
             );
 
-        if (!item) return;
+
+        if (!item) {
+
+            return;
+
+        }
+
 
         if (
             !item.download_url
@@ -1075,20 +1471,24 @@ document.addEventListener(
                 "Download link has not been added yet."
             );
 
+
             return;
+
         }
+
 
         window.open(
             item.download_url,
             "_blank",
             "noopener,noreferrer"
         );
+
     }
 );
 
 
 /* =========================================================
-   VIDEO
+   VIDEO BUTTON
 ========================================================= */
 
 document.addEventListener(
@@ -1100,15 +1500,25 @@ document.addEventListener(
                 ".content-video-button"
             );
 
-        if (!button) return;
+
+        if (!button) {
+
+            return;
+
+        }
+
 
         event.preventDefault();
+
         event.stopPropagation();
+
 
         const item =
             findItem(
-                button.dataset.contentId
+                button.dataset
+                    .contentId
             );
+
 
         if (
             item?.video_url
@@ -1119,13 +1529,15 @@ document.addEventListener(
                 "_blank",
                 "noopener,noreferrer"
             );
+
         }
+
     }
 );
 
 
 /* =========================================================
-   STORY READ
+   STORY READ BUTTON
 ========================================================= */
 
 document.addEventListener(
@@ -1137,28 +1549,40 @@ document.addEventListener(
                 ".content-story-button"
             );
 
-        if (!button) return;
+
+        if (!button) {
+
+            return;
+
+        }
+
 
         event.preventDefault();
+
         event.stopPropagation();
+
 
         const story =
             findItem(
-                button.dataset.contentId
+                button.dataset
+                    .contentId
             );
+
 
         if (story) {
 
             openStoryReader(
                 story
             );
+
         }
+
     }
 );
 
 
 /* =========================================================
-   BOOK READ
+   BOOK READ BUTTON
 ========================================================= */
 
 document.addEventListener(
@@ -1170,15 +1594,25 @@ document.addEventListener(
                 ".content-book-button"
             );
 
-        if (!button) return;
+
+        if (!button) {
+
+            return;
+
+        }
+
 
         event.preventDefault();
+
         event.stopPropagation();
+
 
         const book =
             findItem(
-                button.dataset.contentId
+                button.dataset
+                    .contentId
             );
+
 
         if (
             !book ||
@@ -1189,41 +1623,58 @@ document.addEventListener(
                 "Book PDF has not been uploaded yet."
             );
 
+
             return;
+
         }
+
 
         openBookReader(
             book
         );
+
     }
 );
 
 
 /* =========================================================
-   BOOK READER
+   OPEN BOOK READER
 ========================================================= */
 
 function openBookReader(book) {
 
     closeBookReader();
 
+
     const modal =
         document.createElement(
             "div"
         );
 
+
     modal.id =
         "bookReaderModal";
 
+
     modal.innerHTML = `
 
-        <div class="book-reader-overlay">
+        <div
+            class="book-reader-overlay"
+        >
 
-            <div class="book-reader-box">
+            <div
+                class="book-reader-box"
+            >
 
-                <div class="book-reader-header">
 
-                    <div class="book-reader-title">
+                <div
+                    class="book-reader-header"
+                >
+
+
+                    <div
+                        class="book-reader-title"
+                    >
 
                         <h2>
 
@@ -1233,6 +1684,7 @@ function openBookReader(book) {
                             )}
 
                         </h2>
+
 
                         ${
                             book.author
@@ -1255,7 +1707,10 @@ function openBookReader(book) {
                     </div>
 
 
-                    <div class="book-reader-actions">
+                    <div
+                        class="book-reader-actions"
+                    >
+
 
                         <button
                             type="button"
@@ -1284,12 +1739,16 @@ function openBookReader(book) {
 
                         </button>
 
+
                     </div>
+
 
                 </div>
 
 
-                <div class="book-reader-content">
+                <div
+                    class="book-reader-content"
+                >
 
                     <iframe
                         src="${escapeAttribute(
@@ -1303,15 +1762,19 @@ function openBookReader(book) {
 
                 </div>
 
+
             </div>
 
         </div>
 
     `;
 
-    document.body.appendChild(
-        modal
-    );
+
+    document.body
+        .appendChild(
+            modal
+        );
+
 
     document.body.style.overflow =
         "hidden";
@@ -1333,14 +1796,17 @@ function openBookReader(book) {
             event => {
 
                 if (
-                    event.target.classList
+                    event.target
+                        .classList
                         .contains(
                             "book-reader-overlay"
                         )
                 ) {
 
                     closeBookReader();
+
                 }
+
             }
         );
 
@@ -1353,11 +1819,14 @@ function openBookReader(book) {
                 const button =
                     event.currentTarget;
 
+
                 const oldHTML =
                     button.innerHTML;
 
+
                 button.disabled =
                     true;
+
 
                 button.innerHTML = `
 
@@ -1369,6 +1838,7 @@ function openBookReader(book) {
 
                 `;
 
+
                 try {
 
                     await forceFileDownload(
@@ -1379,11 +1849,14 @@ function openBookReader(book) {
                         )}.pdf`
                     );
 
-                } catch (error) {
+                }
+
+                catch (error) {
 
                     console.error(
                         error
                     );
+
 
                     window.open(
                         book.file_url,
@@ -1391,23 +1864,34 @@ function openBookReader(book) {
                         "noopener,noreferrer"
                     );
 
-                } finally {
+                }
+
+                finally {
 
                     button.disabled =
                         false;
 
+
                     button.innerHTML =
                         oldHTML;
+
                 }
+
             }
         );
+
 }
 
+
+/* =========================================================
+   CLOSE BOOK READER
+========================================================= */
 
 function closeBookReader() {
 
     $("bookReaderModal")
         ?.remove();
+
 
     if (
         !$("storyReaderModal")
@@ -1415,7 +1899,9 @@ function closeBookReader() {
 
         document.body.style.overflow =
             "";
+
     }
+
 }
 
 
@@ -1432,15 +1918,25 @@ document.addEventListener(
                 ".book-pdf-download"
             );
 
-        if (!button) return;
+
+        if (!button) {
+
+            return;
+
+        }
+
 
         event.preventDefault();
+
         event.stopPropagation();
+
 
         const book =
             findItem(
-                button.dataset.contentId
+                button.dataset
+                    .contentId
             );
+
 
         if (
             !book ||
@@ -1451,14 +1947,19 @@ document.addEventListener(
                 "Book PDF has not been uploaded yet."
             );
 
+
             return;
+
         }
+
 
         const oldHTML =
             button.innerHTML;
 
+
         button.disabled =
             true;
+
 
         button.innerHTML = `
 
@@ -1470,6 +1971,7 @@ document.addEventListener(
 
         `;
 
+
         try {
 
             await forceFileDownload(
@@ -1480,11 +1982,15 @@ document.addEventListener(
                 )}.pdf`
             );
 
-        } catch (error) {
+        }
+
+        catch (error) {
 
             console.error(
+                "Book download error:",
                 error
             );
+
 
             window.open(
                 book.file_url,
@@ -1492,14 +1998,19 @@ document.addEventListener(
                 "noopener,noreferrer"
             );
 
-        } finally {
+        }
+
+        finally {
 
             button.disabled =
                 false;
 
+
             button.innerHTML =
                 oldHTML;
+
         }
+
     }
 );
 
@@ -1517,17 +2028,32 @@ document.addEventListener(
                 ".story-pdf-download"
             );
 
-        if (!button) return;
+
+        if (!button) {
+
+            return;
+
+        }
+
 
         event.preventDefault();
+
         event.stopPropagation();
+
 
         const story =
             findItem(
-                button.dataset.contentId
+                button.dataset
+                    .contentId
             );
 
-        if (!story) return;
+
+        if (!story) {
+
+            return;
+
+        }
+
 
         if (
             !story.full_content
@@ -1537,14 +2063,19 @@ document.addEventListener(
                 "Story content has not been added yet."
             );
 
+
             return;
+
         }
+
 
         const oldHTML =
             button.innerHTML;
 
+
         button.disabled =
             true;
+
 
         button.innerHTML = `
 
@@ -1556,36 +2087,46 @@ document.addEventListener(
 
         `;
 
+
         try {
 
             await downloadStoryAsPDF(
                 story
             );
 
-        } catch (error) {
+        }
+
+        catch (error) {
 
             console.error(
+                "Story PDF error:",
                 error
             );
+
 
             alert(
                 "Unable to create PDF."
             );
 
-        } finally {
+        }
+
+        finally {
 
             button.disabled =
                 false;
 
+
             button.innerHTML =
                 oldHTML;
+
         }
+
     }
 );
 
 
 /* =========================================================
-   LOAD PDF LIBRARY
+   LOAD EXTERNAL SCRIPT
 ========================================================= */
 
 function loadExternalScript(
@@ -1599,17 +2140,22 @@ function loadExternalScript(
             reject
         ) => {
 
-            if (check()) {
+            if (
+                check()
+            ) {
 
                 resolve();
 
                 return;
+
             }
+
 
             const existing =
                 document.querySelector(
                     `script[src="${src}"]`
                 );
+
 
             if (existing) {
 
@@ -1621,6 +2167,7 @@ function loadExternalScript(
                     }
                 );
 
+
                 existing.addEventListener(
                     "error",
                     reject,
@@ -1629,48 +2176,70 @@ function loadExternalScript(
                     }
                 );
 
+
                 return;
+
             }
+
 
             const script =
                 document.createElement(
                     "script"
                 );
 
+
             script.src =
                 src;
+
 
             script.onload =
                 resolve;
 
+
             script.onerror =
                 reject;
 
-            document.head.appendChild(
-                script
-            );
+
+            document.head
+                .appendChild(
+                    script
+                );
+
         }
     );
+
 }
 
+
+/* =========================================================
+   LOAD PDF LIBRARIES
+========================================================= */
 
 async function loadPDFLibraries() {
 
     await loadExternalScript(
+
         "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js",
+
         () =>
             Boolean(
                 window.html2canvas
             )
+
     );
 
+
     await loadExternalScript(
+
         "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js",
+
         () =>
             Boolean(
                 window.jspdf
             )
+
     );
+
 }
 
 
@@ -1684,33 +2253,43 @@ async function downloadStoryAsPDF(
 
     await loadPDFLibraries();
 
+
     const pdfArea =
         document.createElement(
             "div"
         );
 
+
     pdfArea.style.cssText = `
 
-        position:fixed;
-        left:-12000px;
-        top:0;
-        width:794px;
-        padding:60px;
+        position: fixed;
 
-        background:#ffffff;
-        color:#111111;
+        left: -12000px;
+
+        top: 0;
+
+        width: 794px;
+
+        padding: 60px;
+
+        background: #ffffff;
+
+        color: #111111;
 
         font-family:
             Arial,
             "Noto Sans Bengali",
+            "Noto Sans",
             sans-serif;
 
-        font-size:18px;
-        line-height:1.85;
+        font-size: 18px;
 
-        z-index:-9999;
+        line-height: 1.85;
+
+        z-index: -9999;
 
     `;
+
 
     pdfArea.innerHTML = `
 
@@ -1718,7 +2297,7 @@ async function downloadStoryAsPDF(
             style="
                 margin:0 0 10px;
                 font-size:32px;
-                color:#111;
+                color:#111111;
             "
         >
 
@@ -1738,7 +2317,7 @@ async function downloadStoryAsPDF(
                     <p
                         style="
                             margin:0 0 28px;
-                            color:#666;
+                            color:#666666;
                             font-size:16px;
                         "
                     >
@@ -1773,8 +2352,8 @@ async function downloadStoryAsPDF(
             style="
                 margin-top:50px;
                 padding-top:15px;
-                border-top:1px solid #ddd;
-                color:#888;
+                border-top:1px solid #dddddd;
+                color:#888888;
                 font-size:12px;
             "
         >
@@ -1785,47 +2364,65 @@ async function downloadStoryAsPDF(
 
     `;
 
-    document.body.appendChild(
-        pdfArea
-    );
+
+    document.body
+        .appendChild(
+            pdfArea
+        );
+
 
     if (
         document.fonts?.ready
     ) {
 
         await document.fonts.ready;
+
     }
+
 
     const canvas =
         await window.html2canvas(
             pdfArea,
             {
-                scale: 2,
+                scale:
+                    2,
+
                 backgroundColor:
                     "#ffffff",
-                useCORS: true,
-                logging: false
+
+                useCORS:
+                    true,
+
+                logging:
+                    false
             }
         );
 
+
     pdfArea.remove();
+
 
     const {
         jsPDF
     } =
         window.jspdf;
 
+
     const pdf =
         new jsPDF({
             orientation:
                 "portrait",
+
             unit:
                 "mm",
+
             format:
                 "a4",
+
             compress:
                 true
         });
+
 
     const imageData =
         canvas.toDataURL(
@@ -1833,33 +2430,42 @@ async function downloadStoryAsPDF(
             0.92
         );
 
+
     const pageWidth =
         210;
+
 
     const pageHeight =
         297;
 
+
     const margin =
         10;
+
 
     const usableWidth =
         pageWidth -
         margin * 2;
 
+
     const usableHeight =
         pageHeight -
         margin * 2;
+
 
     const imageHeight =
         canvas.height *
         usableWidth /
         canvas.width;
 
+
     let heightLeft =
         imageHeight;
 
+
     let position =
         margin;
+
 
     pdf.addImage(
         imageData,
@@ -1870,8 +2476,10 @@ async function downloadStoryAsPDF(
         imageHeight
     );
 
+
     heightLeft -=
         usableHeight;
+
 
     while (
         heightLeft > 0
@@ -1884,7 +2492,9 @@ async function downloadStoryAsPDF(
                 heightLeft
             );
 
+
         pdf.addPage();
+
 
         pdf.addImage(
             imageData,
@@ -1895,9 +2505,12 @@ async function downloadStoryAsPDF(
             imageHeight
         );
 
+
         heightLeft -=
             usableHeight;
+
     }
+
 
     pdf.save(
         `${safeFileName(
@@ -1905,11 +2518,12 @@ async function downloadStoryAsPDF(
             "story"
         )}.pdf`
     );
+
 }
 
 
 /* =========================================================
-   FILE DOWNLOAD
+   FORCE FILE DOWNLOAD
 ========================================================= */
 
 async function forceFileDownload(
@@ -1918,7 +2532,10 @@ async function forceFileDownload(
 ) {
 
     const response =
-        await fetch(url);
+        await fetch(
+            url
+        );
+
 
     if (
         !response.ok
@@ -1927,34 +2544,49 @@ async function forceFileDownload(
         throw new Error(
             "Download failed."
         );
+
     }
+
 
     const blob =
         await response.blob();
+
 
     const blobUrl =
         URL.createObjectURL(
             blob
         );
 
+
     const link =
         document.createElement(
             "a"
         );
 
+
     link.href =
         blobUrl;
+
 
     link.download =
         fileName;
 
-    document.body.appendChild(
-        link
-    );
+
+    link.style.display =
+        "none";
+
+
+    document.body
+        .appendChild(
+            link
+        );
+
 
     link.click();
 
+
     link.remove();
+
 
     setTimeout(
         () => {
@@ -1966,6 +2598,7 @@ async function forceFileDownload(
         },
         1500
     );
+
 }
 
 
@@ -1977,21 +2610,31 @@ function openStoryReader(story) {
 
     closeStoryReader();
 
+
     const modal =
         document.createElement(
             "div"
         );
 
+
     modal.id =
         "storyReaderModal";
 
+
     modal.innerHTML = `
 
-        <div class="story-reader-overlay">
+        <div
+            class="story-reader-overlay"
+        >
 
-            <div class="story-reader-box">
+            <div
+                class="story-reader-box"
+            >
 
-                <div class="story-reader-header">
+
+                <div
+                    class="story-reader-header"
+                >
 
                     <div>
 
@@ -2003,6 +2646,7 @@ function openStoryReader(story) {
                             )}
 
                         </h2>
+
 
                         ${
                             story.author
@@ -2037,10 +2681,13 @@ function openStoryReader(story) {
 
                     </button>
 
+
                 </div>
 
 
-                <div class="story-reader-body">
+                <div
+                    class="story-reader-body"
+                >
 
                     ${escapeHTML(
                         story.full_content ||
@@ -2049,24 +2696,30 @@ function openStoryReader(story) {
 
                 </div>
 
+
             </div>
 
         </div>
 
     `;
 
-    document.body.appendChild(
-        modal
-    );
+
+    document.body
+        .appendChild(
+            modal
+        );
+
 
     document.body.style.overflow =
         "hidden";
+
 
     $("closeStoryReader")
         ?.addEventListener(
             "click",
             closeStoryReader
         );
+
 
     modal
         .querySelector(
@@ -2077,23 +2730,32 @@ function openStoryReader(story) {
             event => {
 
                 if (
-                    event.target.classList
+                    event.target
+                        .classList
                         .contains(
                             "story-reader-overlay"
                         )
                 ) {
 
                     closeStoryReader();
+
                 }
+
             }
         );
+
 }
 
+
+/* =========================================================
+   CLOSE STORY READER
+========================================================= */
 
 function closeStoryReader() {
 
     $("storyReaderModal")
         ?.remove();
+
 
     if (
         !$("bookReaderModal")
@@ -2101,7 +2763,9 @@ function closeStoryReader() {
 
         document.body.style.overflow =
             "";
+
     }
+
 }
 
 
@@ -2118,24 +2782,43 @@ document.addEventListener(
                 "button"
             )
         ) {
+
             return;
+
         }
+
 
         const card =
             event.target.closest(
                 ".uniform-content-card, .featured-card"
             );
 
-        if (!card) return;
+
+        if (!card) {
+
+            return;
+
+        }
+
 
         const item =
             findItem(
-                card.dataset.contentId
+                card.dataset
+                    .contentId
             );
 
-        if (!item) return;
 
-        openContent(item);
+        if (!item) {
+
+            return;
+
+        }
+
+
+        openContent(
+            item
+        );
+
     }
 );
 
@@ -2147,33 +2830,48 @@ document.addEventListener(
 function openContent(item) {
 
     if (
-        item.type === "story"
+        item.type ===
+        "story"
     ) {
 
-        openStoryReader(item);
+        openStoryReader(
+            item
+        );
+
 
         return;
+
     }
 
+
     if (
-        item.type === "book"
+        item.type ===
+        "book"
     ) {
 
         if (
             item.file_url
         ) {
 
-            openBookReader(item);
+            openBookReader(
+                item
+            );
 
-        } else {
+        }
+
+        else {
 
             alert(
                 "Book PDF has not been uploaded yet."
             );
+
         }
 
+
         return;
+
     }
+
 
     if (
         item.video_url
@@ -2185,8 +2883,11 @@ function openContent(item) {
             "noopener,noreferrer"
         );
 
+
         return;
+
     }
+
 
     if (
         item.download_url
@@ -2197,68 +2898,261 @@ function openContent(item) {
             "_blank",
             "noopener,noreferrer"
         );
+
     }
+
 }
 
 
 /* =========================================================
-   HERO SLIDES
-
-   USES ALL BANNERS
+   BUILD HERO SLIDES
 ========================================================= */
 
 function buildHeroSlides() {
 
     const groups = {};
 
-    HERO_ORDER.forEach(
-        type => {
 
-            groups[type] =
-                contents.filter(
-                    item =>
-                        item.type === type
-                        &&
-                        Boolean(
-                            item.banner_url
-                        )
-                );
-        }
-    );
+    HERO_ORDER
+        .forEach(
+            type => {
+
+                groups[
+                    type
+                ] =
+                    contents.filter(
+                        item =>
+                            item.type ===
+                            type
+                            &&
+                            Boolean(
+                                item.banner_url
+                            )
+                    );
+
+            }
+        );
+
 
     const maxLength =
         Math.max(
             0,
-            ...HERO_ORDER.map(
-                type =>
-                    groups[type].length
-            )
+
+            ...HERO_ORDER
+                .map(
+                    type =>
+                        groups[
+                            type
+                        ].length
+                )
         );
+
 
     const slides = [];
 
+
     for (
-        let i = 0;
-        i < maxLength;
-        i++
+        let index = 0;
+        index < maxLength;
+        index++
     ) {
 
-        HERO_ORDER.forEach(
-            type => {
+        HERO_ORDER
+            .forEach(
+                type => {
 
-                if (
-                    groups[type][i]
-                ) {
+                    const item =
+                        groups[
+                            type
+                        ][
+                            index
+                        ];
 
-                    slides.push(
-                        groups[type][i]
-                    );
+
+                    if (item) {
+
+                        slides.push(
+                            item
+                        );
+
+                    }
+
                 }
-            }
-        );
+            );
+
     }
 
+
     return slides;
+
+}
+
+
+/* =========================================================
+   CREATE HERO CROSSFADE LAYERS
+========================================================= */
+
+function createHeroLayers() {
+
+    const hero =
+        $("heroBackground");
+
+
+    if (!hero) {
+
+        return [];
+
+    }
+
+
+    hero.innerHTML =
+        "";
+
+
+    hero.style.backgroundImage =
+        "none";
+
+
+    const layerOne =
+        document.createElement(
+            "div"
+        );
+
+
+    layerOne.className =
+        "hero-bg-layer hero-bg-layer-one";
+
+
+    const layerTwo =
+        document.createElement(
+            "div"
+        );
+
+
+    layerTwo.className =
+        "hero-bg-layer hero-bg-layer-two";
+
+
+    hero.appendChild(
+        layerOne
+    );
+
+
+    hero.appendChild(
+        layerTwo
+    );
+
+
+    heroLayers = [
+        layerOne,
+        layerTwo
+    ];
+
+
+    heroActiveLayer =
+        0;
+
+
+    return heroLayers;
+
+}
+
+
+/* =========================================================
+   PRELOAD HERO IMAGES
+========================================================= */
+
+function preloadHeroImages() {
+
+    heroSlides
+        .forEach(
+            item => {
+
+                if (
+                    !item.banner_url
+                ) {
+
+                    return;
+
+                }
+
+
+                const img =
+                    new Image();
+
+
+                img.src =
+                    item.banner_url;
+
+            }
+        );
+
+}
+
+
+/* =========================================================
+   HERO ZOOM
+========================================================= */
+
+function startHeroZoom(
+    layerIndex
+) {
+
+    const layer =
+        heroLayers[
+            layerIndex
+        ];
+
+
+    if (!layer) {
+
+        return;
+
+    }
+
+
+    if (
+        heroLayerAnimations[
+            layerIndex
+        ]
+    ) {
+
+        heroLayerAnimations[
+            layerIndex
+        ].cancel();
+
+    }
+
+
+    heroLayerAnimations[
+        layerIndex
+    ] =
+        layer.animate(
+            [
+
+                {
+                    transform:
+                        "scale(1.03)"
+                },
+
+                {
+                    transform:
+                        "scale(1.09)"
+                }
+
+            ],
+            {
+                duration:
+                    4000,
+
+                easing:
+                    "linear",
+
+                fill:
+                    "forwards"
+            }
+        );
+
 }
 
 
@@ -2271,13 +3165,17 @@ function setupHero() {
     const hero =
         $("heroBackground");
 
-    if (!hero) return;
 
-    hero.style.transition =
-        "opacity 450ms ease";
+    if (!hero) {
+
+        return;
+
+    }
+
 
     heroSlides =
         buildHeroSlides();
+
 
     if (
         !heroSlides.length
@@ -2286,28 +3184,38 @@ function setupHero() {
         hero.style.backgroundImage =
             "linear-gradient(120deg,#11001f,#2a075c,#4d0c79)";
 
+
         return;
+
     }
 
-    heroIndex = 0;
+
+    createHeroLayers();
+
+
+    preloadHeroImages();
+
+
+    heroIndex =
+        0;
+
 
     renderHeroDots();
+
 
     showHeroSlide(
         0,
         false
     );
 
+
     restartHeroTimer();
+
 }
 
 
 /* =========================================================
-   HERO SHOW
-   4 SEC TOTAL
-
-   ZOOM STARTS FROM 1.04
-   SO RESET IS LESS VISIBLE
+   HERO SMOOTH CROSSFADE
 ========================================================= */
 
 function showHeroSlide(
@@ -2315,87 +3223,25 @@ function showHeroSlide(
     fade = true
 ) {
 
-    const hero =
-        $("heroBackground");
-
     const item =
-        heroSlides[index];
+        heroSlides[
+            index
+        ];
+
 
     if (
-        !hero ||
         !item ||
-        !item.banner_url
+        !item.banner_url ||
+        !heroLayers.length
     ) {
+
         return;
+
     }
+
 
     heroIndex =
         index;
-
-
-    const applySlide =
-        () => {
-
-            /*
-               cancel previous zoom only
-               while image is hidden
-            */
-
-            if (
-                heroZoomAnimation
-            ) {
-
-                heroZoomAnimation.cancel();
-
-                heroZoomAnimation =
-                    null;
-            }
-
-
-            hero.style.backgroundImage =
-                `url("${escapeCssUrl(
-                    item.banner_url
-                )}")`;
-
-            hero.style.backgroundSize =
-                "cover";
-
-            hero.style.backgroundPosition =
-                "center";
-
-            hero.style.opacity =
-                "1";
-
-
-            /*
-               SLOW SMOOTH ZOOM
-               NO OBVIOUS ZOOM-OUT
-            */
-
-            heroZoomAnimation =
-                hero.animate(
-                    [
-                        {
-                            transform:
-                                "scale(1.04)"
-                        },
-                        {
-                            transform:
-                                "scale(1.10)"
-                        }
-                    ],
-                    {
-                        duration:
-                            3400,
-                        easing:
-                            "linear",
-                        fill:
-                            "forwards"
-                    }
-                );
-
-            updateHeroDots();
-        };
 
 
     /*
@@ -2404,32 +3250,202 @@ function showHeroSlide(
 
     if (!fade) {
 
-        applySlide();
+        const firstLayer =
+            heroLayers[
+                heroActiveLayer
+            ];
+
+
+        firstLayer.style
+            .backgroundImage =
+            `url("${escapeCssUrl(
+                item.banner_url
+            )}")`;
+
+
+        firstLayer.style
+            .opacity =
+            "1";
+
+
+        firstLayer.style
+            .zIndex =
+            "2";
+
+
+        startHeroZoom(
+            heroActiveLayer
+        );
+
+
+        updateHeroDots();
+
 
         return;
+
     }
 
 
     /*
-       Fade old image first.
-       Zoom reset happens while invisible.
+       CURRENT / NEXT LAYER
     */
 
-    hero.style.opacity =
-        "0";
+    const currentIndex =
+        heroActiveLayer;
 
 
-    setTimeout(
-        applySlide,
-        450
-    );
+    const nextIndex =
+        currentIndex === 0
+            ?
+            1
+            :
+            0;
+
+
+    const currentLayer =
+        heroLayers[
+            currentIndex
+        ];
+
+
+    const nextLayer =
+        heroLayers[
+            nextIndex
+        ];
+
+
+    /*
+       PRELOAD EXACT NEXT IMAGE
+    */
+
+    const preload =
+        new Image();
+
+
+    preload.onload =
+        () => {
+
+
+            /*
+               PREPARE NEXT LAYER
+            */
+
+            nextLayer.style
+                .backgroundImage =
+                `url("${escapeCssUrl(
+                    item.banner_url
+                )}")`;
+
+
+            nextLayer.style
+                .opacity =
+                "0";
+
+
+            nextLayer.style
+                .zIndex =
+                "3";
+
+
+            currentLayer.style
+                .opacity =
+                "1";
+
+
+            currentLayer.style
+                .zIndex =
+                "2";
+
+
+            /*
+               START NEXT ZOOM
+            */
+
+            startHeroZoom(
+                nextIndex
+            );
+
+
+            /*
+               FADE NEW IMAGE OVER OLD IMAGE
+
+               OLD IMAGE STAYS VISIBLE.
+               SO NO BLACK GAP.
+            */
+
+            requestAnimationFrame(
+                () => {
+
+                    requestAnimationFrame(
+                        () => {
+
+                            nextLayer.style
+                                .opacity =
+                                "1";
+
+                        }
+                    );
+
+                }
+            );
+
+
+            /*
+               AFTER FADE COMPLETE,
+               HIDE OLD IMAGE
+            */
+
+            setTimeout(
+                () => {
+
+                    currentLayer.style
+                        .opacity =
+                        "0";
+
+
+                    currentLayer.style
+                        .zIndex =
+                        "1";
+
+
+                },
+                950
+            );
+
+
+            /*
+               NEXT BECOMES ACTIVE
+            */
+
+            heroActiveLayer =
+                nextIndex;
+
+
+            updateHeroDots();
+
+        };
+
+
+    preload.onerror =
+        () => {
+
+            console.warn(
+                "Hero image failed:",
+                item.banner_url
+            );
+
+        };
+
+
+    preload.src =
+        item.banner_url;
+
 }
 
 
 /* =========================================================
    HERO TIMER
-
-   EXACTLY 4 SECONDS
+   4 SECONDS
 ========================================================= */
 
 function restartHeroTimer() {
@@ -2441,13 +3457,19 @@ function restartHeroTimer() {
         clearInterval(
             heroTimer
         );
+
     }
 
+
     if (
-        heroSlides.length <= 1
+        heroSlides.length <=
+        1
     ) {
+
         return;
+
     }
+
 
     heroTimer =
         setInterval(
@@ -2460,6 +3482,7 @@ function restartHeroTimer() {
                     %
                     heroSlides.length;
 
+
                 showHeroSlide(
                     heroIndex,
                     true
@@ -2468,6 +3491,7 @@ function restartHeroTimer() {
             },
             4000
         );
+
 }
 
 
@@ -2480,7 +3504,13 @@ function renderHeroDots() {
     const dots =
         $("heroDots");
 
-    if (!dots) return;
+
+    if (!dots) {
+
+        return;
+
+    }
+
 
     dots.innerHTML =
         heroSlides
@@ -2500,6 +3530,13 @@ function renderHeroDots() {
                                 ""
                         }"
                         data-index="${index}"
+                        aria-label="${escapeAttribute(
+                            TYPE_LABEL[
+                                item.type
+                            ]
+                            ||
+                            "Slide"
+                        )}"
                     ></button>
 
                 `
@@ -2511,28 +3548,51 @@ function renderHeroDots() {
         .querySelectorAll(
             ".hero-dot"
         )
-        .forEach(dot => {
+        .forEach(
+            dot => {
 
-            dot.addEventListener(
-                "click",
-                () => {
+                dot.addEventListener(
+                    "click",
+                    () => {
 
-                    const index =
-                        Number(
-                            dot.dataset.index
+                        const index =
+                            Number(
+                                dot.dataset
+                                    .index
+                            );
+
+
+                        if (
+                            !Number.isFinite(
+                                index
+                            )
+                        ) {
+
+                            return;
+
+                        }
+
+
+                        showHeroSlide(
+                            index,
+                            true
                         );
 
-                    showHeroSlide(
-                        index,
-                        true
-                    );
 
-                    restartHeroTimer();
-                }
-            );
-        });
+                        restartHeroTimer();
+
+                    }
+                );
+
+            }
+        );
+
 }
 
+
+/* =========================================================
+   HERO ACTIVE DOT
+========================================================= */
 
 function updateHeroDots() {
 
@@ -2548,15 +3608,18 @@ function updateHeroDots() {
 
                 dot.classList.toggle(
                     "active",
-                    index === heroIndex
+                    index ===
+                    heroIndex
                 );
+
             }
         );
+
 }
 
 
 /* =========================================================
-   CREATE FEATURED
+   CREATE FEATURED SECTION
 ========================================================= */
 
 function createFeaturedSection() {
@@ -2564,34 +3627,52 @@ function createFeaturedSection() {
     if (
         $("featured")
     ) {
+
         return;
+
     }
+
 
     const movieSection =
         $("movies");
 
-    if (!movieSection) return;
+
+    if (!movieSection) {
+
+        return;
+
+    }
+
 
     const section =
         document.createElement(
             "section"
         );
 
+
     section.id =
         "featured";
+
 
     section.className =
         "featured-section";
 
+
     section.innerHTML = `
 
-        <div class="section-heading">
+        <div
+            class="section-heading"
+        >
 
-            <div class="heading-left">
+
+            <div
+                class="heading-left"
+            >
 
                 <span
                     class="heading-line"
                 ></span>
+
 
                 <div>
 
@@ -2599,20 +3680,25 @@ function createFeaturedSection() {
                         Featured
                     </h2>
 
+
                     <p>
                         Rating 8.0 or higher
                     </p>
 
                 </div>
 
+
             </div>
 
 
-            <div class="featured-controls">
+            <div
+                class="featured-controls"
+            >
 
                 <button
                     type="button"
                     id="featuredPrev"
+                    aria-label="Previous"
                 >
 
                     <i
@@ -2621,9 +3707,11 @@ function createFeaturedSection() {
 
                 </button>
 
+
                 <button
                     type="button"
                     id="featuredNext"
+                    aria-label="Next"
                 >
 
                     <i
@@ -2633,6 +3721,7 @@ function createFeaturedSection() {
                 </button>
 
             </div>
+
 
         </div>
 
@@ -2651,11 +3740,14 @@ function createFeaturedSection() {
 
     `;
 
-    movieSection.parentNode
+
+    movieSection
+        .parentNode
         .insertBefore(
             section,
             movieSection
         );
+
 }
 
 
@@ -2668,7 +3760,13 @@ function setupFeatured() {
     const track =
         $("featuredTrack");
 
-    if (!track) return;
+
+    if (!track) {
+
+        return;
+
+    }
+
 
     featuredItems =
         contents
@@ -2677,12 +3775,18 @@ function setupFeatured() {
                     Number(
                         item.rating
                     )
-                    >= 8
+                    >=
+                    8
                     &&
-                    item.poster_url
+                    Boolean(
+                        item.poster_url
+                    )
             )
             .sort(
-                (a, b) =>
+                (
+                    a,
+                    b
+                ) =>
                     Number(
                         b.rating
                     )
@@ -2692,100 +3796,123 @@ function setupFeatured() {
                     )
             );
 
+
     if (
         !featuredItems.length
     ) {
 
         track.innerHTML = `
 
-            <div class="database-loading">
+            <div
+                class="database-loading"
+            >
+
                 No rating 8+ content yet.
+
             </div>
 
         `;
 
+
         return;
+
     }
+
 
     track.innerHTML =
         featuredItems
-            .map(item => `
+            .map(
+                item => `
 
-                <article
-                    class="featured-card"
-                    data-content-id="${item.id}"
-                >
-
-                    <div
-                        class="featured-card-poster"
-                        style="background-image:url('${escapeCssUrl(
-                            item.poster_url
-                        )}')"
+                    <article
+                        class="featured-card"
+                        data-content-id="${item.id}"
                     >
 
-                        <span
-                            class="featured-badge"
-                        >
-                            FEATURED
-                        </span>
 
-                        <span
-                            class="featured-rating"
+                        <div
+                            class="featured-card-poster"
+                            style="background-image:url('${escapeCssUrl(
+                                item.poster_url
+                            )}')"
                         >
 
-                            <i
-                                class="fa-solid fa-star"
-                            ></i>
 
-                            ${escapeHTML(
-                                item.rating
+                            <span
+                                class="featured-badge"
+                            >
+
+                                FEATURED
+
+                            </span>
+
+
+                            <span
+                                class="featured-rating"
+                            >
+
+                                <i
+                                    class="fa-solid fa-star"
+                                ></i>
+
+                                ${escapeHTML(
+                                    item.rating
+                                )}
+
+                            </span>
+
+
+                            ${createHoverOverlay(
+                                item
                             )}
 
-                        </span>
 
-                        ${createHoverOverlay(
-                            item
-                        )}
-
-                    </div>
+                        </div>
 
 
-                    <div
-                        class="featured-card-info"
-                    >
-
-                        <span
-                            class="featured-type"
+                        <div
+                            class="featured-card-info"
                         >
 
-                            ${escapeHTML(
-                                TYPE_LABEL[
+
+                            <span
+                                class="featured-type"
+                            >
+
+                                ${escapeHTML(
+                                    TYPE_LABEL[
+                                        item.type
+                                    ]
+                                    ||
                                     item.type
-                                ]
-                                ||
-                                item.type
-                            )}
+                                )}
 
-                        </span>
+                            </span>
 
-                        <h3>
 
-                            ${escapeHTML(
-                                item.title ||
-                                "Untitled"
-                            )}
+                            <h3>
 
-                        </h3>
+                                ${escapeHTML(
+                                    item.title ||
+                                    "Untitled"
+                                )}
 
-                    </div>
+                            </h3>
 
-                </article>
 
-            `)
+                        </div>
+
+
+                    </article>
+
+                `
+            )
             .join("");
 
 
-    featuredIndex = 0;
+    featuredIndex =
+        0;
+
 
     updateFeatured();
 
@@ -2798,6 +3925,7 @@ function setupFeatured() {
                 featuredNext();
 
                 startFeaturedTimer();
+
             }
         );
 
@@ -2810,6 +3938,7 @@ function setupFeatured() {
                 featuredPrev();
 
                 startFeaturedTimer();
+
             }
         );
 
@@ -2829,34 +3958,44 @@ function setupFeatured() {
 
 
     startFeaturedTimer();
+
 }
 
 
 /* =========================================================
-   FEATURED COUNT
-
-   DESKTOP = 4
-   TABLET = 3
-   PHONE = 2
+   FEATURED VISIBLE COUNT
 ========================================================= */
 
 function featuredVisibleCount() {
 
     if (
-        window.innerWidth <= 760
+        window.innerWidth <=
+        760
     ) {
+
         return 2;
+
     }
+
 
     if (
-        window.innerWidth <= 850
+        window.innerWidth <=
+        850
     ) {
+
         return 3;
+
     }
 
+
     return 4;
+
 }
 
+
+/* =========================================================
+   FEATURED MAX
+========================================================= */
 
 function featuredMaxIndex() {
 
@@ -2866,25 +4005,36 @@ function featuredMaxIndex() {
         -
         featuredVisibleCount()
     );
+
 }
 
+
+/* =========================================================
+   FEATURED POSITION
+========================================================= */
 
 function updateFeatured() {
 
     const track =
         $("featuredTrack");
 
+
     const card =
-        track?.querySelector(
-            ".featured-card"
-        );
+        track
+            ?.querySelector(
+                ".featured-card"
+            );
+
 
     if (
         !track ||
         !card
     ) {
+
         return;
+
     }
+
 
     const gap =
         parseFloat(
@@ -2895,43 +4045,59 @@ function updateFeatured() {
         ||
         0;
 
+
     const width =
         card
             .getBoundingClientRect()
             .width;
 
+
     const max =
         featuredMaxIndex();
 
+
     if (
-        featuredIndex > max
+        featuredIndex >
+        max
     ) {
 
         featuredIndex =
             max;
+
     }
+
 
     track.style.transform =
         `translateX(-${
-            featuredIndex *
+            featuredIndex
+            *
             (
                 width +
                 gap
             )
         }px)`;
+
 }
 
+
+/* =========================================================
+   FEATURED NEXT
+========================================================= */
 
 function featuredNext() {
 
     const max =
         featuredMaxIndex();
 
+
     if (
         max <= 0
     ) {
+
         return;
+
     }
+
 
     featuredIndex =
         featuredIndex >= max
@@ -2940,20 +4106,30 @@ function featuredNext() {
             :
             featuredIndex + 1;
 
+
     updateFeatured();
+
 }
 
+
+/* =========================================================
+   FEATURED PREV
+========================================================= */
 
 function featuredPrev() {
 
     const max =
         featuredMaxIndex();
 
+
     if (
         max <= 0
     ) {
+
         return;
+
     }
+
 
     featuredIndex =
         featuredIndex <= 0
@@ -2962,27 +4138,43 @@ function featuredPrev() {
             :
             featuredIndex - 1;
 
+
     updateFeatured();
+
 }
 
+
+/* =========================================================
+   FEATURED TIMER
+========================================================= */
 
 function startFeaturedTimer() {
 
     stopFeaturedTimer();
 
+
     if (
-        featuredMaxIndex() <= 0
+        featuredMaxIndex() <=
+        0
     ) {
+
         return;
+
     }
+
 
     featuredTimer =
         setInterval(
             featuredNext,
             4000
         );
+
 }
 
+
+/* =========================================================
+   STOP FEATURED
+========================================================= */
 
 function stopFeaturedTimer() {
 
@@ -2993,12 +4185,19 @@ function stopFeaturedTimer() {
         clearInterval(
             featuredTimer
         );
+
     }
+
 
     featuredTimer =
         null;
+
 }
 
+
+/* =========================================================
+   RESIZE
+========================================================= */
 
 window.addEventListener(
     "resize",
@@ -3007,7 +4206,7 @@ window.addEventListener(
 
 
 /* =========================================================
-   SEARCH
+   SEARCH OPEN
 ========================================================= */
 
 function openSearch() {
@@ -3018,6 +4217,7 @@ function openSearch() {
             "active"
         );
 
+
     setTimeout(
         () => {
 
@@ -3027,8 +4227,13 @@ function openSearch() {
         },
         100
     );
+
 }
 
+
+/* =========================================================
+   SEARCH CLOSE
+========================================================= */
 
 function closeSearch() {
 
@@ -3038,13 +4243,16 @@ function closeSearch() {
             "active"
         );
 
+
     if (
         $("searchInput")
     ) {
 
         $("searchInput").value =
             "";
+
     }
+
 
     if (
         $("searchResults")
@@ -3052,9 +4260,15 @@ function closeSearch() {
 
         $("searchResults").innerHTML =
             "";
+
     }
+
 }
 
+
+/* =========================================================
+   SEARCH BUTTON
+========================================================= */
 
 $("searchToggle")
     ?.addEventListener(
@@ -3062,6 +4276,7 @@ $("searchToggle")
         event => {
 
             event.stopPropagation();
+
 
             if (
                 $("searchBox")
@@ -3073,20 +4288,38 @@ $("searchToggle")
 
                 closeSearch();
 
-            } else {
+            }
+
+            else {
 
                 openSearch();
+
             }
+
         }
     );
 
 
+/* =========================================================
+   SEARCH CLOSE BUTTON
+========================================================= */
+
 $("searchClose")
     ?.addEventListener(
         "click",
-        closeSearch
+        event => {
+
+            event.stopPropagation();
+
+            closeSearch();
+
+        }
     );
 
+
+/* =========================================================
+   SEARCH INPUT
+========================================================= */
 
 $("searchInput")
     ?.addEventListener(
@@ -3096,16 +4329,27 @@ $("searchInput")
             performSearch(
                 event.target.value
             );
+
         }
     );
 
+
+/* =========================================================
+   SEARCH FUNCTION
+========================================================= */
 
 function performSearch(keyword) {
 
     const box =
         $("searchResults");
 
-    if (!box) return;
+
+    if (!box) {
+
+        return;
+
+    }
+
 
     const text =
         String(
@@ -3114,39 +4358,53 @@ function performSearch(keyword) {
             .trim()
             .toLowerCase();
 
+
     if (!text) {
 
         box.innerHTML =
             "";
 
+
         return;
+
     }
+
 
     const results =
         contents
-            .filter(item => {
+            .filter(
+                item => {
 
-                const searchable = [
-                    item.title,
-                    item.genre,
-                    item.author,
-                    TYPE_LABEL[
-                        item.type
+                    const searchable = [
+
+                        item.title,
+
+                        item.genre,
+
+                        item.author,
+
+                        TYPE_LABEL[
+                            item.type
+                        ]
+
                     ]
-                ]
-                    .filter(Boolean)
-                    .join(" ")
-                    .toLowerCase();
+                        .filter(Boolean)
+                        .join(" ")
+                        .toLowerCase();
 
-                return searchable
-                    .includes(
-                        text
-                    );
-            })
+
+                    return searchable
+                        .includes(
+                            text
+                        );
+
+                }
+            )
             .slice(
                 0,
                 8
             );
+
 
     if (
         !results.length
@@ -3154,7 +4412,9 @@ function performSearch(keyword) {
 
         box.innerHTML = `
 
-            <div class="search-result-item">
+            <div
+                class="search-result-item"
+            >
 
                 No result found
 
@@ -3162,58 +4422,75 @@ function performSearch(keyword) {
 
         `;
 
+
         return;
+
     }
+
 
     box.innerHTML =
         results
-            .map(item => `
-
-                <div
-                    class="search-result-item"
-                    data-search-id="${item.id}"
-                >
+            .map(
+                item => `
 
                     <div
-                        class="search-result-icon"
+                        class="search-result-item"
+                        data-search-id="${item.id}"
                     >
 
-                        <i
-                            class="${getTypeIcon(
-                                item.type
-                            )}"
-                        ></i>
 
-                    </div>
+                        <div
+                            class="search-result-icon"
+                        >
 
-                    <div>
-
-                        <h4>
-
-                            ${escapeHTML(
-                                item.title
-                            )}
-
-                        </h4>
-
-                        <p>
-
-                            ${escapeHTML(
-                                TYPE_LABEL[
+                            <i
+                                class="${getTypeIcon(
                                     item.type
-                                ]
-                            )}
+                                )}"
+                            ></i>
 
-                        </p>
+                        </div>
+
+
+                        <div>
+
+                            <h4>
+
+                                ${escapeHTML(
+                                    item.title ||
+                                    "Untitled"
+                                )}
+
+                            </h4>
+
+
+                            <p>
+
+                                ${escapeHTML(
+                                    TYPE_LABEL[
+                                        item.type
+                                    ]
+                                    ||
+                                    item.type
+                                )}
+
+                            </p>
+
+                        </div>
+
 
                     </div>
 
-                </div>
-
-            `)
+                `
+            )
             .join("");
+
 }
 
+
+/* =========================================================
+   SEARCH RESULT CLICK
+========================================================= */
 
 $("searchResults")
     ?.addEventListener(
@@ -3225,16 +4502,30 @@ $("searchResults")
                     "[data-search-id]"
                 );
 
-            if (!result) return;
+
+            if (!result) {
+
+                return;
+
+            }
+
 
             const item =
                 findItem(
-                    result.dataset.searchId
+                    result.dataset
+                        .searchId
                 );
 
-            if (!item) return;
+
+            if (!item) {
+
+                return;
+
+            }
+
 
             closeSearch();
+
 
             $(
                 TYPE_SECTION[
@@ -3244,11 +4535,65 @@ $("searchResults")
                 ?.scrollIntoView({
                     behavior:
                         "smooth",
+
                     block:
                         "start"
                 });
+
         }
     );
+
+
+/* =========================================================
+   CLICK OUTSIDE SEARCH
+========================================================= */
+
+document.addEventListener(
+    "click",
+    event => {
+
+        const searchBox =
+            $("searchBox");
+
+
+        const searchToggle =
+            $("searchToggle");
+
+
+        if (
+            !searchBox
+        ) {
+
+            return;
+
+        }
+
+
+        const insideBox =
+            searchBox.contains(
+                event.target
+            );
+
+
+        const insideButton =
+            searchToggle
+            &&
+            searchToggle.contains(
+                event.target
+            );
+
+
+        if (
+            !insideBox &&
+            !insideButton
+        ) {
+
+            closeSearch();
+
+        }
+
+    }
+);
 
 
 /* =========================================================
@@ -3262,11 +4607,13 @@ $("mobileMenuButton")
 
             event.stopPropagation();
 
+
             $("mobileNav")
                 ?.classList
                 .toggle(
                     "active"
                 );
+
 
             const icon =
                 $("mobileMenuButton")
@@ -3274,7 +4621,13 @@ $("mobileMenuButton")
                         "i"
                     );
 
-            if (!icon) return;
+
+            if (!icon) {
+
+                return;
+
+            }
+
 
             const isOpen =
                 $("mobileNav")
@@ -3283,10 +4636,12 @@ $("mobileMenuButton")
                         "active"
                     );
 
+
             icon.classList.toggle(
                 "fa-bars",
                 !isOpen
             );
+
 
             icon.classList.toggle(
                 "fa-xmark",
@@ -3294,28 +4649,37 @@ $("mobileMenuButton")
                     isOpen
                 )
             );
+
         }
     );
 
+
+/* =========================================================
+   MOBILE LINKS
+========================================================= */
 
 $("mobileNav")
     ?.querySelectorAll(
         "a"
     )
-    .forEach(link => {
+    .forEach(
+        link => {
 
-        link.addEventListener(
-            "click",
-            () => {
+            link.addEventListener(
+                "click",
+                () => {
 
-                $("mobileNav")
-                    ?.classList
-                    .remove(
-                        "active"
-                    );
-            }
-        );
-    });
+                    $("mobileNav")
+                        ?.classList
+                        .remove(
+                            "active"
+                        );
+
+                }
+            );
+
+        }
+    );
 
 
 /* =========================================================
@@ -3327,53 +4691,70 @@ function updateActiveNav() {
     let current =
         "home";
 
+
     document
         .querySelectorAll(
             "section[id]"
         )
-        .forEach(section => {
+        .forEach(
+            section => {
 
-            if (
-                section.id ===
-                "featured"
-            ) {
-                return;
+                if (
+                    section.id ===
+                    "featured"
+                ) {
+
+                    return;
+
+                }
+
+
+                const top =
+                    section.offsetTop -
+                    150;
+
+
+                const bottom =
+                    top +
+                    section.offsetHeight;
+
+
+                if (
+                    window.scrollY >=
+                    top
+                    &&
+                    window.scrollY <
+                    bottom
+                ) {
+
+                    current =
+                        section.id;
+
+                }
+
             }
+        );
 
-            const top =
-                section.offsetTop -
-                150;
-
-            const bottom =
-                top +
-                section.offsetHeight;
-
-            if (
-                window.scrollY >= top
-                &&
-                window.scrollY < bottom
-            ) {
-
-                current =
-                    section.id;
-            }
-        });
 
     document
         .querySelectorAll(
             ".nav-link"
         )
-        .forEach(link => {
+        .forEach(
+            link => {
 
-            link.classList.toggle(
-                "active",
-                link.getAttribute(
-                    "href"
-                )
-                ===
-                `#${current}`
-            );
-        });
+                link.classList.toggle(
+                    "active",
+                    link.getAttribute(
+                        "href"
+                    )
+                    ===
+                    `#${current}`
+                );
+
+            }
+        );
+
 }
 
 
@@ -3384,7 +4765,7 @@ window.addEventListener(
 
 
 /* =========================================================
-   ESC
+   ESC KEY
 ========================================================= */
 
 document.addEventListener(
@@ -3395,10 +4776,14 @@ document.addEventListener(
             event.key !==
             "Escape"
         ) {
+
             return;
+
         }
 
+
         closeSearch();
+
 
         $("mobileNav")
             ?.classList
@@ -3406,15 +4791,18 @@ document.addEventListener(
                 "active"
             );
 
+
         closeStoryReader();
 
+
         closeBookReader();
+
     }
 );
 
 
 /* =========================================================
-   HELPERS
+   LOAD ERROR
 ========================================================= */
 
 function showLoadError() {
@@ -3423,52 +4811,84 @@ function showLoadError() {
         .values(
             TYPE_GRID
         )
-        .forEach(id => {
+        .forEach(
+            id => {
 
-            const grid =
-                $(id);
+                const grid =
+                    $(id);
 
-            if (!grid) return;
 
-            grid.innerHTML = `
+                if (!grid) {
 
-                <div class="database-loading">
+                    return;
 
-                    Unable to load content.
+                }
 
-                </div>
 
-            `;
-        });
+                grid.innerHTML = `
+
+                    <div
+                        class="database-loading"
+                    >
+
+                        Unable to load content.
+
+                    </div>
+
+                `;
+
+            }
+        );
+
 }
 
+
+/* =========================================================
+   TYPE ICON
+========================================================= */
 
 function getTypeIcon(type) {
 
     const icons = {
+
         movie:
             "fa-solid fa-film",
+
         natok:
             "fa-solid fa-clapperboard",
+
         series:
             "fa-solid fa-tv",
+
         upcoming:
             "fa-solid fa-clock",
+
         story:
             "fa-solid fa-book-open",
+
         book:
             "fa-solid fa-book",
+
         tutorial:
             "fa-solid fa-graduation-cap"
+
     };
 
+
     return (
-        icons[type]
+        icons[
+            type
+        ]
         ||
         "fa-solid fa-film"
     );
+
 }
 
+
+/* =========================================================
+   HAS RATING
+========================================================= */
 
 function hasRating(item) {
 
@@ -3481,14 +4901,22 @@ function hasRating(item) {
         &&
         item.rating !== ""
     );
+
 }
 
+
+/* =========================================================
+   DATE FORMAT
+========================================================= */
 
 function formatDate(value) {
 
     if (!value) {
+
         return "";
+
     }
+
 
     try {
 
@@ -3500,19 +4928,29 @@ function formatDate(value) {
                 {
                     year:
                         "numeric",
+
                     month:
                         "short",
+
                     day:
                         "numeric"
                 }
             );
 
-    } catch {
+    }
+
+    catch {
 
         return value;
+
     }
+
 }
 
+
+/* =========================================================
+   SAFE FILE NAME
+========================================================= */
 
 function safeFileName(value) {
 
@@ -3527,13 +4965,19 @@ function safeFileName(value) {
         .trim()
         ||
         "download";
+
 }
 
+
+/* =========================================================
+   ESCAPE HTML
+========================================================= */
 
 function escapeHTML(value) {
 
     return String(
-        value ?? ""
+        value ??
+        ""
     )
         .replaceAll(
             "&",
@@ -3555,21 +4999,32 @@ function escapeHTML(value) {
             "'",
             "&#039;"
         );
+
 }
 
+
+/* =========================================================
+   ESCAPE ATTRIBUTE
+========================================================= */
 
 function escapeAttribute(value) {
 
     return escapeHTML(
         value
     );
+
 }
 
+
+/* =========================================================
+   ESCAPE CSS URL
+========================================================= */
 
 function escapeCssUrl(value) {
 
     return String(
-        value || ""
+        value ||
+        ""
     )
         .replaceAll(
             "\\",
@@ -3591,11 +5046,12 @@ function escapeCssUrl(value) {
             "\r",
             ""
         );
+
 }
 
 
 /* =========================================================
-   START
+   START WEBSITE
 ========================================================= */
 
 document.addEventListener(
@@ -3605,17 +5061,20 @@ document.addEventListener(
         const hero =
             $("heroBackground");
 
+
         if (hero) {
 
-            hero.style.backgroundImage =
+            hero.style
+                .backgroundImage =
                 "linear-gradient(120deg,#11001f,#2a075c,#4d0c79)";
 
-            hero.style.opacity =
-                "1";
         }
+
 
         setupHeaderLogo();
 
+
         await loadContents();
+
     }
 );
