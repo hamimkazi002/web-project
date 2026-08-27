@@ -1,8 +1,13 @@
 /* =========================================================
    CINEMA MELLA / HUB
-   PUBLIC WEBSITE - FINAL SCRIPT.JS
+   FINAL PUBLIC SCRIPT.JS
 
-   DATABASE CHANGE: NONE
+   HERO = 4 SECONDS
+   DESKTOP FEATURED = 4 CARDS
+   TABLET = 3
+   MOBILE = 2
+
+   NO DATABASE CHANGE
 ========================================================= */
 
 
@@ -16,30 +21,22 @@ const SUPABASE_URL =
 const SUPABASE_PUBLISHABLE_KEY =
     "sb_publishable_ed-PGIvnw8yN2OwI2264IA_f1FOdWrp";
 
-
-const db =
-    window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_PUBLISHABLE_KEY
-    );
+const db = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY
+);
 
 
 /* =========================================================
-   GLOBAL DATA
+   GLOBAL
 ========================================================= */
 
 let contents = [];
-
-
-/* HERO */
 
 let heroSlides = [];
 let heroIndex = 0;
 let heroTimer = null;
 let heroZoomAnimation = null;
-
-
-/* FEATURED */
 
 let featuredItems = [];
 let featuredIndex = 0;
@@ -51,241 +48,111 @@ let featuredTimer = null;
 ========================================================= */
 
 const TYPE_LABEL = {
-
     movie: "Movie",
-
     natok: "Natok",
-
     series: "Web Series",
-
     upcoming: "Upcoming",
-
     story: "Story",
-
     book: "Book",
-
     tutorial: "Tutorial"
-
 };
-
 
 const TYPE_SECTION = {
-
     movie: "movies",
-
     natok: "natok",
-
     series: "webseries",
-
     upcoming: "upcoming",
-
     story: "stories",
-
     book: "books",
-
     tutorial: "tutorial"
-
 };
-
 
 const TYPE_GRID = {
-
     movie: "moviesGrid",
-
     natok: "natokGrid",
-
     series: "webseriesGrid",
-
     upcoming: "upcomingGrid",
-
     story: "storiesGrid",
-
     book: "booksGrid",
-
     tutorial: "tutorialGrid"
-
 };
-
-
-/* =========================================================
-   HERO ORDER
-========================================================= */
 
 const HERO_ORDER = [
-
     "movie",
-
     "natok",
-
     "series",
-
     "upcoming",
-
     "story",
-
     "book",
-
     "tutorial"
-
 ];
 
-
-/* =========================================================
-   ACTIVE CATEGORY
-========================================================= */
-
 const selectedGenre = {
-
     movie: "all",
-
     natok: "all",
-
     series: "all",
-
     upcoming: "all",
-
     story: "all",
-
     book: "all",
-
     tutorial: "all"
-
 };
 
 
 /* =========================================================
-   DOM
+   DOM HELPER
 ========================================================= */
 
-const heroBackground =
-    document.getElementById(
-        "heroBackground"
-    );
-
-
-const heroDots =
-    document.getElementById(
-        "heroDots"
-    );
-
-
-const searchToggle =
-    document.getElementById(
-        "searchToggle"
-    );
-
-
-const searchBox =
-    document.getElementById(
-        "searchBox"
-    );
-
-
-const searchInput =
-    document.getElementById(
-        "searchInput"
-    );
-
-
-const searchClose =
-    document.getElementById(
-        "searchClose"
-    );
-
-
-const searchResults =
-    document.getElementById(
-        "searchResults"
-    );
-
-
-const mobileMenuButton =
-    document.getElementById(
-        "mobileMenuButton"
-    );
-
-
-const mobileNav =
-    document.getElementById(
-        "mobileNav"
-    );
-
-
-/* =========================================================
-   HEADER LOGO ANIMATION
-
-   ONLY HEADER:
-   CINEMA MELLA
-   CINEMA HUB
-
-   FOOTER WILL NOT ANIMATE
-========================================================= */
-
-const headerLogo =
-    document.getElementById(
-        "logoChangingText"
-    );
-
-
-const logoWords = [
-    "MELLA",
-    "HUB"
-];
-
-
-let logoIndex = 0;
-
-
-if (headerLogo) {
-
-    setInterval(
-        () => {
-
-            logoIndex =
-                (
-                    logoIndex + 1
-                )
-                %
-                logoWords.length;
-
-
-            headerLogo.style.opacity =
-                "0";
-
-
-            headerLogo.style.transform =
-                "translateY(5px)";
-
-
-            setTimeout(
-                () => {
-
-                    headerLogo.textContent =
-                        logoWords[
-                            logoIndex
-                        ];
-
-
-                    headerLogo.style.opacity =
-                        "1";
-
-
-                    headerLogo.style.transform =
-                        "translateY(0)";
-
-                },
-                250
-            );
-
-        },
-        2500
-    );
-
+function $(id) {
+    return document.getElementById(id);
 }
 
 
 /* =========================================================
-   LOAD CONTENT FROM SUPABASE
+   HEADER LOGO
+========================================================= */
+
+function setupHeaderLogo() {
+
+    const logo = $("logoChangingText");
+
+    if (!logo) return;
+
+    const words = [
+        "MELLA",
+        "HUB"
+    ];
+
+    let index = 0;
+
+    setInterval(() => {
+
+        index =
+            (index + 1) %
+            words.length;
+
+        logo.style.opacity = "0";
+
+        logo.style.transform =
+            "translateY(5px)";
+
+        setTimeout(() => {
+
+            logo.textContent =
+                words[index];
+
+            logo.style.opacity = "1";
+
+            logo.style.transform =
+                "translateY(0)";
+
+        }, 250);
+
+    }, 2500);
+}
+
+
+/* =========================================================
+   LOAD CONTENT
 ========================================================= */
 
 async function loadContents() {
@@ -295,33 +162,26 @@ async function loadContents() {
         const {
             data,
             error
-        } =
-            await db
-                .from("contents")
-                .select("*")
-                .eq(
-                    "status",
-                    "published"
-                )
-                .order(
-                    "created_at",
-                    {
-                        ascending:
-                            false
-                    }
-                );
-
+        } = await db
+            .from("contents")
+            .select("*")
+            .eq(
+                "status",
+                "published"
+            )
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
+            );
 
         if (error) {
-
             throw error;
-
         }
-
 
         contents =
             data || [];
-
 
         createDropdowns();
 
@@ -337,106 +197,75 @@ async function loadContents() {
 
         updateActiveNav();
 
-    }
-
-    catch (error) {
+    } catch (error) {
 
         console.error(
-            "Cinema Mella load error:",
+            "Content load error:",
             error
         );
 
-
         showLoadError();
-
     }
-
 }
 
 
 /* =========================================================
-   GENRE HELPERS
+   GENRE
 ========================================================= */
 
 function splitGenres(value) {
 
-    return String(
-        value || ""
-    )
+    return String(value || "")
         .split(",")
         .map(
-            item =>
-                item.trim()
+            item => item.trim()
         )
         .filter(Boolean);
-
 }
 
-
-/* =========================================================
-   GET UNIQUE GENRES
-========================================================= */
 
 function getGenres(type) {
 
     const result = [];
-
 
     contents
         .filter(
             item =>
                 item.type === type
         )
-        .forEach(
-            item => {
+        .forEach(item => {
 
-                splitGenres(
-                    item.genre
-                )
-                    .forEach(
-                        genre => {
+            splitGenres(
+                item.genre
+            )
+                .forEach(genre => {
 
-                            const exists =
-                                result.some(
-                                    old =>
-                                        old
-                                            .toLowerCase()
-                                        ===
-                                        genre
-                                            .toLowerCase()
-                                );
+                    const exists =
+                        result.some(
+                            old =>
+                                old.toLowerCase()
+                                ===
+                                genre.toLowerCase()
+                        );
 
+                    if (!exists) {
 
-                            if (!exists) {
-
-                                result.push(
-                                    genre
-                                );
-
-                            }
-
-                        }
-                    );
-
-            }
-        );
-
+                        result.push(
+                            genre
+                        );
+                    }
+                });
+        });
 
     return result.sort(
-        (
-            a,
-            b
-        ) =>
-            a.localeCompare(
-                b
-            )
+        (a, b) =>
+            a.localeCompare(b)
     );
-
 }
 
 
 /* =========================================================
-   CREATE HEADER DROPDOWNS
+   NAVBAR DROPDOWNS
 ========================================================= */
 
 function createDropdowns() {
@@ -446,68 +275,29 @@ function createDropdowns() {
             ".nav-menu"
         );
 
-
-    if (!nav) {
-
-        return;
-
-    }
-
+    if (!nav) return;
 
     const map = {
-
-        "#movies":
-            "movie",
-
-        "#natok":
-            "natok",
-
-        "#webseries":
-            "series",
-
-        "#upcoming":
-            "upcoming",
-
-        "#stories":
-            "story",
-
-        "#books":
-            "book",
-
-        "#tutorial":
-            "tutorial"
-
+        "#movies": "movie",
+        "#natok": "natok",
+        "#webseries": "series",
+        "#upcoming": "upcoming",
+        "#stories": "story",
+        "#books": "book",
+        "#tutorial": "tutorial"
     };
 
-
     Object
-        .entries(
-            map
-        )
+        .entries(map)
         .forEach(
-            (
-                [
-                    href,
-                    type
-                ]
-            ) => {
+            ([href, type]) => {
 
                 const link =
                     nav.querySelector(
                         `a.nav-link[href="${href}"]`
                     );
 
-
-                if (!link) {
-
-                    return;
-
-                }
-
-
-                /*
-                   Already wrapped?
-                */
+                if (!link) return;
 
                 if (
                     link.parentElement
@@ -516,50 +306,35 @@ function createDropdowns() {
                             "nav-category-dropdown"
                         )
                 ) {
-
                     return;
-
                 }
-
 
                 const wrapper =
                     document.createElement(
                         "div"
                     );
 
-
                 wrapper.className =
                     "nav-category-dropdown";
-
 
                 wrapper.dataset.type =
                     type;
 
-
-                const dropdown =
+                const menu =
                     document.createElement(
                         "div"
                     );
 
-
-                dropdown.className =
+                menu.className =
                     "genre-dropdown-menu";
 
+                menu.innerHTML = `
 
-                dropdown.innerHTML = `
-
-                    <div
-                        class="genre-dropdown-head"
-                    >
-
+                    <div class="genre-dropdown-head">
                         ${escapeHTML(
-                            TYPE_LABEL[
-                                type
-                            ]
+                            TYPE_LABEL[type]
                         )}
-
                     </div>
-
 
                     <div
                         class="genre-menu-dynamic"
@@ -567,31 +342,25 @@ function createDropdowns() {
 
                 `;
 
-
-                link.parentNode
-                    .insertBefore(
-                        wrapper,
-                        link
-                    );
-
+                link.parentNode.insertBefore(
+                    wrapper,
+                    link
+                );
 
                 wrapper.appendChild(
                     link
                 );
 
-
                 wrapper.appendChild(
-                    dropdown
+                    menu
                 );
-
             }
         );
-
 }
 
 
 /* =========================================================
-   RENDER HEADER CATEGORIES
+   CATEGORY MENU
 ========================================================= */
 
 function renderDropdownCategories() {
@@ -600,84 +369,63 @@ function renderDropdownCategories() {
         .querySelectorAll(
             ".nav-category-dropdown"
         )
-        .forEach(
-            wrapper => {
+        .forEach(wrapper => {
 
-                const type =
-                    wrapper.dataset.type;
+            const type =
+                wrapper.dataset.type;
 
+            const box =
+                wrapper.querySelector(
+                    ".genre-menu-dynamic"
+                );
 
-                const box =
-                    wrapper.querySelector(
-                        ".genre-menu-dynamic"
-                    );
-
-
-                if (
-                    !type ||
-                    !box
-                ) {
-
-                    return;
-
-                }
-
-
-                let html = `
-
-                    <button
-                        type="button"
-                        class="genre-menu-item active"
-                        data-type="${type}"
-                        data-genre="all"
-                    >
-
-                        All ${escapeHTML(
-                            TYPE_LABEL[
-                                type
-                            ]
-                        )}
-
-                    </button>
-
-                `;
-
-
-                getGenres(
-                    type
-                )
-                    .forEach(
-                        genre => {
-
-                            html += `
-
-                                <button
-                                    type="button"
-                                    class="genre-menu-item"
-                                    data-type="${type}"
-                                    data-genre="${escapeAttribute(
-                                        genre
-                                    )}"
-                                >
-
-                                    ${escapeHTML(
-                                        genre
-                                    )}
-
-                                </button>
-
-                            `;
-
-                        }
-                    );
-
-
-                box.innerHTML =
-                    html;
-
+            if (!type || !box) {
+                return;
             }
-        );
 
+            let html = `
+
+                <button
+                    type="button"
+                    class="genre-menu-item active"
+                    data-type="${type}"
+                    data-genre="all"
+                >
+
+                    All ${escapeHTML(
+                        TYPE_LABEL[type]
+                    )}
+
+                </button>
+
+            `;
+
+            getGenres(type)
+                .forEach(genre => {
+
+                    html += `
+
+                        <button
+                            type="button"
+                            class="genre-menu-item"
+                            data-type="${type}"
+                            data-genre="${escapeAttribute(
+                                genre
+                            )}"
+                        >
+
+                            ${escapeHTML(
+                                genre
+                            )}
+
+                        </button>
+
+                    `;
+                });
+
+            box.innerHTML =
+                html;
+        });
 }
 
 
@@ -694,226 +442,142 @@ document.addEventListener(
                 ".genre-menu-item"
             );
 
-
-        if (!button) {
-
-            return;
-
-        }
-
+        if (!button) return;
 
         event.preventDefault();
-
         event.stopPropagation();
-
 
         const type =
             button.dataset.type;
-
 
         const genre =
             button.dataset.genre ||
             "all";
 
+        if (!type) return;
 
-        if (
-            !type ||
-            !TYPE_GRID[
-                type
-            ]
-        ) {
-
-            return;
-
-        }
-
-
-        selectedGenre[
-            type
-        ] =
+        selectedGenre[type] =
             genre;
-
 
         const wrapper =
             button.closest(
                 ".nav-category-dropdown"
             );
 
-
         wrapper
             ?.querySelectorAll(
                 ".genre-menu-item"
             )
-            .forEach(
-                item => {
+            .forEach(item => {
 
-                    item.classList.remove(
-                        "active"
-                    );
-
-                }
-            );
-
+                item.classList.remove(
+                    "active"
+                );
+            });
 
         button.classList.add(
             "active"
         );
 
+        renderType(type);
 
-        renderType(
-            type
-        );
-
-
-        document
-            .getElementById(
-                TYPE_SECTION[
-                    type
-                ]
-            )
+        $(
+            TYPE_SECTION[type]
+        )
             ?.scrollIntoView({
-                behavior:
-                    "smooth",
-
-                block:
-                    "start"
+                behavior: "smooth",
+                block: "start"
             });
-
     }
 );
 
 
 /* =========================================================
-   FILTER CONTENT
+   FILTER
 ========================================================= */
 
 function getItems(type) {
 
     const genre =
-        selectedGenre[
-            type
-        ]
-        ||
+        selectedGenre[type] ||
         "all";
-
 
     return contents
         .filter(
             item =>
                 item.type === type
         )
-        .filter(
-            item => {
+        .filter(item => {
 
-                if (
-                    genre === "all"
-                ) {
-
-                    return true;
-
-                }
-
-
-                return splitGenres(
-                    item.genre
-                )
-                    .some(
-                        current =>
-                            current
-                                .toLowerCase()
-                            ===
-                            genre
-                                .toLowerCase()
-                    );
-
+            if (
+                genre === "all"
+            ) {
+                return true;
             }
-        );
 
+            return splitGenres(
+                item.genre
+            )
+                .some(
+                    current =>
+                        current.toLowerCase()
+                        ===
+                        genre.toLowerCase()
+                );
+        });
 }
 
 
 /* =========================================================
-   RENDER ALL SECTIONS
+   RENDER ALL
 ========================================================= */
 
 function renderAllSections() {
 
-    HERO_ORDER
-        .forEach(
-            type => {
-
-                renderType(
-                    type
-                );
-
-            }
-        );
-
+    HERO_ORDER.forEach(
+        type => {
+            renderType(type);
+        }
+    );
 }
 
 
 /* =========================================================
-   RENDER SECTION
-
-   IMPORTANT:
-   ALL SECTIONS USE SAME CARD STRUCTURE
+   RENDER ONE SECTION
 ========================================================= */
 
 function renderType(type) {
 
     const grid =
-        document.getElementById(
-            TYPE_GRID[
-                type
-            ]
+        $(
+            TYPE_GRID[type]
         );
 
-
-    if (!grid) {
-
-        return;
-
-    }
-
-
-    /*
-       Force same class for all grids.
-    */
+    if (!grid) return;
 
     grid.classList.add(
         "uniform-content-grid"
     );
 
-
     const items =
-        getItems(
-            type
-        );
-
+        getItems(type);
 
     if (!items.length) {
 
         grid.innerHTML = `
 
-            <div
-                class="database-loading"
-            >
+            <div class="database-loading">
 
                 No ${escapeHTML(
-                    TYPE_LABEL[
-                        type
-                    ]
+                    TYPE_LABEL[type]
                 )} content found.
 
             </div>
 
         `;
 
-
         return;
-
     }
-
 
     grid.innerHTML =
         items
@@ -921,20 +585,11 @@ function renderType(type) {
                 createStandardCard
             )
             .join("");
-
 }
 
 
 /* =========================================================
-   SAME CARD FOR EVERYTHING
-
-   MOVIE
-   NATOK
-   WEB SERIES
-   UPCOMING
-   STORY
-   BOOK
-   TUTORIAL
+   SAME CARD FOR ALL SECTIONS
 ========================================================= */
 
 function createStandardCard(item) {
@@ -943,14 +598,9 @@ function createStandardCard(item) {
         item.poster_url ||
         "";
 
-
     const typeName =
-        TYPE_LABEL[
-            item.type
-        ]
-        ||
+        TYPE_LABEL[item.type] ||
         item.type;
-
 
     return `
 
@@ -958,9 +608,6 @@ function createStandardCard(item) {
             class="movie-card uniform-content-card"
             data-content-id="${item.id}"
         >
-
-
-            <!-- POSTER -->
 
             <div
                 class="movie-poster uniform-card-poster"
@@ -975,15 +622,12 @@ function createStandardCard(item) {
                 }"
             >
 
-
                 ${
                     item.badge
                         ?
                         `
 
-                            <span
-                                class="content-badge"
-                            >
+                            <span class="content-badge">
 
                                 ${escapeHTML(
                                     item.badge
@@ -996,11 +640,9 @@ function createStandardCard(item) {
                         ""
                 }
 
-
                 ${createHoverOverlay(
                     item
                 )}
-
 
                 ${
                     item.video_url
@@ -1011,7 +653,6 @@ function createStandardCard(item) {
                                 type="button"
                                 class="poster-play content-video-button"
                                 data-content-id="${item.id}"
-                                aria-label="Watch"
                             >
 
                                 <i
@@ -1025,24 +666,17 @@ function createStandardCard(item) {
                         ""
                 }
 
-
             </div>
 
-
-            <!-- INFO -->
 
             <div
                 class="card-info uniform-card-info"
             >
 
-
-                <span
-                    class="card-category"
-                >
+                <span class="card-category">
 
                     ${escapeHTML(
-                        typeName
-                            .toUpperCase()
+                        typeName.toUpperCase()
                     )}
 
                 </span>
@@ -1058,9 +692,7 @@ function createStandardCard(item) {
                 </h3>
 
 
-                <div
-                    class="card-meta"
-                >
+                <div class="card-meta">
 
                     <span>
 
@@ -1076,9 +708,7 @@ function createStandardCard(item) {
                     <span>
 
                         ${
-                            hasRating(
-                                item
-                            )
+                            hasRating(item)
                                 ?
                                 `
 
@@ -1100,9 +730,7 @@ function createStandardCard(item) {
                 </div>
 
 
-                <div
-                    class="card-actions"
-                >
+                <div class="card-actions">
 
                     ${getCardButtons(
                         item
@@ -1110,14 +738,11 @@ function createStandardCard(item) {
 
                 </div>
 
-
             </div>
-
 
         </article>
 
     `;
-
 }
 
 
@@ -1127,29 +752,17 @@ function createStandardCard(item) {
 
 function getCardMeta(item) {
 
-    /*
-       SERIES
-    */
-
     if (
-        item.type ===
-        "series"
+        item.type === "series"
         &&
         item.season
     ) {
 
         return `Season ${item.season}`;
-
     }
 
-
-    /*
-       UPCOMING
-    */
-
     if (
-        item.type ===
-        "upcoming"
+        item.type === "upcoming"
         &&
         item.release_date
     ) {
@@ -1157,34 +770,20 @@ function getCardMeta(item) {
         return formatDate(
             item.release_date
         );
-
     }
-
-
-    /*
-       STORY / BOOK AUTHOR
-    */
 
     if (
         (
-            item.type ===
-            "story"
+            item.type === "story"
             ||
-            item.type ===
-            "book"
+            item.type === "book"
         )
         &&
         item.author
     ) {
 
         return item.author;
-
     }
-
-
-    /*
-       DEFAULT
-    */
 
     return String(
         item.year
@@ -1193,7 +792,6 @@ function getCardMeta(item) {
         ||
         ""
     );
-
 }
 
 
@@ -1203,12 +801,7 @@ function getCardMeta(item) {
 
 function getCardButtons(item) {
 
-
-    /* =====================================================
-       MOVIE / NATOK / SERIES / TUTORIAL
-
-       DOWNLOAD BUTTON
-    ===================================================== */
+    /* MOVIE / NATOK / SERIES / TUTORIAL */
 
     if (
         [
@@ -1244,20 +837,13 @@ function getCardButtons(item) {
             </button>
 
         `;
-
     }
 
 
-    /* =====================================================
-       STORY
-
-       READ
-       DOWNLOAD PDF
-    ===================================================== */
+    /* STORY */
 
     if (
-        item.type ===
-        "story"
+        item.type === "story"
     ) {
 
         return `
@@ -1292,20 +878,13 @@ function getCardButtons(item) {
             </button>
 
         `;
-
     }
 
 
-    /* =====================================================
-       BOOK
-
-       READ BOOK INSIDE WEBSITE
-       DOWNLOAD PDF
-    ===================================================== */
+    /* BOOK */
 
     if (
-        item.type ===
-        "book"
+        item.type === "book"
     ) {
 
         return `
@@ -1352,17 +931,9 @@ function getCardButtons(item) {
             </button>
 
         `;
-
     }
 
-
-    /*
-       UPCOMING =
-       no extra button
-    */
-
     return "";
-
 }
 
 
@@ -1374,9 +945,7 @@ function createHoverOverlay(item) {
 
     return `
 
-        <div
-            class="card-hover-overlay"
-        >
+        <div class="card-hover-overlay">
 
             <h4>
 
@@ -1387,7 +956,6 @@ function createHoverOverlay(item) {
 
             </h4>
 
-
             <p>
 
                 ${escapeHTML(
@@ -1397,10 +965,7 @@ function createHoverOverlay(item) {
 
             </p>
 
-
-            <span
-                class="card-hover-action"
-            >
+            <span class="card-hover-action">
 
                 ${escapeHTML(
                     getHoverText(
@@ -1417,57 +982,36 @@ function createHoverOverlay(item) {
         </div>
 
     `;
-
 }
 
-
-/* =========================================================
-   HOVER TEXT
-========================================================= */
 
 function getHoverText(item) {
 
     if (
-        item.type ===
-        "story"
+        item.type === "story"
     ) {
-
         return "Read Story";
-
     }
 
-
     if (
-        item.type ===
-        "book"
+        item.type === "book"
     ) {
-
         return "Read Book";
-
     }
-
 
     if (
-        item.type ===
-        "upcoming"
+        item.type === "upcoming"
     ) {
-
         return "Coming Soon";
-
     }
-
 
     if (
         item.video_url
     ) {
-
         return "Watch Now";
-
     }
 
-
     return "View";
-
 }
 
 
@@ -1479,20 +1023,15 @@ function findItem(id) {
 
     return contents.find(
         item =>
-            String(
-                item.id
-            )
+            String(item.id)
             ===
-            String(
-                id
-            )
+            String(id)
     );
-
 }
 
 
 /* =========================================================
-   MOVIE / NATOK / SERIES / TUTORIAL DOWNLOAD
+   NORMAL DOWNLOAD
 ========================================================= */
 
 document.addEventListener(
@@ -1504,54 +1043,29 @@ document.addEventListener(
                 ".content-download-button"
             );
 
-
-        if (!button) {
-
-            return;
-
-        }
-
-
-        /*
-           Story এবং Book PDF
-           আলাদা handler
-        */
+        if (!button) return;
 
         if (
-            button.classList
-                .contains(
-                    "story-pdf-download"
-                )
+            button.classList.contains(
+                "story-pdf-download"
+            )
             ||
-            button.classList
-                .contains(
-                    "book-pdf-download"
-                )
+            button.classList.contains(
+                "book-pdf-download"
+            )
         ) {
-
             return;
-
         }
 
-
         event.preventDefault();
-
         event.stopPropagation();
-
 
         const item =
             findItem(
-                button.dataset
-                    .contentId
+                button.dataset.contentId
             );
 
-
-        if (!item) {
-
-            return;
-
-        }
-
+        if (!item) return;
 
         if (
             !item.download_url
@@ -1561,24 +1075,20 @@ document.addEventListener(
                 "Download link has not been added yet."
             );
 
-
             return;
-
         }
-
 
         window.open(
             item.download_url,
             "_blank",
             "noopener,noreferrer"
         );
-
     }
 );
 
 
 /* =========================================================
-   VIDEO / WATCH BUTTON
+   VIDEO
 ========================================================= */
 
 document.addEventListener(
@@ -1590,25 +1100,15 @@ document.addEventListener(
                 ".content-video-button"
             );
 
-
-        if (!button) {
-
-            return;
-
-        }
-
+        if (!button) return;
 
         event.preventDefault();
-
         event.stopPropagation();
-
 
         const item =
             findItem(
-                button.dataset
-                    .contentId
+                button.dataset.contentId
             );
-
 
         if (
             item?.video_url
@@ -1619,9 +1119,7 @@ document.addEventListener(
                 "_blank",
                 "noopener,noreferrer"
             );
-
         }
-
     }
 );
 
@@ -1639,42 +1137,28 @@ document.addEventListener(
                 ".content-story-button"
             );
 
-
-        if (!button) {
-
-            return;
-
-        }
-
+        if (!button) return;
 
         event.preventDefault();
-
         event.stopPropagation();
 
-
-        const item =
+        const story =
             findItem(
-                button.dataset
-                    .contentId
+                button.dataset.contentId
             );
 
-
-        if (item) {
+        if (story) {
 
             openStoryReader(
-                item
+                story
             );
-
         }
-
     }
 );
 
 
 /* =========================================================
    BOOK READ
-
-   BOOK PDF OPENS INSIDE WEBSITE
 ========================================================= */
 
 document.addEventListener(
@@ -1686,25 +1170,15 @@ document.addEventListener(
                 ".content-book-button"
             );
 
-
-        if (!button) {
-
-            return;
-
-        }
-
+        if (!button) return;
 
         event.preventDefault();
-
         event.stopPropagation();
-
 
         const book =
             findItem(
-                button.dataset
-                    .contentId
+                button.dataset.contentId
             );
-
 
         if (
             !book ||
@@ -1715,64 +1189,41 @@ document.addEventListener(
                 "Book PDF has not been uploaded yet."
             );
 
-
             return;
-
         }
-
 
         openBookReader(
             book
         );
-
     }
 );
 
 
 /* =========================================================
-   OPEN BOOK READER
+   BOOK READER
 ========================================================= */
 
 function openBookReader(book) {
 
-    /*
-       Remove old modal
-    */
-
     closeBookReader();
-
 
     const modal =
         document.createElement(
             "div"
         );
 
-
     modal.id =
         "bookReaderModal";
 
-
     modal.innerHTML = `
 
-        <div
-            class="book-reader-overlay"
-        >
+        <div class="book-reader-overlay">
 
-            <div
-                class="book-reader-box"
-            >
+            <div class="book-reader-box">
 
+                <div class="book-reader-header">
 
-                <!-- HEADER -->
-
-                <div
-                    class="book-reader-header"
-                >
-
-
-                    <div
-                        class="book-reader-title"
-                    >
+                    <div class="book-reader-title">
 
                         <h2>
 
@@ -1782,7 +1233,6 @@ function openBookReader(book) {
                             )}
 
                         </h2>
-
 
                         ${
                             book.author
@@ -1805,10 +1255,7 @@ function openBookReader(book) {
                     </div>
 
 
-                    <div
-                        class="book-reader-actions"
-                    >
-
+                    <div class="book-reader-actions">
 
                         <button
                             type="button"
@@ -1837,18 +1284,12 @@ function openBookReader(book) {
 
                         </button>
 
-
                     </div>
-
 
                 </div>
 
 
-                <!-- PDF -->
-
-                <div
-                    class="book-reader-content"
-                >
+                <div class="book-reader-content">
 
                     <iframe
                         src="${escapeAttribute(
@@ -1862,41 +1303,26 @@ function openBookReader(book) {
 
                 </div>
 
-
             </div>
 
         </div>
 
     `;
 
-
-    document.body
-        .appendChild(
-            modal
-        );
-
+    document.body.appendChild(
+        modal
+    );
 
     document.body.style.overflow =
         "hidden";
 
 
-    /*
-       CLOSE BUTTON
-    */
-
-    modal
-        .querySelector(
-            "#closeBookReader"
-        )
+    $("closeBookReader")
         ?.addEventListener(
             "click",
             closeBookReader
         );
 
-
-    /*
-       CLICK OUTSIDE
-    */
 
     modal
         .querySelector(
@@ -1907,29 +1333,19 @@ function openBookReader(book) {
             event => {
 
                 if (
-                    event.target
-                        .classList
+                    event.target.classList
                         .contains(
                             "book-reader-overlay"
                         )
                 ) {
 
                     closeBookReader();
-
                 }
-
             }
         );
 
 
-    /*
-       DOWNLOAD INSIDE READER
-    */
-
-    modal
-        .querySelector(
-            "#readerBookDownload"
-        )
+    $("readerBookDownload")
         ?.addEventListener(
             "click",
             async event => {
@@ -1937,14 +1353,11 @@ function openBookReader(book) {
                 const button =
                     event.currentTarget;
 
-
                 const oldHTML =
                     button.innerHTML;
 
-
                 button.disabled =
                     true;
-
 
                 button.innerHTML = `
 
@@ -1956,28 +1369,21 @@ function openBookReader(book) {
 
                 `;
 
-
                 try {
 
                     await forceFileDownload(
-
                         book.file_url,
-
                         `${safeFileName(
                             book.title ||
                             "book"
                         )}.pdf`
-
                     );
 
-                }
-
-                catch (error) {
+                } catch (error) {
 
                     console.error(
                         error
                     );
-
 
                     window.open(
                         book.file_url,
@@ -1985,41 +1391,31 @@ function openBookReader(book) {
                         "noopener,noreferrer"
                     );
 
-                }
-
-                finally {
+                } finally {
 
                     button.disabled =
                         false;
 
-
                     button.innerHTML =
                         oldHTML;
-
                 }
-
             }
         );
-
 }
 
 
-/* =========================================================
-   CLOSE BOOK READER
-========================================================= */
-
 function closeBookReader() {
 
-    document
-        .getElementById(
-            "bookReaderModal"
-        )
+    $("bookReaderModal")
         ?.remove();
 
+    if (
+        !$("storyReaderModal")
+    ) {
 
-    document.body.style.overflow =
-        "";
-
+        document.body.style.overflow =
+            "";
+    }
 }
 
 
@@ -2036,25 +1432,15 @@ document.addEventListener(
                 ".book-pdf-download"
             );
 
-
-        if (!button) {
-
-            return;
-
-        }
-
+        if (!button) return;
 
         event.preventDefault();
-
         event.stopPropagation();
-
 
         const book =
             findItem(
-                button.dataset
-                    .contentId
+                button.dataset.contentId
             );
-
 
         if (
             !book ||
@@ -2065,19 +1451,14 @@ document.addEventListener(
                 "Book PDF has not been uploaded yet."
             );
 
-
             return;
-
         }
-
 
         const oldHTML =
             button.innerHTML;
 
-
         button.disabled =
             true;
-
 
         button.innerHTML = `
 
@@ -2089,33 +1470,21 @@ document.addEventListener(
 
         `;
 
-
         try {
 
             await forceFileDownload(
-
                 book.file_url,
-
                 `${safeFileName(
                     book.title ||
                     "book"
                 )}.pdf`
-
             );
 
-        }
-
-        catch (error) {
+        } catch (error) {
 
             console.error(
-                "Book download error:",
                 error
             );
-
-
-            /*
-               Browser fallback
-            */
 
             window.open(
                 book.file_url,
@@ -2123,28 +1492,20 @@ document.addEventListener(
                 "noopener,noreferrer"
             );
 
-        }
-
-        finally {
+        } finally {
 
             button.disabled =
                 false;
 
-
             button.innerHTML =
                 oldHTML;
-
         }
-
     }
 );
 
 
 /* =========================================================
    STORY PDF DOWNLOAD
-
-   ADMIN FULL STORY TEXT
-   AUTOMATICALLY BECOMES PDF
 ========================================================= */
 
 document.addEventListener(
@@ -2156,32 +1517,17 @@ document.addEventListener(
                 ".story-pdf-download"
             );
 
-
-        if (!button) {
-
-            return;
-
-        }
-
+        if (!button) return;
 
         event.preventDefault();
-
         event.stopPropagation();
-
 
         const story =
             findItem(
-                button.dataset
-                    .contentId
+                button.dataset.contentId
             );
 
-
-        if (!story) {
-
-            return;
-
-        }
-
+        if (!story) return;
 
         if (
             !story.full_content
@@ -2191,19 +1537,14 @@ document.addEventListener(
                 "Story content has not been added yet."
             );
 
-
             return;
-
         }
-
 
         const oldHTML =
             button.innerHTML;
 
-
         button.disabled =
             true;
-
 
         button.innerHTML = `
 
@@ -2215,51 +1556,41 @@ document.addEventListener(
 
         `;
 
-
         try {
 
             await downloadStoryAsPDF(
                 story
             );
 
-        }
-
-        catch (error) {
+        } catch (error) {
 
             console.error(
-                "Story PDF error:",
                 error
             );
 
-
             alert(
-                "Unable to create PDF. Please try again."
+                "Unable to create PDF."
             );
 
-        }
-
-        finally {
+        } finally {
 
             button.disabled =
                 false;
 
-
             button.innerHTML =
                 oldHTML;
-
         }
-
     }
 );
 
 
 /* =========================================================
-   LOAD EXTERNAL SCRIPT
+   LOAD PDF LIBRARY
 ========================================================= */
 
 function loadExternalScript(
     src,
-    globalCheck
+    check
 ) {
 
     return new Promise(
@@ -2268,30 +1599,17 @@ function loadExternalScript(
             reject
         ) => {
 
-            /*
-               Already loaded
-            */
-
-            if (
-                globalCheck()
-            ) {
+            if (check()) {
 
                 resolve();
 
                 return;
-
             }
-
-
-            /*
-               Existing loading script
-            */
 
             const existing =
                 document.querySelector(
                     `script[src="${src}"]`
                 );
-
 
             if (existing) {
 
@@ -2303,7 +1621,6 @@ function loadExternalScript(
                     }
                 );
 
-
                 existing.addEventListener(
                     "error",
                     reject,
@@ -2312,79 +1629,48 @@ function loadExternalScript(
                     }
                 );
 
-
                 return;
-
             }
-
 
             const script =
                 document.createElement(
                     "script"
                 );
 
-
             script.src =
                 src;
-
 
             script.onload =
                 resolve;
 
-
             script.onerror =
                 reject;
 
-
-            document.head
-                .appendChild(
-                    script
-                );
-
+            document.head.appendChild(
+                script
+            );
         }
     );
-
 }
 
 
-/* =========================================================
-   LOAD PDF LIBRARIES
-========================================================= */
-
 async function loadPDFLibraries() {
 
-    /*
-       html2canvas:
-       browser rendered Bangla -> image
-    */
-
     await loadExternalScript(
-
         "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js",
-
         () =>
             Boolean(
                 window.html2canvas
             )
-
     );
 
-
-    /*
-       jsPDF
-    */
-
     await loadExternalScript(
-
         "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js",
-
         () =>
             Boolean(
                 window.jspdf
             )
-
     );
-
 }
 
 
@@ -2398,57 +1684,41 @@ async function downloadStoryAsPDF(
 
     await loadPDFLibraries();
 
-
-    /*
-       Create printable hidden document
-    */
-
     const pdfArea =
         document.createElement(
             "div"
         );
 
-
     pdfArea.style.cssText = `
 
-        position: fixed;
+        position:fixed;
+        left:-12000px;
+        top:0;
+        width:794px;
+        padding:60px;
 
-        left: -12000px;
-
-        top: 0;
-
-        width: 794px;
-
-        padding: 60px;
-
-        background: #ffffff;
-
-        color: #111111;
+        background:#ffffff;
+        color:#111111;
 
         font-family:
             Arial,
             "Noto Sans Bengali",
-            "Noto Sans",
             sans-serif;
 
-        font-size: 18px;
+        font-size:18px;
+        line-height:1.85;
 
-        line-height: 1.85;
-
-        z-index: -9999;
+        z-index:-9999;
 
     `;
-
 
     pdfArea.innerHTML = `
 
         <h1
             style="
                 margin:0 0 10px;
-                padding:0;
                 font-size:32px;
-                line-height:1.35;
-                color:#111111;
+                color:#111;
             "
         >
 
@@ -2468,7 +1738,7 @@ async function downloadStoryAsPDF(
                     <p
                         style="
                             margin:0 0 28px;
-                            color:#666666;
+                            color:#666;
                             font-size:16px;
                         "
                     >
@@ -2489,7 +1759,6 @@ async function downloadStoryAsPDF(
             style="
                 white-space:pre-wrap;
                 overflow-wrap:anywhere;
-                word-break:normal;
             "
         >
 
@@ -2504,8 +1773,8 @@ async function downloadStoryAsPDF(
             style="
                 margin-top:50px;
                 padding-top:15px;
-                border-top:1px solid #dddddd;
-                color:#888888;
+                border-top:1px solid #ddd;
+                color:#888;
                 font-size:12px;
             "
         >
@@ -2516,82 +1785,47 @@ async function downloadStoryAsPDF(
 
     `;
 
-
-    document.body
-        .appendChild(
-            pdfArea
-        );
-
-
-    /*
-       Wait fonts
-    */
+    document.body.appendChild(
+        pdfArea
+    );
 
     if (
         document.fonts?.ready
     ) {
 
         await document.fonts.ready;
-
     }
-
-
-    /*
-       Browser HTML -> Canvas
-    */
 
     const canvas =
         await window.html2canvas(
             pdfArea,
             {
-                scale:
-                    2,
-
+                scale: 2,
                 backgroundColor:
                     "#ffffff",
-
-                useCORS:
-                    true,
-
-                logging:
-                    false,
-
-                windowWidth:
-                    794
+                useCORS: true,
+                logging: false
             }
         );
 
-
     pdfArea.remove();
-
 
     const {
         jsPDF
     } =
         window.jspdf;
 
-
-    /*
-       A4
-    */
-
     const pdf =
-        new jsPDF(
-            {
-                orientation:
-                    "portrait",
-
-                unit:
-                    "mm",
-
-                format:
-                    "a4",
-
-                compress:
-                    true
-            }
-        );
-
+        new jsPDF({
+            orientation:
+                "portrait",
+            unit:
+                "mm",
+            format:
+                "a4",
+            compress:
+                true
+        });
 
     const imageData =
         canvas.toDataURL(
@@ -2599,54 +1833,33 @@ async function downloadStoryAsPDF(
             0.92
         );
 
-
     const pageWidth =
         210;
-
 
     const pageHeight =
         297;
 
-
     const margin =
         10;
 
-
     const usableWidth =
-        pageWidth
-        -
-        (
-            margin * 2
-        );
-
+        pageWidth -
+        margin * 2;
 
     const usableHeight =
-        pageHeight
-        -
-        (
-            margin * 2
-        );
-
+        pageHeight -
+        margin * 2;
 
     const imageHeight =
-        canvas.height
-        *
-        usableWidth
-        /
+        canvas.height *
+        usableWidth /
         canvas.width;
-
 
     let heightLeft =
         imageHeight;
 
-
     let position =
         margin;
-
-
-    /*
-       First page
-    */
 
     pdf.addImage(
         imageData,
@@ -2657,31 +1870,21 @@ async function downloadStoryAsPDF(
         imageHeight
     );
 
-
     heightLeft -=
         usableHeight;
-
-
-    /*
-       More pages
-    */
 
     while (
         heightLeft > 0
     ) {
 
         position =
-            margin
-            -
+            margin -
             (
-                imageHeight
-                -
+                imageHeight -
                 heightLeft
             );
 
-
         pdf.addPage();
-
 
         pdf.addImage(
             imageData,
@@ -2692,31 +1895,21 @@ async function downloadStoryAsPDF(
             imageHeight
         );
 
-
         heightLeft -=
             usableHeight;
-
     }
 
-
-    /*
-       Download
-    */
-
     pdf.save(
-
         `${safeFileName(
             story.title ||
             "story"
         )}.pdf`
-
     );
-
 }
 
 
 /* =========================================================
-   FORCE PDF / FILE DOWNLOAD
+   FILE DOWNLOAD
 ========================================================= */
 
 async function forceFileDownload(
@@ -2725,61 +1918,43 @@ async function forceFileDownload(
 ) {
 
     const response =
-        await fetch(
-            url
-        );
-
+        await fetch(url);
 
     if (
         !response.ok
     ) {
 
         throw new Error(
-            "File download failed."
+            "Download failed."
         );
-
     }
-
 
     const blob =
         await response.blob();
-
 
     const blobUrl =
         URL.createObjectURL(
             blob
         );
 
-
     const link =
         document.createElement(
             "a"
         );
 
-
     link.href =
         blobUrl;
-
 
     link.download =
         fileName;
 
-
-    link.style.display =
-        "none";
-
-
-    document.body
-        .appendChild(
-            link
-        );
-
+    document.body.appendChild(
+        link
+    );
 
     link.click();
 
-
     link.remove();
-
 
     setTimeout(
         () => {
@@ -2791,7 +1966,6 @@ async function forceFileDownload(
         },
         1500
     );
-
 }
 
 
@@ -2803,31 +1977,21 @@ function openStoryReader(story) {
 
     closeStoryReader();
 
-
     const modal =
         document.createElement(
             "div"
         );
 
-
     modal.id =
         "storyReaderModal";
 
-
     modal.innerHTML = `
 
-        <div
-            class="story-reader-overlay"
-        >
+        <div class="story-reader-overlay">
 
-            <div
-                class="story-reader-box"
-            >
+            <div class="story-reader-box">
 
-
-                <div
-                    class="story-reader-header"
-                >
+                <div class="story-reader-header">
 
                     <div>
 
@@ -2839,7 +2003,6 @@ function openStoryReader(story) {
                             )}
 
                         </h2>
-
 
                         ${
                             story.author
@@ -2877,18 +2040,14 @@ function openStoryReader(story) {
                 </div>
 
 
-                <div
-                    class="story-reader-body"
-                >
+                <div class="story-reader-body">
 
                     ${escapeHTML(
-                        story.full_content
-                        ||
+                        story.full_content ||
                         "Story content is not available."
                     )}
 
                 </div>
-
 
             </div>
 
@@ -2896,26 +2055,18 @@ function openStoryReader(story) {
 
     `;
 
-
-    document.body
-        .appendChild(
-            modal
-        );
-
+    document.body.appendChild(
+        modal
+    );
 
     document.body.style.overflow =
         "hidden";
 
-
-    modal
-        .querySelector(
-            "#closeStoryReader"
-        )
+    $("closeStoryReader")
         ?.addEventListener(
             "click",
             closeStoryReader
         );
-
 
     modal
         .querySelector(
@@ -2926,110 +2077,65 @@ function openStoryReader(story) {
             event => {
 
                 if (
-                    event.target
-                        .classList
+                    event.target.classList
                         .contains(
                             "story-reader-overlay"
                         )
                 ) {
 
                     closeStoryReader();
-
                 }
-
             }
         );
-
 }
 
 
-/* =========================================================
-   CLOSE STORY
-========================================================= */
-
 function closeStoryReader() {
 
-    document
-        .getElementById(
-            "storyReaderModal"
-        )
+    $("storyReaderModal")
         ?.remove();
 
-
     if (
-        !document.getElementById(
-            "bookReaderModal"
-        )
+        !$("bookReaderModal")
     ) {
 
         document.body.style.overflow =
             "";
-
     }
-
 }
 
 
 /* =========================================================
    CARD CLICK
-
-   CLICKING CARD:
-   Story -> Reader
-   Book -> Book Reader
-   Video -> Video
-   Download fallback
 ========================================================= */
 
 document.addEventListener(
     "click",
     event => {
 
-        /*
-           Button handled separately
-        */
-
         if (
             event.target.closest(
                 "button"
             )
         ) {
-
             return;
-
         }
-
 
         const card =
             event.target.closest(
                 ".uniform-content-card, .featured-card"
             );
 
-
-        if (!card) {
-
-            return;
-
-        }
-
+        if (!card) return;
 
         const item =
             findItem(
-                card.dataset
-                    .contentId
+                card.dataset.contentId
             );
 
+        if (!item) return;
 
-        if (!item) {
-
-            return;
-
-        }
-
-
-        openContent(
-            item
-        );
-
+        openContent(item);
     }
 );
 
@@ -3040,61 +2146,34 @@ document.addEventListener(
 
 function openContent(item) {
 
-    /*
-       STORY
-    */
-
     if (
-        item.type ===
-        "story"
+        item.type === "story"
     ) {
 
-        openStoryReader(
-            item
-        );
-
+        openStoryReader(item);
 
         return;
-
     }
 
-
-    /*
-       BOOK
-    */
-
     if (
-        item.type ===
-        "book"
+        item.type === "book"
     ) {
 
         if (
             item.file_url
         ) {
 
-            openBookReader(
-                item
-            );
+            openBookReader(item);
 
-        }
-
-        else {
+        } else {
 
             alert(
                 "Book PDF has not been uploaded yet."
             );
-
         }
 
-
         return;
-
     }
-
-
-    /*
-       VIDEO
-    */
 
     if (
         item.video_url
@@ -3106,15 +2185,8 @@ function openContent(item) {
             "noopener,noreferrer"
         );
 
-
         return;
-
     }
-
-
-    /*
-       DOWNLOAD
-    */
 
     if (
         item.download_url
@@ -3125,107 +2197,68 @@ function openContent(item) {
             "_blank",
             "noopener,noreferrer"
         );
-
     }
-
 }
 
 
 /* =========================================================
-   HERO BUILD
+   HERO SLIDES
 
-   IMPORTANT:
-   USES ALL BANNER IMAGES
-
-   ORDER:
-   Movie 1
-   Natok 1
-   Series 1
-   Upcoming 1
-   Story 1
-   Book 1
-   Tutorial 1
-
-   then second items...
+   USES ALL BANNERS
 ========================================================= */
 
 function buildHeroSlides() {
 
     const groups = {};
 
+    HERO_ORDER.forEach(
+        type => {
 
-    HERO_ORDER
-        .forEach(
-            type => {
-
-                groups[
-                    type
-                ] =
-                    contents.filter(
-                        item =>
-                            item.type ===
-                            type
-                            &&
-                            Boolean(
-                                item.banner_url
-                            )
-                    );
-
-            }
-        );
-
+            groups[type] =
+                contents.filter(
+                    item =>
+                        item.type === type
+                        &&
+                        Boolean(
+                            item.banner_url
+                        )
+                );
+        }
+    );
 
     const maxLength =
         Math.max(
             0,
-
-            ...HERO_ORDER
-                .map(
-                    type =>
-                        groups[
-                            type
-                        ].length
-                )
+            ...HERO_ORDER.map(
+                type =>
+                    groups[type].length
+            )
         );
-
 
     const slides = [];
 
-
     for (
-        let index = 0;
-        index < maxLength;
-        index++
+        let i = 0;
+        i < maxLength;
+        i++
     ) {
 
-        HERO_ORDER
-            .forEach(
-                type => {
+        HERO_ORDER.forEach(
+            type => {
 
-                    const item =
-                        groups[
-                            type
-                        ][
-                            index
-                        ];
+                if (
+                    groups[type][i]
+                ) {
 
-
-                    if (item) {
-
-                        slides.push(
-                            item
-                        );
-
-                    }
-
+                    slides.push(
+                        groups[type][i]
+                    );
                 }
-            );
-
+            }
+        );
     }
 
-
     return slides;
-
 }
 
 
@@ -3235,60 +2268,46 @@ function buildHeroSlides() {
 
 function setupHero() {
 
-    if (
-        !heroBackground
-    ) {
+    const hero =
+        $("heroBackground");
 
-        return;
+    if (!hero) return;
 
-    }
-
+    hero.style.transition =
+        "opacity 450ms ease";
 
     heroSlides =
         buildHeroSlides();
-
 
     if (
         !heroSlides.length
     ) {
 
-        heroBackground.style
-            .backgroundImage =
+        hero.style.backgroundImage =
             "linear-gradient(120deg,#11001f,#2a075c,#4d0c79)";
 
-
         return;
-
     }
 
-
-    heroIndex =
-        0;
-
+    heroIndex = 0;
 
     renderHeroDots();
-
-
-    /*
-       First image also zooms
-    */
 
     showHeroSlide(
         0,
         false
     );
 
-
     restartHeroTimer();
-
 }
 
 
 /* =========================================================
-   SHOW HERO SLIDE
+   HERO SHOW
+   4 SEC TOTAL
 
-   EVERY IMAGE:
-   SCALE 1 -> 1.10
+   ZOOM STARTS FROM 1.04
+   SO RESET IS LESS VISIBLE
 ========================================================= */
 
 function showHeroSlide(
@@ -3296,144 +2315,121 @@ function showHeroSlide(
     fade = true
 ) {
 
-    const item =
-        heroSlides[
-            index
-        ];
+    const hero =
+        $("heroBackground");
 
+    const item =
+        heroSlides[index];
 
     if (
-        !item
-        ||
+        !hero ||
+        !item ||
         !item.banner_url
-        ||
-        !heroBackground
     ) {
-
         return;
-
     }
-
 
     heroIndex =
         index;
-
-
-    /*
-       Stop previous zoom
-    */
-
-    if (
-        heroZoomAnimation
-    ) {
-
-        heroZoomAnimation.cancel();
-
-
-        heroZoomAnimation =
-            null;
-
-    }
 
 
     const applySlide =
         () => {
 
             /*
-               New image
+               cancel previous zoom only
+               while image is hidden
             */
 
-            heroBackground.style
-                .backgroundImage =
+            if (
+                heroZoomAnimation
+            ) {
+
+                heroZoomAnimation.cancel();
+
+                heroZoomAnimation =
+                    null;
+            }
+
+
+            hero.style.backgroundImage =
                 `url("${escapeCssUrl(
                     item.banner_url
                 )}")`;
 
-
-            heroBackground.style
-                .backgroundSize =
+            hero.style.backgroundSize =
                 "cover";
 
-
-            heroBackground.style
-                .backgroundPosition =
+            hero.style.backgroundPosition =
                 "center";
 
-
-            heroBackground.style.opacity =
+            hero.style.opacity =
                 "1";
 
 
             /*
-               VERY IMPORTANT:
-               EACH BANNER GETS NEW ZOOM
+               SLOW SMOOTH ZOOM
+               NO OBVIOUS ZOOM-OUT
             */
 
             heroZoomAnimation =
-                heroBackground.animate(
+                hero.animate(
                     [
-
                         {
                             transform:
-                                "scale(1)"
+                                "scale(1.04)"
                         },
-
                         {
                             transform:
                                 "scale(1.10)"
                         }
-
                     ],
                     {
                         duration:
-                            4500,
-
+                            3400,
                         easing:
-                            "ease-out",
-
+                            "linear",
                         fill:
                             "forwards"
                     }
                 );
 
-
             updateHeroDots();
-
         };
 
 
     /*
-       First image
+       FIRST IMAGE
     */
 
     if (!fade) {
 
         applySlide();
 
-
         return;
-
     }
 
 
     /*
-       Fade old
+       Fade old image first.
+       Zoom reset happens while invisible.
     */
 
-    heroBackground.style.opacity =
+    hero.style.opacity =
         "0";
 
 
     setTimeout(
         applySlide,
-        650
+        450
     );
-
 }
 
 
 /* =========================================================
    HERO TIMER
+
+   EXACTLY 4 SECONDS
 ========================================================= */
 
 function restartHeroTimer() {
@@ -3445,24 +2441,13 @@ function restartHeroTimer() {
         clearInterval(
             heroTimer
         );
-
     }
-
 
     if (
-        heroSlides.length <=
-        1
+        heroSlides.length <= 1
     ) {
-
         return;
-
     }
-
-
-    /*
-       3 sec zoom
-       little gap for transition
-    */
 
     heroTimer =
         setInterval(
@@ -3475,16 +2460,14 @@ function restartHeroTimer() {
                     %
                     heroSlides.length;
 
-
                 showHeroSlide(
                     heroIndex,
                     true
                 );
 
             },
-            5200
+            4000
         );
-
 }
 
 
@@ -3494,16 +2477,12 @@ function restartHeroTimer() {
 
 function renderHeroDots() {
 
-    if (
-        !heroDots
-    ) {
+    const dots =
+        $("heroDots");
 
-        return;
+    if (!dots) return;
 
-    }
-
-
-    heroDots.innerHTML =
+    dots.innerHTML =
         heroSlides
             .map(
                 (
@@ -3521,13 +2500,6 @@ function renderHeroDots() {
                                 ""
                         }"
                         data-index="${index}"
-                        aria-label="${escapeAttribute(
-                            TYPE_LABEL[
-                                item.type
-                            ]
-                            ||
-                            "Slide"
-                        )}"
                     ></button>
 
                 `
@@ -3535,59 +2507,36 @@ function renderHeroDots() {
             .join("");
 
 
-    heroDots
+    dots
         .querySelectorAll(
             ".hero-dot"
         )
-        .forEach(
-            dot => {
+        .forEach(dot => {
 
-                dot.addEventListener(
-                    "click",
-                    () => {
+            dot.addEventListener(
+                "click",
+                () => {
 
-                        const index =
-                            Number(
-                                dot.dataset
-                                    .index
-                            );
-
-
-                        if (
-                            !Number.isFinite(
-                                index
-                            )
-                        ) {
-
-                            return;
-
-                        }
-
-
-                        showHeroSlide(
-                            index,
-                            true
+                    const index =
+                        Number(
+                            dot.dataset.index
                         );
 
+                    showHeroSlide(
+                        index,
+                        true
+                    );
 
-                        restartHeroTimer();
-
-                    }
-                );
-
-            }
-        );
-
+                    restartHeroTimer();
+                }
+            );
+        });
 }
 
 
-/* =========================================================
-   HERO ACTIVE DOT
-========================================================= */
-
 function updateHeroDots() {
 
-    heroDots
+    $("heroDots")
         ?.querySelectorAll(
             ".hero-dot"
         )
@@ -3598,86 +2547,57 @@ function updateHeroDots() {
             ) => {
 
                 dot.classList.toggle(
-
                     "active",
-
-                    index ===
-                    heroIndex
-
+                    index === heroIndex
                 );
-
             }
         );
-
 }
 
 
 /* =========================================================
-   CREATE FEATURED SECTION
+   CREATE FEATURED
 ========================================================= */
 
 function createFeaturedSection() {
 
     if (
-        document.getElementById(
-            "featured"
-        )
+        $("featured")
     ) {
-
         return;
-
     }
-
 
     const movieSection =
-        document.getElementById(
-            "movies"
-        );
+        $("movies");
 
-
-    if (!movieSection) {
-
-        return;
-
-    }
-
+    if (!movieSection) return;
 
     const section =
         document.createElement(
             "section"
         );
 
-
     section.id =
         "featured";
-
 
     section.className =
         "featured-section";
 
-
     section.innerHTML = `
 
-        <div
-            class="section-heading"
-        >
+        <div class="section-heading">
 
-
-            <div
-                class="heading-left"
-            >
+            <div class="heading-left">
 
                 <span
                     class="heading-line"
                 ></span>
-
 
                 <div>
 
                     <h2>
                         Featured
                     </h2>
-
 
                     <p>
                         Rating 8.0 or higher
@@ -3688,14 +2608,11 @@ function createFeaturedSection() {
             </div>
 
 
-            <div
-                class="featured-controls"
-            >
+            <div class="featured-controls">
 
                 <button
                     type="button"
                     id="featuredPrev"
-                    aria-label="Previous"
                 >
 
                     <i
@@ -3704,11 +2621,9 @@ function createFeaturedSection() {
 
                 </button>
 
-
                 <button
                     type="button"
                     id="featuredNext"
-                    aria-label="Next"
                 >
 
                     <i
@@ -3718,7 +2633,6 @@ function createFeaturedSection() {
                 </button>
 
             </div>
-
 
         </div>
 
@@ -3737,14 +2651,11 @@ function createFeaturedSection() {
 
     `;
 
-
-    movieSection
-        .parentNode
+    movieSection.parentNode
         .insertBefore(
             section,
             movieSection
         );
-
 }
 
 
@@ -3755,17 +2666,9 @@ function createFeaturedSection() {
 function setupFeatured() {
 
     const track =
-        document.getElementById(
-            "featuredTrack"
-        );
+        $("featuredTrack");
 
-
-    if (!track) {
-
-        return;
-
-    }
-
+    if (!track) return;
 
     featuredItems =
         contents
@@ -3774,18 +2677,12 @@ function setupFeatured() {
                     Number(
                         item.rating
                     )
-                    >=
-                    8
+                    >= 8
                     &&
-                    Boolean(
-                        item.poster_url
-                    )
+                    item.poster_url
             )
             .sort(
-                (
-                    a,
-                    b
-                ) =>
+                (a, b) =>
                     Number(
                         b.rating
                     )
@@ -3795,131 +2692,105 @@ function setupFeatured() {
                     )
             );
 
-
     if (
         !featuredItems.length
     ) {
 
         track.innerHTML = `
 
-            <div
-                class="database-loading"
-            >
-
+            <div class="database-loading">
                 No rating 8+ content yet.
-
             </div>
 
         `;
 
-
         return;
-
     }
-
 
     track.innerHTML =
         featuredItems
-            .map(
-                item => `
+            .map(item => `
 
-                    <article
-                        class="featured-card"
-                        data-content-id="${item.id}"
+                <article
+                    class="featured-card"
+                    data-content-id="${item.id}"
+                >
+
+                    <div
+                        class="featured-card-poster"
+                        style="background-image:url('${escapeCssUrl(
+                            item.poster_url
+                        )}')"
                     >
 
+                        <span
+                            class="featured-badge"
+                        >
+                            FEATURED
+                        </span>
 
-                        <div
-                            class="featured-card-poster"
-                            style="background-image:url('${escapeCssUrl(
-                                item.poster_url
-                            )}')"
+                        <span
+                            class="featured-rating"
                         >
 
+                            <i
+                                class="fa-solid fa-star"
+                            ></i>
 
-                            <span
-                                class="featured-badge"
-                            >
-
-                                FEATURED
-
-                            </span>
-
-
-                            <span
-                                class="featured-rating"
-                            >
-
-                                <i
-                                    class="fa-solid fa-star"
-                                ></i>
-
-                                ${escapeHTML(
-                                    item.rating
-                                )}
-
-                            </span>
-
-
-                            ${createHoverOverlay(
-                                item
+                            ${escapeHTML(
+                                item.rating
                             )}
 
+                        </span>
 
-                        </div>
+                        ${createHoverOverlay(
+                            item
+                        )}
+
+                    </div>
 
 
-                        <div
-                            class="featured-card-info"
+                    <div
+                        class="featured-card-info"
+                    >
+
+                        <span
+                            class="featured-type"
                         >
 
-
-                            <span
-                                class="featured-type"
-                            >
-
-                                ${escapeHTML(
-                                    TYPE_LABEL[
-                                        item.type
-                                    ]
-                                    ||
+                            ${escapeHTML(
+                                TYPE_LABEL[
                                     item.type
-                                )}
+                                ]
+                                ||
+                                item.type
+                            )}
 
-                            </span>
+                        </span>
 
+                        <h3>
 
-                            <h3>
+                            ${escapeHTML(
+                                item.title ||
+                                "Untitled"
+                            )}
 
-                                ${escapeHTML(
-                                    item.title ||
-                                    "Untitled"
-                                )}
+                        </h3>
 
-                            </h3>
+                    </div>
 
+                </article>
 
-                        </div>
-
-
-                    </article>
-
-                `
-            )
+            `)
             .join("");
 
 
-    featuredIndex =
-        0;
-
+    featuredIndex = 0;
 
     updateFeatured();
 
 
-    document
-        .getElementById(
-            "featuredNext"
-        )
+    $("featuredNext")
         ?.addEventListener(
             "click",
             () => {
@@ -3927,15 +2798,11 @@ function setupFeatured() {
                 featuredNext();
 
                 startFeaturedTimer();
-
             }
         );
 
 
-    document
-        .getElementById(
-            "featuredPrev"
-        )
+    $("featuredPrev")
         ?.addEventListener(
             "click",
             () => {
@@ -3943,25 +2810,18 @@ function setupFeatured() {
                 featuredPrev();
 
                 startFeaturedTimer();
-
             }
         );
 
 
-    const viewport =
-        document.getElementById(
-            "featuredViewport"
-        );
-
-
-    viewport
+    $("featuredViewport")
         ?.addEventListener(
             "mouseenter",
             stopFeaturedTimer
         );
 
 
-    viewport
+    $("featuredViewport")
         ?.addEventListener(
             "mouseleave",
             startFeaturedTimer
@@ -3969,88 +2829,62 @@ function setupFeatured() {
 
 
     startFeaturedTimer();
-
 }
 
 
 /* =========================================================
-   FEATURED RESPONSIVE
+   FEATURED COUNT
+
+   DESKTOP = 4
+   TABLET = 3
+   PHONE = 2
 ========================================================= */
 
 function featuredVisibleCount() {
 
     if (
-        window.innerWidth <=
-        760
+        window.innerWidth <= 760
     ) {
-
         return 2;
-
     }
-
 
     if (
-        window.innerWidth <=
-        1000
+        window.innerWidth <= 850
     ) {
-
-        return 4;
-
+        return 3;
     }
 
-
-    return 5;
-
+    return 4;
 }
 
-
-/* =========================================================
-   FEATURED MAX
-========================================================= */
 
 function featuredMaxIndex() {
 
     return Math.max(
-
         0,
-
         featuredItems.length
         -
         featuredVisibleCount()
-
     );
-
 }
 
-
-/* =========================================================
-   FEATURED POSITION
-========================================================= */
 
 function updateFeatured() {
 
     const track =
-        document.getElementById(
-            "featuredTrack"
-        );
-
+        $("featuredTrack");
 
     const card =
         track?.querySelector(
             ".featured-card"
         );
 
-
     if (
-        !track
-        ||
+        !track ||
         !card
     ) {
-
         return;
-
     }
-
 
     const gap =
         parseFloat(
@@ -4061,60 +2895,43 @@ function updateFeatured() {
         ||
         0;
 
-
     const width =
         card
             .getBoundingClientRect()
             .width;
 
-
     const max =
         featuredMaxIndex();
 
-
     if (
-        featuredIndex >
-        max
+        featuredIndex > max
     ) {
 
         featuredIndex =
             max;
-
     }
-
 
     track.style.transform =
         `translateX(-${
-            featuredIndex
-            *
+            featuredIndex *
             (
-                width
-                +
+                width +
                 gap
             )
         }px)`;
-
 }
 
-
-/* =========================================================
-   FEATURED NEXT
-========================================================= */
 
 function featuredNext() {
 
     const max =
         featuredMaxIndex();
 
-
     if (
         max <= 0
     ) {
-
         return;
-
     }
-
 
     featuredIndex =
         featuredIndex >= max
@@ -4123,30 +2940,20 @@ function featuredNext() {
             :
             featuredIndex + 1;
 
-
     updateFeatured();
-
 }
 
-
-/* =========================================================
-   FEATURED PREV
-========================================================= */
 
 function featuredPrev() {
 
     const max =
         featuredMaxIndex();
 
-
     if (
         max <= 0
     ) {
-
         return;
-
     }
-
 
     featuredIndex =
         featuredIndex <= 0
@@ -4155,43 +2962,27 @@ function featuredPrev() {
             :
             featuredIndex - 1;
 
-
     updateFeatured();
-
 }
 
-
-/* =========================================================
-   FEATURED TIMER
-========================================================= */
 
 function startFeaturedTimer() {
 
     stopFeaturedTimer();
 
-
     if (
-        featuredMaxIndex() <=
-        0
+        featuredMaxIndex() <= 0
     ) {
-
         return;
-
     }
-
 
     featuredTimer =
         setInterval(
             featuredNext,
             4000
         );
-
 }
 
-
-/* =========================================================
-   STOP FEATURED
-========================================================= */
 
 function stopFeaturedTimer() {
 
@@ -4202,19 +2993,12 @@ function stopFeaturedTimer() {
         clearInterval(
             featuredTimer
         );
-
     }
-
 
     featuredTimer =
         null;
-
 }
 
-
-/* =========================================================
-   RESIZE
-========================================================= */
 
 window.addEventListener(
     "resize",
@@ -4223,80 +3007,64 @@ window.addEventListener(
 
 
 /* =========================================================
-   SEARCH OPEN
+   SEARCH
 ========================================================= */
 
 function openSearch() {
 
-    searchBox
+    $("searchBox")
         ?.classList
         .add(
             "active"
         );
 
-
     setTimeout(
         () => {
 
-            searchInput
+            $("searchInput")
                 ?.focus();
 
         },
         100
     );
-
 }
 
 
-/* =========================================================
-   SEARCH CLOSE
-========================================================= */
-
 function closeSearch() {
 
-    searchBox
+    $("searchBox")
         ?.classList
         .remove(
             "active"
         );
 
-
     if (
-        searchInput
+        $("searchInput")
     ) {
 
-        searchInput.value =
+        $("searchInput").value =
             "";
-
     }
-
 
     if (
-        searchResults
+        $("searchResults")
     ) {
 
-        searchResults.innerHTML =
+        $("searchResults").innerHTML =
             "";
-
     }
-
 }
 
 
-/* =========================================================
-   SEARCH BUTTON
-========================================================= */
-
-searchToggle
+$("searchToggle")
     ?.addEventListener(
         "click",
         event => {
 
             event.stopPropagation();
 
-
             if (
-                searchBox
+                $("searchBox")
                     ?.classList
                     .contains(
                         "active"
@@ -4305,41 +3073,22 @@ searchToggle
 
                 closeSearch();
 
-            }
-
-            else {
+            } else {
 
                 openSearch();
-
             }
-
         }
     );
 
 
-/* =========================================================
-   SEARCH CLOSE BUTTON
-========================================================= */
-
-searchClose
+$("searchClose")
     ?.addEventListener(
         "click",
-        event => {
-
-            event.stopPropagation();
-
-
-            closeSearch();
-
-        }
+        closeSearch
     );
 
 
-/* =========================================================
-   SEARCH INPUT
-========================================================= */
-
-searchInput
+$("searchInput")
     ?.addEventListener(
         "input",
         event => {
@@ -4347,25 +3096,16 @@ searchInput
             performSearch(
                 event.target.value
             );
-
         }
     );
 
 
-/* =========================================================
-   SEARCH
-========================================================= */
-
 function performSearch(keyword) {
 
-    if (
-        !searchResults
-    ) {
+    const box =
+        $("searchResults");
 
-        return;
-
-    }
-
+    if (!box) return;
 
     const text =
         String(
@@ -4374,160 +3114,108 @@ function performSearch(keyword) {
             .trim()
             .toLowerCase();
 
-
     if (!text) {
 
-        searchResults.innerHTML =
+        box.innerHTML =
             "";
 
-
         return;
-
     }
 
-
-    const result =
+    const results =
         contents
-            .filter(
-                item => {
+            .filter(item => {
 
-                    const searchable = [
-
-                        item.title,
-
-                        item.genre,
-
-                        item.author,
-
-                        TYPE_LABEL[
-                            item.type
-                        ]
-
+                const searchable = [
+                    item.title,
+                    item.genre,
+                    item.author,
+                    TYPE_LABEL[
+                        item.type
                     ]
-                        .filter(Boolean)
-                        .join(" ")
-                        .toLowerCase();
+                ]
+                    .filter(Boolean)
+                    .join(" ")
+                    .toLowerCase();
 
-
-                    return searchable
-                        .includes(
-                            text
-                        );
-
-                }
-            )
+                return searchable
+                    .includes(
+                        text
+                    );
+            })
             .slice(
                 0,
                 8
             );
 
-
     if (
-        !result.length
+        !results.length
     ) {
 
-        searchResults.innerHTML = `
+        box.innerHTML = `
 
-            <div
-                class="search-result-item"
-            >
+            <div class="search-result-item">
 
-                <div
-                    class="search-result-icon"
-                >
-
-                    <i
-                        class="fa-solid fa-magnifying-glass"
-                    ></i>
-
-                </div>
-
-
-                <div>
-
-                    <h4>
-                        No result found
-                    </h4>
-
-                    <p>
-                        Try another keyword
-                    </p>
-
-                </div>
+                No result found
 
             </div>
 
         `;
 
-
         return;
-
     }
 
+    box.innerHTML =
+        results
+            .map(item => `
 
-    searchResults.innerHTML =
-        result
-            .map(
-                item => `
+                <div
+                    class="search-result-item"
+                    data-search-id="${item.id}"
+                >
 
                     <div
-                        class="search-result-item"
-                        data-search-id="${item.id}"
+                        class="search-result-icon"
                     >
 
-                        <div
-                            class="search-result-icon"
-                        >
-
-                            <i
-                                class="${getTypeIcon(
-                                    item.type
-                                )}"
-                            ></i>
-
-                        </div>
-
-
-                        <div>
-
-                            <h4>
-
-                                ${escapeHTML(
-                                    item.title ||
-                                    "Untitled"
-                                )}
-
-                            </h4>
-
-
-                            <p>
-
-                                ${escapeHTML(
-                                    TYPE_LABEL[
-                                        item.type
-                                    ]
-                                    ||
-                                    item.type
-                                )}
-
-                            </p>
-
-                        </div>
+                        <i
+                            class="${getTypeIcon(
+                                item.type
+                            )}"
+                        ></i>
 
                     </div>
 
-                `
-            )
-            .join("");
+                    <div>
 
+                        <h4>
+
+                            ${escapeHTML(
+                                item.title
+                            )}
+
+                        </h4>
+
+                        <p>
+
+                            ${escapeHTML(
+                                TYPE_LABEL[
+                                    item.type
+                                ]
+                            )}
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+            `)
+            .join("");
 }
 
 
-/* =========================================================
-   SEARCH RESULT CLICK
-========================================================= */
-
-searchResults
+$("searchResults")
     ?.addEventListener(
         "click",
         event => {
@@ -4537,140 +3225,68 @@ searchResults
                     "[data-search-id]"
                 );
 
-
-            if (!result) {
-
-                return;
-
-            }
-
+            if (!result) return;
 
             const item =
                 findItem(
-                    result.dataset
-                        .searchId
+                    result.dataset.searchId
                 );
 
-
-            if (!item) {
-
-                return;
-
-            }
-
+            if (!item) return;
 
             closeSearch();
 
-
-            document
-                .getElementById(
-                    TYPE_SECTION[
-                        item.type
-                    ]
-                )
+            $(
+                TYPE_SECTION[
+                    item.type
+                ]
+            )
                 ?.scrollIntoView({
                     behavior:
                         "smooth",
-
                     block:
                         "start"
                 });
-
         }
     );
-
-
-/* =========================================================
-   CLICK OUTSIDE SEARCH
-========================================================= */
-
-document.addEventListener(
-    "click",
-    event => {
-
-        if (
-            !searchBox
-        ) {
-
-            return;
-
-        }
-
-
-        const clickedInside =
-            searchBox.contains(
-                event.target
-            );
-
-
-        const clickedButton =
-            searchToggle
-            &&
-            searchToggle.contains(
-                event.target
-            );
-
-
-        if (
-            !clickedInside
-            &&
-            !clickedButton
-        ) {
-
-            closeSearch();
-
-        }
-
-    }
-);
 
 
 /* =========================================================
    MOBILE MENU
 ========================================================= */
 
-mobileMenuButton
+$("mobileMenuButton")
     ?.addEventListener(
         "click",
         event => {
 
             event.stopPropagation();
 
-
-            mobileNav
+            $("mobileNav")
                 ?.classList
                 .toggle(
                     "active"
                 );
 
-
             const icon =
-                mobileMenuButton
-                    .querySelector(
+                $("mobileMenuButton")
+                    ?.querySelector(
                         "i"
                     );
 
-
-            if (!icon) {
-
-                return;
-
-            }
-
+            if (!icon) return;
 
             const isOpen =
-                mobileNav
+                $("mobileNav")
                     ?.classList
                     .contains(
                         "active"
                     );
 
-
             icon.classList.toggle(
                 "fa-bars",
                 !isOpen
             );
-
 
             icon.classList.toggle(
                 "fa-xmark",
@@ -4678,41 +3294,32 @@ mobileMenuButton
                     isOpen
                 )
             );
-
         }
     );
 
 
-/* =========================================================
-   MOBILE LINKS
-========================================================= */
-
-mobileNav
+$("mobileNav")
     ?.querySelectorAll(
         "a"
     )
-    .forEach(
-        link => {
+    .forEach(link => {
 
-            link.addEventListener(
-                "click",
-                () => {
+        link.addEventListener(
+            "click",
+            () => {
 
-                    mobileNav
-                        .classList
-                        .remove(
-                            "active"
-                        );
-
-                }
-            );
-
-        }
-    );
+                $("mobileNav")
+                    ?.classList
+                    .remove(
+                        "active"
+                    );
+            }
+        );
+    });
 
 
 /* =========================================================
-   ACTIVE HEADER NAV
+   ACTIVE NAV
 ========================================================= */
 
 function updateActiveNav() {
@@ -4720,75 +3327,53 @@ function updateActiveNav() {
     let current =
         "home";
 
-
     document
         .querySelectorAll(
             "section[id]"
         )
-        .forEach(
-            section => {
+        .forEach(section => {
 
-                if (
-                    section.id ===
-                    "featured"
-                ) {
-
-                    return;
-
-                }
-
-
-                const top =
-                    section.offsetTop
-                    -
-                    150;
-
-
-                const bottom =
-                    top
-                    +
-                    section.offsetHeight;
-
-
-                if (
-                    window.scrollY >=
-                    top
-                    &&
-                    window.scrollY <
-                    bottom
-                ) {
-
-                    current =
-                        section.id;
-
-                }
-
+            if (
+                section.id ===
+                "featured"
+            ) {
+                return;
             }
-        );
 
+            const top =
+                section.offsetTop -
+                150;
+
+            const bottom =
+                top +
+                section.offsetHeight;
+
+            if (
+                window.scrollY >= top
+                &&
+                window.scrollY < bottom
+            ) {
+
+                current =
+                    section.id;
+            }
+        });
 
     document
         .querySelectorAll(
             ".nav-link"
         )
-        .forEach(
-            link => {
+        .forEach(link => {
 
-                link.classList.toggle(
-
-                    "active",
-
-                    link.getAttribute(
-                        "href"
-                    )
-                    ===
-                    `#${current}`
-
-                );
-
-            }
-        );
-
+            link.classList.toggle(
+                "active",
+                link.getAttribute(
+                    "href"
+                )
+                ===
+                `#${current}`
+            );
+        });
 }
 
 
@@ -4799,7 +3384,7 @@ window.addEventListener(
 
 
 /* =========================================================
-   ESC KEY
+   ESC
 ========================================================= */
 
 document.addEventListener(
@@ -4810,33 +3395,26 @@ document.addEventListener(
             event.key !==
             "Escape"
         ) {
-
             return;
-
         }
-
 
         closeSearch();
 
-
-        mobileNav
+        $("mobileNav")
             ?.classList
             .remove(
                 "active"
             );
 
-
         closeStoryReader();
 
-
         closeBookReader();
-
     }
 );
 
 
 /* =========================================================
-   LOAD ERROR
+   HELPERS
 ========================================================= */
 
 function showLoadError() {
@@ -4845,86 +3423,52 @@ function showLoadError() {
         .values(
             TYPE_GRID
         )
-        .forEach(
-            id => {
+        .forEach(id => {
 
-                const grid =
-                    document.getElementById(
-                        id
-                    );
+            const grid =
+                $(id);
 
+            if (!grid) return;
 
-                if (!grid) {
+            grid.innerHTML = `
 
-                    return;
+                <div class="database-loading">
 
-                }
+                    Unable to load content.
 
+                </div>
 
-                grid.innerHTML = `
-
-                    <div
-                        class="database-loading"
-                    >
-
-                        Unable to load content.
-
-                    </div>
-
-                `;
-
-            }
-        );
-
+            `;
+        });
 }
 
-
-/* =========================================================
-   TYPE ICON
-========================================================= */
 
 function getTypeIcon(type) {
 
     const icons = {
-
         movie:
             "fa-solid fa-film",
-
         natok:
             "fa-solid fa-clapperboard",
-
         series:
             "fa-solid fa-tv",
-
         upcoming:
             "fa-solid fa-clock",
-
         story:
             "fa-solid fa-book-open",
-
         book:
             "fa-solid fa-book",
-
         tutorial:
             "fa-solid fa-graduation-cap"
-
     };
 
-
     return (
-        icons[
-            type
-        ]
+        icons[type]
         ||
         "fa-solid fa-film"
     );
-
 }
 
-
-/* =========================================================
-   HAS RATING
-========================================================= */
 
 function hasRating(item) {
 
@@ -4937,22 +3481,14 @@ function hasRating(item) {
         &&
         item.rating !== ""
     );
-
 }
 
-
-/* =========================================================
-   DATE
-========================================================= */
 
 function formatDate(value) {
 
     if (!value) {
-
         return "";
-
     }
-
 
     try {
 
@@ -4964,61 +3500,40 @@ function formatDate(value) {
                 {
                     year:
                         "numeric",
-
                     month:
                         "short",
-
                     day:
                         "numeric"
                 }
             );
 
-    }
-
-    catch (error) {
+    } catch {
 
         return value;
-
     }
-
 }
 
-
-/* =========================================================
-   SAFE FILE NAME
-========================================================= */
 
 function safeFileName(value) {
 
-    const name =
-        String(
-            value ||
-            "download"
-        )
-            .replace(
-                /[\\/:*?"<>|]+/g,
-                "-"
-            )
-            .trim();
-
-
-    return (
-        name ||
+    return String(
+        value ||
         "download"
-    );
-
+    )
+        .replace(
+            /[\\/:*?"<>|]+/g,
+            "-"
+        )
+        .trim()
+        ||
+        "download";
 }
 
-
-/* =========================================================
-   ESCAPE HTML
-========================================================= */
 
 function escapeHTML(value) {
 
     return String(
-        value ??
-        ""
+        value ?? ""
     )
         .replaceAll(
             "&",
@@ -5040,32 +3555,21 @@ function escapeHTML(value) {
             "'",
             "&#039;"
         );
-
 }
 
-
-/* =========================================================
-   ESCAPE ATTRIBUTE
-========================================================= */
 
 function escapeAttribute(value) {
 
     return escapeHTML(
         value
     );
-
 }
 
-
-/* =========================================================
-   ESCAPE CSS URL
-========================================================= */
 
 function escapeCssUrl(value) {
 
     return String(
-        value ||
-        ""
+        value || ""
     )
         .replaceAll(
             "\\",
@@ -5087,42 +3591,31 @@ function escapeCssUrl(value) {
             "\r",
             ""
         );
-
 }
 
 
 /* =========================================================
-   START WEBSITE
+   START
 ========================================================= */
 
 document.addEventListener(
     "DOMContentLoaded",
     async () => {
 
-        /*
-           Hero fallback
-        */
+        const hero =
+            $("heroBackground");
 
-        if (
-            heroBackground
-        ) {
+        if (hero) {
 
-            heroBackground.style
-                .backgroundImage =
+            hero.style.backgroundImage =
                 "linear-gradient(120deg,#11001f,#2a075c,#4d0c79)";
 
-
-            heroBackground.style.opacity =
+            hero.style.opacity =
                 "1";
-
         }
 
-
-        /*
-           Load everything
-        */
+        setupHeaderLogo();
 
         await loadContents();
-
     }
 );
