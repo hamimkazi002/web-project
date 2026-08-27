@@ -1,5 +1,6 @@
 /* =====================================================
    CINEMA MELLA ADMIN PANEL
+   FINAL NO-DATABASE-CHANGE VERSION
 ===================================================== */
 
 
@@ -73,7 +74,17 @@ textarea {
 }
 
 
+/* =====================================================
+   LOGIN LOGO
+===================================================== */
+
 .login-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 0;
+
     text-align: center;
 
     font-size: 28px;
@@ -81,10 +92,30 @@ textarea {
     font-weight: 900;
 
     margin-bottom: 28px;
+
+    letter-spacing: -1px;
+
+    white-space: nowrap;
+
+    color: #ffffff;
 }
 
 
-.login-logo span {
+.login-logo .brand-white {
+    color: #ffffff !important;
+}
+
+
+.login-logo .logo-changing {
+    color: #ef1024 !important;
+
+    margin-left: 0 !important;
+}
+
+
+/* support old login html also */
+
+.login-logo > span:not(.brand-white) {
     color: #ef1024;
 }
 
@@ -162,7 +193,7 @@ textarea {
 
     background: #ef1024;
 
-    color: white;
+    color: #ffffff;
 
     font-size: 15px;
 
@@ -179,6 +210,7 @@ textarea {
 
 #loginButton:disabled {
     opacity: 0.6;
+
     cursor: not-allowed;
 }
 
@@ -242,7 +274,17 @@ textarea {
 }
 
 
+/* =====================================================
+   ADMIN LOGO
+===================================================== */
+
 .admin-brand {
+    display: flex;
+
+    align-items: center;
+
+    gap: 0;
+
     padding: 0 12px;
 
     margin-bottom: 38px;
@@ -254,10 +296,36 @@ textarea {
     letter-spacing: -1px;
 
     white-space: nowrap;
+
+    color: #ffffff;
 }
 
 
-.admin-brand span {
+.admin-brand .brand-white {
+    color: #ffffff !important;
+
+    display: inline-block;
+}
+
+
+.admin-brand .logo-changing {
+    color: #ef1024 !important;
+
+    display: inline-block;
+
+    margin-left: 0 !important;
+
+    min-width: 55px;
+
+    transition:
+        opacity 0.3s ease,
+        transform 0.3s ease;
+}
+
+
+/* fallback */
+
+.admin-brand > span:not(.brand-white) {
     color: #ef1024;
 }
 
@@ -429,7 +497,7 @@ textarea {
 
     background: #ef1024;
 
-    color: white;
+    color: #ffffff;
 
     display: flex;
 
@@ -497,7 +565,7 @@ textarea {
 
 
 /* =====================================================
-   FORM SECTION
+   SECTION BOX
 ===================================================== */
 
 .content-form-section,
@@ -540,7 +608,7 @@ textarea {
 
 
 /* =====================================================
-   ADMIN FORM
+   FORM GRID
 ===================================================== */
 
 .form-grid {
@@ -567,13 +635,17 @@ textarea {
 
 
 .admin-form-group label {
-    color: rgba(255, 255, 255, 0.7);
+    color: rgba(255, 255, 255, 0.72);
 
     font-size: 12px;
 
     font-weight: 600;
 }
 
+
+/* =====================================================
+   INPUTS
+===================================================== */
 
 .admin-form-group input,
 .admin-form-group select,
@@ -639,6 +711,118 @@ textarea {
 
 
 /* =====================================================
+   CATEGORY / GENRE INPUT
+===================================================== */
+
+#contentGenre {
+    background: #18191f;
+
+    color: #ffffff;
+}
+
+
+/*
+   Browser datalist use korle input er
+   right side e normal browser suggestion thakte pare.
+   Eta select field na.
+*/
+
+#contentGenre::-webkit-calendar-picker-indicator {
+    opacity: 0.6;
+
+    cursor: pointer;
+}
+
+
+/* =====================================================
+   FIELD NOTE
+===================================================== */
+
+.field-note {
+    margin-top: -1px;
+
+    color: rgba(255, 255, 255, 0.38);
+
+    font-size: 11px;
+
+    line-height: 1.5;
+}
+
+
+/* =====================================================
+   DYNAMIC FIELDS
+===================================================== */
+
+.type-field {
+    display: none;
+}
+
+
+.type-field.show-field {
+    display: flex;
+}
+
+
+/* =====================================================
+   FILE INPUT
+===================================================== */
+
+.admin-form-group input[type="file"] {
+    padding: 11px;
+
+    cursor: pointer;
+}
+
+
+/* =====================================================
+   UPLOAD PREVIEW
+===================================================== */
+
+.upload-preview {
+    width: 100%;
+
+    margin-top: 5px;
+}
+
+
+.upload-preview img {
+    width: 90px;
+
+    height: 120px;
+
+    object-fit: cover;
+
+    border-radius: 8px;
+
+    border: 1px solid rgba(255, 255, 255, 0.1);
+
+    background: #18191f;
+}
+
+
+.upload-preview.banner-preview img {
+    width: 220px;
+
+    height: 110px;
+
+    object-fit: cover;
+}
+
+
+/* =====================================================
+   FILE STATUS
+===================================================== */
+
+.file-status {
+    color: rgba(255, 255, 255, 0.5);
+
+    font-size: 12px;
+
+    margin-top: 4px;
+}
+
+
+/* =====================================================
    CHECKBOX
 ===================================================== */
 
@@ -662,6 +846,7 @@ textarea {
 
 .checkbox-group input {
     width: 17px;
+
     height: 17px;
 
     accent-color: #ef1024;
@@ -669,7 +854,7 @@ textarea {
 
 
 /* =====================================================
-   FORM BUTTONS
+   BUTTONS
 ===================================================== */
 
 .form-actions {
@@ -756,7 +941,7 @@ textarea {
 
 
 /* =====================================================
-   CONTENT TABLE
+   TABLE
 ===================================================== */
 
 .admin-table-wrapper {
@@ -816,7 +1001,61 @@ textarea {
 
 
 /* =====================================================
-   STATUS
+   TABLE CONTENT
+===================================================== */
+
+.content-title-wrap {
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+}
+
+
+.content-thumb {
+    width: 42px;
+
+    height: 55px;
+
+    object-fit: cover;
+
+    border-radius: 6px;
+
+    background: #18191f;
+}
+
+
+.content-thumb-placeholder {
+    width: 42px;
+
+    height: 55px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 6px;
+
+    background: #18191f;
+
+    color: rgba(255, 255, 255, 0.3);
+}
+
+
+.table-subtext {
+    margin-top: 5px;
+
+    font-size: 11px;
+
+    color: rgba(255, 255, 255, 0.4);
+}
+
+
+/* =====================================================
+   STATUS BADGE
 ===================================================== */
 
 .status-badge {
@@ -849,7 +1088,7 @@ textarea {
 
 
 /* =====================================================
-   ACTION BUTTONS
+   TABLE ACTIONS
 ===================================================== */
 
 .table-actions {
@@ -889,7 +1128,7 @@ textarea {
 .edit-button:hover {
     background: #4084ff;
 
-    color: white;
+    color: #ffffff;
 }
 
 
@@ -903,7 +1142,7 @@ textarea {
 .delete-button:hover {
     background: #ef1024;
 
-    color: white;
+    color: #ffffff;
 }
 
 
@@ -913,6 +1152,7 @@ textarea {
 
 ::-webkit-scrollbar {
     width: 7px;
+
     height: 7px;
 }
 
@@ -929,6 +1169,11 @@ textarea {
 }
 
 
+::-webkit-scrollbar-thumb:hover {
+    background: #ef1024;
+}
+
+
 /* =====================================================
    TABLET
 ===================================================== */
@@ -936,7 +1181,8 @@ textarea {
 @media (max-width: 1000px) {
 
     .dashboard-stats {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns:
+            repeat(2, 1fr);
     }
 
 }
@@ -976,7 +1222,8 @@ textarea {
     .admin-menu {
         display: grid;
 
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns:
+            repeat(2, 1fr);
     }
 
 
@@ -993,7 +1240,8 @@ textarea {
 
 
     .dashboard-stats {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns:
+            repeat(2, 1fr);
     }
 
 
@@ -1004,6 +1252,20 @@ textarea {
 
     .admin-form-group.full-width {
         grid-column: auto;
+    }
+
+
+    .upload-preview img {
+        width: 80px;
+
+        height: 110px;
+    }
+
+
+    .upload-preview.banner-preview img {
+        width: 180px;
+
+        height: 95px;
     }
 
 }
@@ -1043,196 +1305,24 @@ textarea {
         justify-content: center;
     }
 
-}
-/* =====================================================
-   DYNAMIC CONTENT FORM
-===================================================== */
 
-.type-field {
-    display: none;
-}
-
-.type-field.show-field {
-    display: flex;
-}
-
-
-/* FILE INPUT */
-
-.admin-form-group input[type="file"] {
-    padding: 11px;
-    cursor: pointer;
-}
-
-
-/* UPLOAD PREVIEW */
-
-.upload-preview {
-    width: 100%;
-    margin-top: 5px;
-}
-
-.upload-preview img {
-    width: 90px;
-    height: 120px;
-    object-fit: cover;
-
-    border-radius: 8px;
-
-    border: 1px solid rgba(255,255,255,0.1);
-}
-
-.upload-preview.banner-preview img {
-    width: 180px;
-    height: 100px;
-}
-
-
-/* FILE STATUS */
-
-.file-status {
-    color: rgba(255,255,255,0.5);
-    font-size: 12px;
-    margin-top: 4px;
-}
-
-
-/* TABLE THUMBNAIL */
-
-.content-title-wrap {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.content-thumb {
-    width: 42px;
-    height: 55px;
-
-    object-fit: cover;
-
-    border-radius: 6px;
-
-    background: #18191f;
-}
-
-.content-thumb-placeholder {
-    width: 42px;
-    height: 55px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    border-radius: 6px;
-
-    background: #18191f;
-
-    color: rgba(255,255,255,0.3);
-}
-
-
-/* MOBILE */
-
-@media (max-width: 760px) {
-
-    .upload-preview img {
-        width: 80px;
-        height: 110px;
+    .admin-brand {
+        font-size: 23px;
     }
 
 }
 
+
 /* =====================================================
-   LOGO (matches public site spacing)
+   LOGO ANIMATION
 ===================================================== */
 
 .logo-changing {
     display: inline-block;
-    min-width: 55px;
-    margin-left: 0;
-    transition: opacity 0.3s ease, transform 0.3s ease;
-}
-/* =====================================================
-   ADMIN UPDATE: LOGO + CATEGORY MANAGEMENT
-===================================================== */
 
-/* Keep CINEMA and MELLA/HUB attached exactly like public logo */
-.admin-brand {
-    display: flex;
-    align-items: center;
-    gap: 0;
-}
+    margin-left: 0 !important;
 
-.admin-logo-cinema,
-.admin-brand .logo-changing {
-    display: inline-block;
-    margin: 0;
-    padding: 0;
-}
-
-.admin-brand .logo-changing {
-    min-width: 55px;
-}
-
-.field-help {
-    color: rgba(255, 255, 255, 0.35);
-    font-size: 11px;
-    line-height: 1.5;
-}
-
-.category-management-section {
-    background: #101116;
-    border: 1px solid rgba(255, 255, 255, 0.07);
-    border-radius: 14px;
-    padding: 25px;
-    margin-bottom: 28px;
-}
-
-.category-management-section[hidden] {
-    display: none !important;
-}
-
-.category-form {
-    padding-bottom: 28px;
-    margin-bottom: 28px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
-}
-
-.category-form-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 18px;
-}
-
-.category-list-title {
-    margin-bottom: 18px;
-}
-
-#categoryMessage {
-    margin-top: 15px;
-    min-height: 20px;
-    font-size: 13px;
-}
-
-.category-name-cell {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-weight: 700;
-}
-
-.category-name-cell i {
-    color: #ef1024;
-    font-size: 11px;
-}
-
-@media (max-width: 760px) {
-    .category-form-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .category-management-section {
-        padding: 18px;
-    }
+    transition:
+        opacity 0.3s ease,
+        transform 0.3s ease;
 }

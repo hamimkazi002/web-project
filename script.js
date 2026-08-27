@@ -1,14 +1,35 @@
 /* =====================================================
-   CINEMA MELLA - PUBLIC WEBSITE
-   NO DATABASE CHANGE VERSION
-   Uses only existing "contents" table
+   CINEMA MELLA
+   PUBLIC WEBSITE - FINAL VERSION
+
+   NO DATABASE CHANGE
+
+   FEATURES:
+   - Existing contents table only
+   - Auto category dropdown from genre
+   - Description on hover
+   - Rating 8+ Featured slider
+   - Hero uses BANNER IMAGE ONLY
+   - Hero order:
+     Movie -> Natok -> Series -> Upcoming
+     -> Story -> Book -> Tutorial -> repeat
+   - Movie/Natok/Series/Tutorial download button
+   - Story reader
+   - Book PDF
+===================================================== */
+
+
+/* =====================================================
+   SUPABASE
 ===================================================== */
 
 const SUPABASE_URL =
     "https://vuvstnlalyikvlanxxwy.supabase.co";
 
+
 const SUPABASE_PUBLISHABLE_KEY =
     "sb_publishable_ed-PGIvnw8yN2OwI2264IA_f1FOdWrp";
+
 
 const publicSupabase =
     window.supabase.createClient(
@@ -23,14 +44,10 @@ const publicSupabase =
 
 let databaseContents = [];
 
-let featuredItems = [];
-let featuredIndex = 0;
-let featuredTimer = null;
 
-let heroSlides = [];
-let heroIndex = 0;
-let heroTimer = null;
-
+/* =====================================================
+   TYPE MAP
+===================================================== */
 
 const TYPE_LABELS = {
 
@@ -70,6 +87,10 @@ const TYPE_SECTIONS = {
 };
 
 
+/* =====================================================
+   HERO ORDER
+===================================================== */
+
 const HERO_SEQUENCE = [
 
     "movie",
@@ -88,6 +109,10 @@ const HERO_SEQUENCE = [
 
 ];
 
+
+/* =====================================================
+   CATEGORY FILTER
+===================================================== */
 
 const activeGenreFilters = {
 
@@ -109,7 +134,29 @@ const activeGenreFilters = {
 
 
 /* =====================================================
-   DOM ELEMENTS
+   HERO VARIABLES
+===================================================== */
+
+let heroSlides = [];
+
+let heroIndex = 0;
+
+let heroTimer = null;
+
+
+/* =====================================================
+   FEATURED VARIABLES
+===================================================== */
+
+let featuredItems = [];
+
+let featuredIndex = 0;
+
+let featuredTimer = null;
+
+
+/* =====================================================
+   DOM
 ===================================================== */
 
 const heroBackground =
@@ -237,7 +284,7 @@ setInterval(
 
 
 /* =====================================================
-   LOAD CONTENT
+   LOAD DATABASE CONTENT
 ===================================================== */
 
 async function loadWebsiteContents() {
@@ -249,12 +296,8 @@ async function loadWebsiteContents() {
             error
         } =
             await publicSupabase
-                .from(
-                    "contents"
-                )
-                .select(
-                    "*"
-                )
+                .from("contents")
+                .select("*")
                 .eq(
                     "status",
                     "published"
@@ -278,17 +321,28 @@ async function loadWebsiteContents() {
             data || [];
 
 
-        createCategoryDropdowns();
+        createNavbarDropdowns();
 
-        renderCategoryDropdowns();
+
+        renderNavbarCategories();
+
 
         createFeaturedSection();
 
+
         renderAllSections();
+
 
         setupFeaturedSlider();
 
+
         setupDynamicHero();
+
+
+        console.log(
+            "Cinema Mella content loaded:",
+            databaseContents
+        );
 
     }
 
@@ -308,54 +362,29 @@ async function loadWebsiteContents() {
 
 
 /* =====================================================
-   CATEGORY SYSTEM
-
-   DATABASE CHANGE LAGBE NA
-
-   CATEGORY ASBE contents.genre THEKE
-
-   Example:
-
-   Movie:
-   Action
-   Horror
-
-   Natok:
-   Bangla
-   Hindi
-
-   Tutorial:
-   SEO
-   Coding
-   Web Design
+   CATEGORY HELPERS
 ===================================================== */
 
-function splitGenres(
-    value
-) {
+function splitGenres(value) {
 
     return String(
         value || ""
     )
         .split(",")
         .map(
-            item =>
-                item.trim()
+            genre =>
+                genre.trim()
         )
-        .filter(
-            Boolean
-        );
+        .filter(Boolean);
 
 }
 
 
 /* =====================================================
-   GET UNIQUE GENRES
+   GET CATEGORY FROM EXISTING CONTENT
 ===================================================== */
 
-function getGenresForType(
-    type
-) {
+function getGenresForType(type) {
 
     const genres = [];
 
@@ -376,8 +405,8 @@ function getGenresForType(
 
                             const exists =
                                 genres.some(
-                                    current =>
-                                        current
+                                    oldGenre =>
+                                        oldGenre
                                             .toLowerCase()
                                         ===
                                         genre
@@ -405,22 +434,28 @@ function getGenresForType(
             a,
             b
         ) =>
-            a.localeCompare(
-                b
-            )
+            a.localeCompare(b)
     );
 
 }
 
 
 /* =====================================================
-   CREATE NAV DROPDOWN
+   CREATE NAVBAR DROPDOWNS
 
-   Existing index.html change na korleo JS
-   menu create korbe
+   Existing index.html menu:
+   Movies
+   Natok
+   Web Series
+   Upcoming
+   Stories
+   Books
+   Tutorial
+
+   JS automatically wraps them.
 ===================================================== */
 
-function createCategoryDropdowns() {
+function createNavbarDropdowns() {
 
     const navMenu =
         document.querySelector(
@@ -462,9 +497,7 @@ function createCategoryDropdowns() {
 
 
     Object
-        .entries(
-            map
-        )
+        .entries(map)
         .forEach(
             (
                 [
@@ -474,10 +507,9 @@ function createCategoryDropdowns() {
             ) => {
 
                 const link =
-                    navMenu
-                        .querySelector(
-                            `a.nav-link[href="${href}"]`
-                        );
+                    navMenu.querySelector(
+                        `a.nav-link[href="${href}"]`
+                    );
 
 
                 if (!link) {
@@ -488,9 +520,10 @@ function createCategoryDropdowns() {
 
 
                 if (
-                    link
-                        .parentElement
-                        ?.classList
+                    link.parentElement
+                    &&
+                    link.parentElement
+                        .classList
                         .contains(
                             "nav-category-dropdown"
                         )
@@ -511,60 +544,50 @@ function createCategoryDropdowns() {
                     "nav-category-dropdown";
 
 
-                wrapper.dataset
-                    .contentType =
+                wrapper.dataset.contentType =
                     type;
 
 
-                const menu =
+                const dropdown =
                     document.createElement(
                         "div"
                     );
 
 
-                menu.className =
+                dropdown.className =
                     "genre-dropdown-menu";
 
 
-                menu.innerHTML = `
+                dropdown.innerHTML = `
 
-                    <div
-                        class="genre-dropdown-head"
-                    >
+                    <div class="genre-dropdown-head">
 
                         ${escapeHTML(
-                            TYPE_LABELS[
-                                type
-                            ]
+                            TYPE_LABELS[type]
                         )}
 
                     </div>
 
 
-                    <div
-                        class="genre-menu-dynamic"
-                    ></div>
+                    <div class="genre-menu-dynamic"></div>
 
                 `;
 
 
-                link.parentNode
-                    .insertBefore(
-                        wrapper,
-                        link
-                    );
+                link.parentNode.insertBefore(
+                    wrapper,
+                    link
+                );
 
 
-                wrapper
-                    .appendChild(
-                        link
-                    );
+                wrapper.appendChild(
+                    link
+                );
 
 
-                wrapper
-                    .appendChild(
-                        menu
-                    );
+                wrapper.appendChild(
+                    dropdown
+                );
 
             }
         );
@@ -573,10 +596,10 @@ function createCategoryDropdowns() {
 
 
 /* =====================================================
-   RENDER NAV CATEGORIES
+   RENDER NAVBAR CATEGORY
 ===================================================== */
 
-function renderCategoryDropdowns() {
+function renderNavbarCategories() {
 
     document
         .querySelectorAll(
@@ -590,16 +613,15 @@ function renderCategoryDropdowns() {
                         .contentType;
 
 
-                const box =
-                    wrapper
-                        .querySelector(
-                            ".genre-menu-dynamic"
-                        );
+                const dynamicBox =
+                    wrapper.querySelector(
+                        ".genre-menu-dynamic"
+                    );
 
 
                 if (
                     !type ||
-                    !box
+                    !dynamicBox
                 ) {
 
                     return;
@@ -613,52 +635,56 @@ function renderCategoryDropdowns() {
                     );
 
 
-                box.innerHTML = `
+                let html = `
 
                     <button
-                        class="genre-menu-item active"
                         type="button"
-                        data-content-type="${type}"
+                        class="genre-menu-item active"
+                        data-content-type="${escapeAttribute(
+                            type
+                        )}"
                         data-genre="all"
                     >
 
                         All ${escapeHTML(
-                            TYPE_LABELS[
-                                type
-                            ]
+                            TYPE_LABELS[type]
                         )}
 
                     </button>
 
+                `;
 
-                    ${
 
-                        genres
-                            .map(
-                                genre => `
+                genres.forEach(
+                    genre => {
 
-                                    <button
-                                        class="genre-menu-item"
-                                        type="button"
-                                        data-content-type="${type}"
-                                        data-genre="${escapeAttribute(
-                                            genre
-                                        )}"
-                                    >
+                        html += `
 
-                                        ${escapeHTML(
-                                            genre
-                                        )}
+                            <button
+                                type="button"
+                                class="genre-menu-item"
+                                data-content-type="${escapeAttribute(
+                                    type
+                                )}"
+                                data-genre="${escapeAttribute(
+                                    genre
+                                )}"
+                            >
 
-                                    </button>
+                                ${escapeHTML(
+                                    genre
+                                )}
 
-                                `
-                            )
-                            .join("")
+                            </button>
+
+                        `;
 
                     }
+                );
 
-                `;
+
+                dynamicBox.innerHTML =
+                    html;
 
             }
         );
@@ -707,8 +733,7 @@ document.addEventListener(
         if (
             !type ||
             !(
-                type
-                in
+                type in
                 activeGenreFilters
             )
         ) {
@@ -718,9 +743,7 @@ document.addEventListener(
         }
 
 
-        activeGenreFilters[
-            type
-        ] =
+        activeGenreFilters[type] =
             genre;
 
 
@@ -739,10 +762,9 @@ document.addEventListener(
                 .forEach(
                     item => {
 
-                        item.classList
-                            .remove(
-                                "active"
-                            );
+                        item.classList.remove(
+                            "active"
+                        );
 
                     }
                 );
@@ -750,10 +772,9 @@ document.addEventListener(
         }
 
 
-        button.classList
-            .add(
-                "active"
-            );
+        button.classList.add(
+            "active"
+        );
 
 
         renderSectionByType(
@@ -761,11 +782,13 @@ document.addEventListener(
         );
 
 
+        const sectionId =
+            TYPE_SECTIONS[type];
+
+
         const section =
             document.getElementById(
-                TYPE_SECTIONS[
-                    type
-                ]
+                sectionId
             );
 
 
@@ -773,13 +796,11 @@ document.addEventListener(
 
             section.scrollIntoView(
                 {
-
                     behavior:
                         "smooth",
 
                     block:
                         "start"
-
                 }
             );
 
@@ -790,7 +811,7 @@ document.addEventListener(
 
 
 /* =====================================================
-   GENRE MATCH
+   CATEGORY MATCH
 ===================================================== */
 
 function itemMatchesGenre(
@@ -812,8 +833,8 @@ function itemMatchesGenre(
         item.genre
     )
         .some(
-            current =>
-                current
+            itemGenre =>
+                itemGenre
                     .toLowerCase()
                 ===
                 genre
@@ -827,23 +848,24 @@ function itemMatchesGenre(
    FILTER CONTENT
 ===================================================== */
 
-function getFilteredContents(
-    type
-) {
+function getFilteredContents(type) {
+
+    const selectedGenre =
+        activeGenreFilters[type]
+        ||
+        "all";
+
 
     return databaseContents
         .filter(
             item =>
-                item.type ===
-                type
+                item.type === type
         )
         .filter(
             item =>
                 itemMatchesGenre(
                     item,
-                    activeGenreFilters[
-                        type
-                    ]
+                    selectedGenre
                 )
         );
 
@@ -851,7 +873,7 @@ function getFilteredContents(
 
 
 /* =====================================================
-   EMPTY TEXT
+   EMPTY FILTER TEXT
 ===================================================== */
 
 function getEmptyText(
@@ -860,9 +882,7 @@ function getEmptyText(
 ) {
 
     const genre =
-        activeGenreFilters[
-            type
-        ];
+        activeGenreFilters[type];
 
 
     if (
@@ -904,14 +924,12 @@ function renderAllSections() {
 
 
 /* =====================================================
-   RENDER BY TYPE
+   RENDER ONE TYPE
 ===================================================== */
 
-function renderSectionByType(
-    type
-) {
+function renderSectionByType(type) {
 
-    const map = {
+    const renderers = {
 
         movie:
             renderMovies,
@@ -937,15 +955,9 @@ function renderSectionByType(
     };
 
 
-    if (
-        map[
-            type
-        ]
-    ) {
+    if (renderers[type]) {
 
-        map[
-            type
-        ]();
+        renderers[type]();
 
     }
 
@@ -959,15 +971,10 @@ function renderSectionByType(
 function renderMovies() {
 
     renderVideoGrid(
-
         "moviesGrid",
-
         "movie",
-
         "MOVIE",
-
         "No movies added yet."
-
     );
 
 }
@@ -980,36 +987,26 @@ function renderMovies() {
 function renderNatok() {
 
     renderVideoGrid(
-
         "natokGrid",
-
         "natok",
-
         "NATOK",
-
         "No natok added yet."
-
     );
 
 }
 
 
 /* =====================================================
-   SERIES
+   WEB SERIES
 ===================================================== */
 
 function renderSeries() {
 
     renderVideoGrid(
-
         "webseriesGrid",
-
         "series",
-
         "WEB SERIES",
-
         "No web series added yet."
-
     );
 
 }
@@ -1045,9 +1042,7 @@ function renderVideoGrid(
         );
 
 
-    if (
-        items.length === 0
-    ) {
+    if (!items.length) {
 
         grid.innerHTML =
             emptyMessage(
@@ -1078,10 +1073,7 @@ function renderVideoGrid(
 
 
 /* =====================================================
-   VIDEO CARD
-
-   Description niche thakbe na.
-   Hover korle poster er upor show korbe.
+   MOVIE / NATOK / SERIES CARD
 ===================================================== */
 
 function createVideoCard(
@@ -1092,41 +1084,36 @@ function createVideoCard(
     const image =
         item.poster_url
         ||
-        item.banner_url
-        ||
         "";
 
 
-    const leftMeta =
-        (
-            item.type ===
-            "series"
-            &&
-            item.season
-        )
+    let leftMeta =
+        item.year ||
+        "";
 
-            ?
 
+    if (
+        item.type ===
+        "series"
+        &&
+        item.season
+    ) {
+
+        leftMeta =
             `S${String(
                 item.season
             ).padStart(
                 2,
                 "0"
-            )}`
+            )}`;
 
-            :
-
-            (
-                item.year
-                ||
-                ""
-            );
+    }
 
 
     return `
 
         <article
-            class="movie-card content-open-card"
+            class="movie-card"
             data-content-id="${item.id}"
         >
 
@@ -1134,15 +1121,11 @@ function createVideoCard(
                 class="movie-poster"
                 style='${
                     image
-
                         ?
-
                         `background-image:url("${escapeCssUrl(
                             image
                         )}")`
-
                         :
-
                         ""
                 }'
             >
@@ -1150,14 +1133,10 @@ function createVideoCard(
 
                 ${
                     item.badge
-
                         ?
-
                         `
 
-                            <span
-                                class="content-badge"
-                            >
+                            <span class="content-badge">
 
                                 ${escapeHTML(
                                     item.badge
@@ -1166,94 +1145,43 @@ function createVideoCard(
                             </span>
 
                         `
-
                         :
-
                         ""
                 }
 
 
-                <div
-                    class="card-hover-overlay"
-                >
-
-                    <h4>
-
-                        ${escapeHTML(
-                            item.title
-                            ||
-                            "Untitled"
-                        )}
-
-                    </h4>
-
-
-                    <p>
-
-                        ${escapeHTML(
-                            item.description
-                            ||
-                            "No description available."
-                        )}
-
-                    </p>
-
-
-                    <span
-                        class="card-hover-action"
-                    >
-
-                        ${getActionText(
-                            item
-                        )}
-
-                        <i
-                            class="fa-solid fa-arrow-right"
-                        ></i>
-
-                    </span>
-
-                </div>
+                ${createHoverOverlay(
+                    item
+                )}
 
 
                 ${
-                    getMainActionUrl(
-                        item
-                    )
-
+                    item.video_url
                         ?
-
                         `
 
                             <button
-                                class="poster-play content-action-button"
                                 type="button"
+                                class="poster-play content-video-button"
                                 data-content-id="${item.id}"
+                                title="Watch"
                             >
 
-                                <i
-                                    class="fa-solid fa-play"
-                                ></i>
+                                <i class="fa-solid fa-play"></i>
 
                             </button>
 
                         `
-
                         :
-
                         ""
                 }
 
             </div>
 
 
-            <div
-                class="card-info"
-            >
+            <div class="card-info">
 
-                <span
-                    class="card-category"
-                >
+                <span class="card-category">
 
                     ${label}
 
@@ -1263,17 +1191,14 @@ function createVideoCard(
                 <h3>
 
                     ${escapeHTML(
-                        item.title
-                        ||
+                        item.title ||
                         "Untitled"
                     )}
 
                 </h3>
 
 
-                <div
-                    class="card-meta"
-                >
+                <div class="card-meta">
 
                     <span>
 
@@ -1287,32 +1212,47 @@ function createVideoCard(
                     <span>
 
                         ${
-                            hasRating(
-                                item
-                            )
-
+                            hasRating(item)
                                 ?
-
                                 `
 
-                                    <i
-                                        class="fa-solid fa-star"
-                                    ></i>
+                                    <i class="fa-solid fa-star"></i>
 
                                     ${escapeHTML(
                                         item.rating
                                     )}
 
                                 `
-
                                 :
-
                                 ""
                         }
 
                     </span>
 
                 </div>
+
+
+                ${
+                    item.download_url
+                        ?
+                        `
+
+                            <button
+                                type="button"
+                                class="content-download-button"
+                                data-content-id="${item.id}"
+                            >
+
+                                <i class="fa-solid fa-download"></i>
+
+                                Download
+
+                            </button>
+
+                        `
+                        :
+                        ""
+                }
 
             </div>
 
@@ -1348,21 +1288,14 @@ function renderUpcoming() {
         );
 
 
-    if (
-        items.length === 0
-    ) {
+    if (!items.length) {
 
         grid.innerHTML =
             emptyMessage(
-
                 getEmptyText(
-
                     "upcoming",
-
                     "No upcoming content."
-
                 )
-
             );
 
 
@@ -1377,17 +1310,14 @@ function renderUpcoming() {
                 item => {
 
                     const image =
-                        item.banner_url
-                        ||
-                        item.poster_url
-                        ||
+                        item.poster_url ||
                         "";
 
 
                     return `
 
                         <article
-                            class="upcoming-card content-open-card"
+                            class="upcoming-card"
                             data-content-id="${item.id}"
                         >
 
@@ -1395,56 +1325,43 @@ function renderUpcoming() {
                                 class="upcoming-poster"
                                 style='${
                                     image
-
                                         ?
-
                                         `background-image:url("${escapeCssUrl(
                                             image
                                         )}")`
-
                                         :
-
                                         ""
                                 }'
                             >
 
-                                <span
-                                    class="coming-badge"
-                                >
+                                <span class="coming-badge">
 
                                     ${escapeHTML(
-                                        item.badge
-                                        ||
+                                        item.badge ||
                                         "COMING SOON"
                                     )}
 
                                 </span>
 
 
-                                ${hoverOverlay(
-                                    item,
-                                    "View Content"
+                                ${createHoverOverlay(
+                                    item
                                 )}
 
                             </div>
 
 
-                            <div
-                                class="upcoming-info"
-                            >
+                            <div class="upcoming-info">
 
                                 <span>
-
                                     RELEASE DATE
-
                                 </span>
 
 
                                 <h3>
 
                                     ${escapeHTML(
-                                        item.title
-                                        ||
+                                        item.title ||
                                         ""
                                     )}
 
@@ -1455,17 +1372,13 @@ function renderUpcoming() {
 
                                     ${
                                         item.release_date
-
                                             ?
-
                                             escapeHTML(
                                                 formatDate(
                                                     item.release_date
                                                 )
                                             )
-
                                             :
-
                                             "Coming Soon"
                                     }
 
@@ -1509,21 +1422,14 @@ function renderStories() {
         );
 
 
-    if (
-        items.length === 0
-    ) {
+    if (!items.length) {
 
         grid.innerHTML =
             emptyMessage(
-
                 getEmptyText(
-
                     "story",
-
                     "No stories added yet."
-
                 )
-
             );
 
 
@@ -1538,15 +1444,14 @@ function renderStories() {
                 item => {
 
                     const image =
-                        item.poster_url
-                        ||
+                        item.poster_url ||
                         "";
 
 
                     return `
 
                         <article
-                            class="story-card content-open-card"
+                            class="story-card"
                             data-content-id="${item.id}"
                         >
 
@@ -1554,67 +1459,48 @@ function renderStories() {
                                 class="story-image"
                                 style='${
                                     image
-
                                         ?
-
                                         `background-image:url("${escapeCssUrl(
                                             image
                                         )}")`
-
                                         :
-
                                         ""
                                 }'
                             >
 
-                                <span
-                                    class="story-badge"
-                                >
+                                <span class="story-badge">
 
                                     ${
                                         item.featured
-
                                             ?
-
                                             "FEATURED"
-
                                             :
-
                                             "STORY"
                                     }
 
                                 </span>
 
 
-                                ${hoverOverlay(
-                                    item,
-                                    "Read Story"
+                                ${createHoverOverlay(
+                                    item
                                 )}
 
                             </div>
 
 
-                            <div
-                                class="story-info"
-                            >
+                            <div class="story-info">
 
-                                <span
-                                    class="story-date"
-                                >
+                                <span class="story-date">
 
                                     ${
                                         item.release_date
-
                                             ?
-
                                             escapeHTML(
                                                 formatDate(
                                                     item.release_date
                                                 )
                                             )
-
                                             :
-
                                             ""
                                     }
 
@@ -1624,8 +1510,7 @@ function renderStories() {
                                 <h3>
 
                                     ${escapeHTML(
-                                        item.title
-                                        ||
+                                        item.title ||
                                         ""
                                     )}
 
@@ -1634,9 +1519,7 @@ function renderStories() {
 
                                 ${
                                     item.author
-
                                         ?
-
                                         `
 
                                             <p>
@@ -1648,24 +1531,20 @@ function renderStories() {
                                             </p>
 
                                         `
-
                                         :
-
                                         ""
                                 }
 
 
                                 <button
-                                    class="story-button content-action-button"
                                     type="button"
+                                    class="story-button content-story-button"
                                     data-content-id="${item.id}"
                                 >
 
                                     Read Story
 
-                                    <i
-                                        class="fa-solid fa-arrow-right"
-                                    ></i>
+                                    <i class="fa-solid fa-arrow-right"></i>
 
                                 </button>
 
@@ -1707,21 +1586,14 @@ function renderBooks() {
         );
 
 
-    if (
-        items.length === 0
-    ) {
+    if (!items.length) {
 
         grid.innerHTML =
             emptyMessage(
-
                 getEmptyText(
-
                     "book",
-
                     "No books added yet."
-
                 )
-
             );
 
 
@@ -1736,15 +1608,14 @@ function renderBooks() {
                 item => {
 
                     const image =
-                        item.poster_url
-                        ||
+                        item.poster_url ||
                         "";
 
 
                     return `
 
                         <article
-                            class="book-card content-open-card"
+                            class="book-card"
                             data-content-id="${item.id}"
                         >
 
@@ -1752,57 +1623,41 @@ function renderBooks() {
                                 class="book-cover"
                                 style='${
                                     image
-
                                         ?
-
                                         `background-image:url("${escapeCssUrl(
                                             image
                                         )}")`
-
                                         :
-
                                         ""
                                 }'
                             >
 
-                                <span
-                                    class="book-badge"
-                                >
+                                <span class="book-badge">
 
                                     ${
                                         item.featured
-
                                             ?
-
                                             "FEATURED"
-
                                             :
-
                                             "BOOK"
                                     }
 
                                 </span>
 
 
-                                ${hoverOverlay(
-                                    item,
-                                    "Read Book"
+                                ${createHoverOverlay(
+                                    item
                                 )}
 
                             </div>
 
 
-                            <div
-                                class="book-info"
-                            >
+                            <div class="book-info">
 
-                                <span
-                                    class="book-category"
-                                >
+                                <span class="book-category">
 
                                     ${escapeHTML(
-                                        item.genre
-                                        ||
+                                        item.genre ||
                                         "BOOK"
                                     )}
 
@@ -1812,8 +1667,7 @@ function renderBooks() {
                                 <h3>
 
                                     ${escapeHTML(
-                                        item.title
-                                        ||
+                                        item.title ||
                                         ""
                                     )}
 
@@ -1822,9 +1676,7 @@ function renderBooks() {
 
                                 ${
                                     item.author
-
                                         ?
-
                                         `
 
                                             <p>
@@ -1836,38 +1688,30 @@ function renderBooks() {
                                             </p>
 
                                         `
-
                                         :
-
                                         ""
                                 }
 
 
                                 ${
                                     item.file_url
-
                                         ?
-
                                         `
 
                                             <button
-                                                class="book-button content-action-button"
                                                 type="button"
+                                                class="book-button content-book-button"
                                                 data-content-id="${item.id}"
                                             >
 
                                                 Read Book
 
-                                                <i
-                                                    class="fa-solid fa-arrow-right"
-                                                ></i>
+                                                <i class="fa-solid fa-arrow-right"></i>
 
                                             </button>
 
                                         `
-
                                         :
-
                                         ""
                                 }
 
@@ -1909,21 +1753,14 @@ function renderTutorial() {
         );
 
 
-    if (
-        items.length === 0
-    ) {
+    if (!items.length) {
 
         grid.innerHTML =
             emptyMessage(
-
                 getEmptyText(
-
                     "tutorial",
-
                     "No tutorial content added yet."
-
                 )
-
             );
 
 
@@ -1938,17 +1775,14 @@ function renderTutorial() {
                 item => {
 
                     const image =
-                        item.poster_url
-                        ||
-                        item.banner_url
-                        ||
+                        item.poster_url ||
                         "";
 
 
                     return `
 
                         <article
-                            class="movie-card content-open-card"
+                            class="movie-card"
                             data-content-id="${item.id}"
                         >
 
@@ -1956,15 +1790,11 @@ function renderTutorial() {
                                 class="movie-poster"
                                 style='${
                                     image
-
                                         ?
-
                                         `background-image:url("${escapeCssUrl(
                                             image
                                         )}")`
-
                                         :
-
                                         ""
                                 }'
                             >
@@ -1972,14 +1802,10 @@ function renderTutorial() {
 
                                 ${
                                     item.genre
-
                                         ?
-
                                         `
 
-                                            <span
-                                                class="content-badge"
-                                            >
+                                            <span class="content-badge">
 
                                                 ${escapeHTML(
                                                     item.genre
@@ -1988,59 +1814,42 @@ function renderTutorial() {
                                             </span>
 
                                         `
-
                                         :
-
                                         ""
                                 }
 
 
-                                ${hoverOverlay(
-                                    item,
-                                    getActionText(
-                                        item
-                                    )
+                                ${createHoverOverlay(
+                                    item
                                 )}
 
 
                                 ${
-                                    getMainActionUrl(
-                                        item
-                                    )
-
+                                    item.video_url
                                         ?
-
                                         `
 
                                             <button
-                                                class="poster-play content-action-button"
                                                 type="button"
+                                                class="poster-play content-video-button"
                                                 data-content-id="${item.id}"
                                             >
 
-                                                <i
-                                                    class="fa-solid fa-play"
-                                                ></i>
+                                                <i class="fa-solid fa-play"></i>
 
                                             </button>
 
                                         `
-
                                         :
-
                                         ""
                                 }
 
                             </div>
 
 
-                            <div
-                                class="card-info"
-                            >
+                            <div class="card-info">
 
-                                <span
-                                    class="card-category"
-                                >
+                                <span class="card-category">
 
                                     TUTORIAL
 
@@ -2050,23 +1859,19 @@ function renderTutorial() {
                                 <h3>
 
                                     ${escapeHTML(
-                                        item.title
-                                        ||
+                                        item.title ||
                                         "Untitled"
                                     )}
 
                                 </h3>
 
 
-                                <div
-                                    class="card-meta"
-                                >
+                                <div class="card-meta">
 
                                     <span>
 
                                         ${escapeHTML(
-                                            item.year
-                                            ||
+                                            item.year ||
                                             ""
                                         )}
 
@@ -2076,26 +1881,18 @@ function renderTutorial() {
                                     <span>
 
                                         ${
-                                            hasRating(
-                                                item
-                                            )
-
+                                            hasRating(item)
                                                 ?
-
                                                 `
 
-                                                    <i
-                                                        class="fa-solid fa-star"
-                                                    ></i>
+                                                    <i class="fa-solid fa-star"></i>
 
                                                     ${escapeHTML(
                                                         item.rating
                                                     )}
 
                                                 `
-
                                                 :
-
                                                 ""
                                         }
 
@@ -2106,30 +1903,23 @@ function renderTutorial() {
 
                                 ${
                                     item.download_url
-
                                         ?
-
                                         `
 
                                             <button
-                                                class="book-button content-action-button"
                                                 type="button"
+                                                class="content-download-button"
                                                 data-content-id="${item.id}"
-                                                style="margin-top:12px;"
                                             >
 
-                                                Download
+                                                <i class="fa-solid fa-download"></i>
 
-                                                <i
-                                                    class="fa-solid fa-download"
-                                                ></i>
+                                                Download
 
                                             </button>
 
                                         `
-
                                         :
-
                                         ""
                                 }
 
@@ -2147,25 +1937,19 @@ function renderTutorial() {
 
 
 /* =====================================================
-   HOVER OVERLAY
+   HOVER DESCRIPTION
 ===================================================== */
 
-function hoverOverlay(
-    item,
-    actionText
-) {
+function createHoverOverlay(item) {
 
     return `
 
-        <div
-            class="card-hover-overlay"
-        >
+        <div class="card-hover-overlay">
 
             <h4>
 
                 ${escapeHTML(
-                    item.title
-                    ||
+                    item.title ||
                     "Untitled"
                 )}
 
@@ -2175,25 +1959,22 @@ function hoverOverlay(
             <p>
 
                 ${escapeHTML(
-                    item.description
-                    ||
+                    item.description ||
                     "No description available."
                 )}
 
             </p>
 
 
-            <span
-                class="card-hover-action"
-            >
+            <span class="card-hover-action">
 
                 ${escapeHTML(
-                    actionText
+                    getActionText(
+                        item
+                    )
                 )}
 
-                <i
-                    class="fa-solid fa-arrow-right"
-                ></i>
+                <i class="fa-solid fa-arrow-right"></i>
 
             </span>
 
@@ -2205,183 +1986,10 @@ function hoverOverlay(
 
 
 /* =====================================================
-   CONTENT CLICK
-===================================================== */
-
-document.addEventListener(
-    "click",
-    event => {
-
-        const actionButton =
-            event.target.closest(
-                ".content-action-button"
-            );
-
-
-        if (actionButton) {
-
-            event.preventDefault();
-
-            event.stopPropagation();
-
-
-            const item =
-                findContentById(
-                    actionButton.dataset
-                        .contentId
-                );
-
-
-            if (item) {
-
-                openContent(
-                    item
-                );
-
-            }
-
-
-            return;
-
-        }
-
-
-        const card =
-            event.target.closest(
-                ".content-open-card, .featured-card"
-            );
-
-
-        if (!card) {
-
-            return;
-
-        }
-
-
-        const item =
-            findContentById(
-                card.dataset
-                    .contentId
-            );
-
-
-        if (item) {
-
-            openContent(
-                item
-            );
-
-        }
-
-    }
-);
-
-
-/* =====================================================
-   FIND CONTENT
-===================================================== */
-
-function findContentById(
-    id
-) {
-
-    return databaseContents
-        .find(
-            item =>
-                String(
-                    item.id
-                )
-                ===
-                String(
-                    id
-                )
-        );
-
-}
-
-
-/* =====================================================
-   ACTION URL
-===================================================== */
-
-function getMainActionUrl(
-    item
-) {
-
-    if (!item) {
-
-        return "";
-
-    }
-
-
-    if (
-        [
-            "movie",
-            "natok",
-            "series",
-            "upcoming"
-        ].includes(
-            item.type
-        )
-    ) {
-
-        return (
-            item.video_url
-            ||
-            ""
-        );
-
-    }
-
-
-    if (
-        item.type ===
-        "book"
-    ) {
-
-        return (
-            item.file_url
-            ||
-            ""
-        );
-
-    }
-
-
-    if (
-        item.type ===
-        "tutorial"
-    ) {
-
-        return (
-
-            item.video_url
-            ||
-
-            item.download_url
-            ||
-
-            ""
-
-        );
-
-    }
-
-
-    return "";
-
-}
-
-
-/* =====================================================
    ACTION TEXT
 ===================================================== */
 
-function getActionText(
-    item
-) {
+function getActionText(item) {
 
     if (!item) {
 
@@ -2415,18 +2023,14 @@ function getActionText(
         "tutorial"
     ) {
 
-        if (
-            item.video_url
-        ) {
+        if (item.video_url) {
 
             return "Watch Tutorial";
 
         }
 
 
-        if (
-            item.download_url
-        ) {
+        if (item.download_url) {
 
             return "Download";
 
@@ -2443,7 +2047,7 @@ function getActionText(
         "upcoming"
     ) {
 
-        return "View Content";
+        return "Coming Soon";
 
     }
 
@@ -2454,12 +2058,288 @@ function getActionText(
 
 
 /* =====================================================
+   FIND CONTENT
+===================================================== */
+
+function findContentById(id) {
+
+    return databaseContents.find(
+        item =>
+            String(item.id)
+            ===
+            String(id)
+    );
+
+}
+
+
+/* =====================================================
+   VIDEO BUTTON CLICK
+===================================================== */
+
+document.addEventListener(
+    "click",
+    event => {
+
+        const button =
+            event.target.closest(
+                ".content-video-button"
+            );
+
+
+        if (!button) {
+
+            return;
+
+        }
+
+
+        event.preventDefault();
+
+        event.stopPropagation();
+
+
+        const item =
+            findContentById(
+                button.dataset
+                    .contentId
+            );
+
+
+        if (
+            item &&
+            item.video_url
+        ) {
+
+            window.open(
+                item.video_url,
+                "_blank",
+                "noopener,noreferrer"
+            );
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   DOWNLOAD BUTTON CLICK
+===================================================== */
+
+document.addEventListener(
+    "click",
+    event => {
+
+        const button =
+            event.target.closest(
+                ".content-download-button"
+            );
+
+
+        if (!button) {
+
+            return;
+
+        }
+
+
+        event.preventDefault();
+
+        event.stopPropagation();
+
+
+        const item =
+            findContentById(
+                button.dataset
+                    .contentId
+            );
+
+
+        if (
+            item &&
+            item.download_url
+        ) {
+
+            window.open(
+                item.download_url,
+                "_blank",
+                "noopener,noreferrer"
+            );
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   STORY BUTTON
+===================================================== */
+
+document.addEventListener(
+    "click",
+    event => {
+
+        const button =
+            event.target.closest(
+                ".content-story-button"
+            );
+
+
+        if (!button) {
+
+            return;
+
+        }
+
+
+        event.preventDefault();
+
+        event.stopPropagation();
+
+
+        const story =
+            findContentById(
+                button.dataset
+                    .contentId
+            );
+
+
+        if (story) {
+
+            openStoryReader(
+                story
+            );
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   BOOK BUTTON
+===================================================== */
+
+document.addEventListener(
+    "click",
+    event => {
+
+        const button =
+            event.target.closest(
+                ".content-book-button"
+            );
+
+
+        if (!button) {
+
+            return;
+
+        }
+
+
+        event.preventDefault();
+
+        event.stopPropagation();
+
+
+        const item =
+            findContentById(
+                button.dataset
+                    .contentId
+            );
+
+
+        if (
+            item &&
+            item.file_url
+        ) {
+
+            window.open(
+                item.file_url,
+                "_blank",
+                "noopener,noreferrer"
+            );
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   CARD CLICK
+===================================================== */
+
+document.addEventListener(
+    "click",
+    event => {
+
+        if (
+            event.target.closest(
+                "button"
+            )
+        ) {
+
+            return;
+
+        }
+
+
+        const card =
+            event.target.closest(
+                `
+                .movie-card,
+                .story-card,
+                .book-card,
+                .upcoming-card,
+                .featured-card
+                `
+            );
+
+
+        if (!card) {
+
+            return;
+
+        }
+
+
+        const item =
+            findContentById(
+                card.dataset
+                    .contentId
+            );
+
+
+        if (!item) {
+
+            return;
+
+        }
+
+
+        openContent(
+            item
+        );
+
+    }
+);
+
+
+/* =====================================================
    OPEN CONTENT
 ===================================================== */
 
-function openContent(
-    item
-) {
+function openContent(item) {
+
+    if (!item) {
+
+        return;
+
+    }
+
 
     if (
         item.type ===
@@ -2476,22 +2356,51 @@ function openContent(
     }
 
 
-    const url =
-        getMainActionUrl(
-            item
+    if (
+        item.type ===
+        "book"
+    ) {
+
+        if (item.file_url) {
+
+            window.open(
+                item.file_url,
+                "_blank",
+                "noopener,noreferrer"
+            );
+
+        }
+
+
+        return;
+
+    }
+
+
+    if (
+        item.video_url
+    ) {
+
+        window.open(
+            item.video_url,
+            "_blank",
+            "noopener,noreferrer"
         );
 
 
-    if (url) {
+        return;
+
+    }
+
+
+    if (
+        item.download_url
+    ) {
 
         window.open(
-
-            url,
-
+            item.download_url,
             "_blank",
-
             "noopener,noreferrer"
-
         );
 
     }
@@ -2503,9 +2412,7 @@ function openContent(
    STORY READER
 ===================================================== */
 
-function openStoryReader(
-    story
-) {
+function openStoryReader(story) {
 
     const oldModal =
         document.getElementById(
@@ -2542,7 +2449,7 @@ function openStoryReader(
                 align-items:center;
                 justify-content:center;
                 padding:20px;
-                background:rgba(0,0,0,.88);
+                background:rgba(0,0,0,.9);
             "
         >
 
@@ -2560,15 +2467,15 @@ function openStoryReader(
             >
 
                 <button
-                    id="closeStoryReader"
                     type="button"
+                    id="closeStoryReader"
                     style="
                         position:absolute;
                         top:18px;
                         right:18px;
                         width:38px;
                         height:38px;
-                        border:0;
+                        border:none;
                         border-radius:50%;
                         background:#ef1024;
                         color:#fff;
@@ -2576,9 +2483,7 @@ function openStoryReader(
                     "
                 >
 
-                    <i
-                        class="fa-solid fa-xmark"
-                    ></i>
+                    <i class="fa-solid fa-xmark"></i>
 
                 </button>
 
@@ -2591,8 +2496,7 @@ function openStoryReader(
                 >
 
                     ${escapeHTML(
-                        story.title
-                        ||
+                        story.title ||
                         "Untitled Story"
                     )}
 
@@ -2601,9 +2505,7 @@ function openStoryReader(
 
                 ${
                     story.author
-
                         ?
-
                         `
 
                             <p
@@ -2620,9 +2522,7 @@ function openStoryReader(
                             </p>
 
                         `
-
                         :
-
                         ""
                 }
 
@@ -2630,15 +2530,14 @@ function openStoryReader(
                 <div
                     style="
                         white-space:pre-wrap;
-                        color:rgba(255,255,255,.78);
+                        color:rgba(255,255,255,.8);
                         line-height:1.9;
                         font-size:15px;
                     "
                 >
 
                     ${escapeHTML(
-                        story.full_content
-                        ||
+                        story.full_content ||
                         "Story content is not available."
                     )}
 
@@ -2651,10 +2550,9 @@ function openStoryReader(
     `;
 
 
-    document.body
-        .appendChild(
-            modal
-        );
+    document.body.appendChild(
+        modal
+    );
 
 
     modal
@@ -2680,8 +2578,7 @@ function openStoryReader(
             event => {
 
                 if (
-                    event.target
-                        .classList
+                    event.target.classList
                         .contains(
                             "story-reader-overlay"
                         )
@@ -2699,8 +2596,6 @@ function openStoryReader(
 
 /* =====================================================
    CREATE FEATURED SECTION
-
-   index.html e manually section add korte hobe na
 ===================================================== */
 
 function createFeaturedSection() {
@@ -2745,32 +2640,22 @@ function createFeaturedSection() {
 
     section.innerHTML = `
 
-        <div
-            class="section-heading featured-heading"
-        >
+        <div class="section-heading">
 
-            <div
-                class="heading-left"
-            >
+            <div class="heading-left">
 
-                <span
-                    class="heading-line"
-                ></span>
+                <span class="heading-line"></span>
 
 
                 <div>
 
                     <h2>
-
                         Featured
-
                     </h2>
 
 
                     <p>
-
                         Top rated content
-
                     </p>
 
                 </div>
@@ -2778,30 +2663,26 @@ function createFeaturedSection() {
             </div>
 
 
-            <div
-                class="featured-controls"
-            >
+            <div class="featured-controls">
 
                 <button
-                    id="featuredPrev"
                     type="button"
+                    id="featuredPrev"
+                    aria-label="Previous"
                 >
 
-                    <i
-                        class="fa-solid fa-chevron-left"
-                    ></i>
+                    <i class="fa-solid fa-chevron-left"></i>
 
                 </button>
 
 
                 <button
-                    id="featuredNext"
                     type="button"
+                    id="featuredNext"
+                    aria-label="Next"
                 >
 
-                    <i
-                        class="fa-solid fa-chevron-right"
-                    ></i>
+                    <i class="fa-solid fa-chevron-right"></i>
 
                 </button>
 
@@ -2837,9 +2718,7 @@ function createFeaturedSection() {
 
 /* =====================================================
    FEATURED SLIDER
-
-   Existing rating field use korbe.
-   8+ hole show korbe.
+   RATING 8+
 ===================================================== */
 
 function setupFeaturedSlider() {
@@ -2847,24 +2726,6 @@ function setupFeaturedSlider() {
     const track =
         document.getElementById(
             "featuredTrack"
-        );
-
-
-    const viewport =
-        document.getElementById(
-            "featuredViewport"
-        );
-
-
-    const prev =
-        document.getElementById(
-            "featuredPrev"
-        );
-
-
-    const next =
-        document.getElementById(
-            "featuredNext"
         );
 
 
@@ -2880,22 +2741,20 @@ function setupFeaturedSlider() {
             .filter(
                 item => {
 
-                    return (
-
+                    const rating =
                         Number(
                             item.rating
-                        )
-                        >=
-                        8
+                        );
 
+
+                    return (
+                        Number.isFinite(rating)
                         &&
-
-                        (
+                        rating >= 8
+                        &&
+                        Boolean(
                             item.poster_url
-                            ||
-                            item.banner_url
                         )
-
                     );
 
                 }
@@ -2905,28 +2764,17 @@ function setupFeaturedSlider() {
                     a,
                     b
                 ) =>
-
-                    Number(
-                        b.rating
-                    )
+                    Number(b.rating)
                     -
-                    Number(
-                        a.rating
-                    )
-
+                    Number(a.rating)
             );
 
 
-    if (
-        featuredItems.length ===
-        0
-    ) {
+    if (!featuredItems.length) {
 
         track.innerHTML = `
 
-            <div
-                class="database-loading"
-            >
+            <div class="database-loading">
 
                 No content with rating 8.0 or higher yet.
 
@@ -2943,109 +2791,83 @@ function setupFeaturedSlider() {
     track.innerHTML =
         featuredItems
             .map(
-                item => {
+                item => `
 
-                    const image =
-                        item.poster_url
-                        ||
-                        item.banner_url
-                        ||
-                        "";
+                    <article
+                        class="featured-card"
+                        data-content-id="${item.id}"
+                    >
 
-
-                    return `
-
-                        <article
-                            class="featured-card"
-                            data-content-id="${item.id}"
+                        <div
+                            class="featured-card-poster"
+                            style='background-image:url("${escapeCssUrl(
+                                item.poster_url
+                            )}")'
                         >
 
-                            <div
-                                class="featured-card-poster"
-                                style='background-image:url("${escapeCssUrl(
-                                    image
-                                )}")'
-                            >
+                            <span class="featured-badge">
 
-                                <span
-                                    class="featured-badge"
-                                >
+                                FEATURED
 
-                                    FEATURED
-
-                                </span>
+                            </span>
 
 
-                                <span
-                                    class="featured-rating"
-                                >
+                            <span class="featured-rating">
 
-                                    <i
-                                        class="fa-solid fa-star"
-                                    ></i>
+                                <i class="fa-solid fa-star"></i>
 
-                                    ${escapeHTML(
-                                        item.rating
-                                    )}
+                                ${escapeHTML(
+                                    item.rating
+                                )}
 
-                                </span>
+                            </span>
 
 
-                                ${hoverOverlay(
-                                    item,
-                                    getActionText(
+                            ${createHoverOverlay(
+                                item
+                            )}
+
+                        </div>
+
+
+                        <div class="featured-card-info">
+
+                            <span class="featured-type">
+
+                                ${escapeHTML(
+                                    formatType(
+                                        item.type
+                                    )
+                                )}
+
+                            </span>
+
+
+                            <h3>
+
+                                ${escapeHTML(
+                                    item.title ||
+                                    "Untitled"
+                                )}
+
+                            </h3>
+
+
+                            <p>
+
+                                ${escapeHTML(
+                                    getFeaturedMeta(
                                         item
                                     )
                                 )}
 
-                            </div>
+                            </p>
 
+                        </div>
 
-                            <div
-                                class="featured-card-info"
-                            >
+                    </article>
 
-                                <span
-                                    class="featured-type"
-                                >
-
-                                    ${escapeHTML(
-                                        formatType(
-                                            item.type
-                                        )
-                                    )}
-
-                                </span>
-
-
-                                <h3>
-
-                                    ${escapeHTML(
-                                        item.title
-                                        ||
-                                        "Untitled"
-                                    )}
-
-                                </h3>
-
-
-                                <p>
-
-                                    ${escapeHTML(
-                                        getFeaturedMeta(
-                                            item
-                                        )
-                                    )}
-
-                                </p>
-
-                            </div>
-
-                        </article>
-
-                    `;
-
-                }
+                `
             )
             .join("");
 
@@ -3060,9 +2882,11 @@ function setupFeaturedSlider() {
     startFeaturedAutoPlay();
 
 
-    if (next) {
-
-        next.addEventListener(
+    document
+        .getElementById(
+            "featuredNext"
+        )
+        ?.addEventListener(
             "click",
             () => {
 
@@ -3073,12 +2897,12 @@ function setupFeaturedSlider() {
             }
         );
 
-    }
 
-
-    if (prev) {
-
-        prev.addEventListener(
+    document
+        .getElementById(
+            "featuredPrev"
+        )
+        ?.addEventListener(
             "click",
             () => {
 
@@ -3089,23 +2913,23 @@ function setupFeaturedSlider() {
             }
         );
 
-    }
 
-
-    if (viewport) {
-
-        viewport.addEventListener(
-            "mouseenter",
-            stopFeaturedAutoPlay
+    const viewport =
+        document.getElementById(
+            "featuredViewport"
         );
 
 
-        viewport.addEventListener(
-            "mouseleave",
-            startFeaturedAutoPlay
-        );
+    viewport?.addEventListener(
+        "mouseenter",
+        stopFeaturedAutoPlay
+    );
 
-    }
+
+    viewport?.addEventListener(
+        "mouseleave",
+        startFeaturedAutoPlay
+    );
 
 }
 
@@ -3114,9 +2938,7 @@ function setupFeaturedSlider() {
    FEATURED META
 ===================================================== */
 
-function getFeaturedMeta(
-    item
-) {
+function getFeaturedMeta(item) {
 
     if (
         item.type ===
@@ -3147,28 +2969,24 @@ function getFeaturedMeta(
 
 
     return (
-
         item.year
         ||
         item.genre
         ||
         ""
-
     );
 
 }
 
 
 /* =====================================================
-   FEATURED RESPONSIVE COUNT
+   FEATURED VISIBLE
 ===================================================== */
 
 function getFeaturedVisibleCount() {
 
     if (
-        window.innerWidth
-        <=
-        760
+        window.innerWidth <= 760
     ) {
 
         return 2;
@@ -3177,9 +2995,7 @@ function getFeaturedVisibleCount() {
 
 
     if (
-        window.innerWidth
-        <=
-        1000
+        window.innerWidth <= 1000
     ) {
 
         return 4;
@@ -3224,10 +3040,9 @@ function updateFeaturedPosition() {
 
 
     const firstCard =
-        track
-            ?.querySelector(
-                ".featured-card"
-            );
+        track?.querySelector(
+            ".featured-card"
+        );
 
 
     if (
@@ -3240,34 +3055,42 @@ function updateFeaturedPosition() {
     }
 
 
+    const style =
+        getComputedStyle(
+            track
+        );
+
+
     const gap =
         parseFloat(
-            getComputedStyle(
-                track
-            ).gap
-            ||
-            "0"
+            style.gap || "0"
         )
         ||
         0;
 
 
-    const step =
+    const cardWidth =
         firstCard
             .getBoundingClientRect()
-            .width
-        +
-        gap;
+            .width;
 
 
-    featuredIndex =
-        Math.min(
+    const step =
+        cardWidth + gap;
 
-            featuredIndex,
 
-            getFeaturedMaxIndex()
+    const max =
+        getFeaturedMaxIndex();
 
-        );
+
+    if (
+        featuredIndex > max
+    ) {
+
+        featuredIndex =
+            max;
+
+    }
 
 
     track.style.transform =
@@ -3286,9 +3109,7 @@ function featuredGoNext() {
         getFeaturedMaxIndex();
 
 
-    if (
-        max <= 0
-    ) {
+    if (max <= 0) {
 
         return;
 
@@ -3297,13 +3118,9 @@ function featuredGoNext() {
 
     featuredIndex =
         featuredIndex >= max
-
             ?
-
             0
-
             :
-
             featuredIndex + 1;
 
 
@@ -3322,9 +3139,7 @@ function featuredGoPrev() {
         getFeaturedMaxIndex();
 
 
-    if (
-        max <= 0
-    ) {
+    if (max <= 0) {
 
         return;
 
@@ -3333,13 +3148,9 @@ function featuredGoPrev() {
 
     featuredIndex =
         featuredIndex <= 0
-
             ?
-
             max
-
             :
-
             featuredIndex - 1;
 
 
@@ -3349,7 +3160,7 @@ function featuredGoPrev() {
 
 
 /* =====================================================
-   FEATURED AUTO
+   FEATURED AUTO PLAY
 ===================================================== */
 
 function startFeaturedAutoPlay() {
@@ -3359,11 +3170,8 @@ function startFeaturedAutoPlay() {
 
     featuredTimer =
         setInterval(
-
             featuredGoNext,
-
             4000
-
         );
 
 }
@@ -3371,9 +3179,7 @@ function startFeaturedAutoPlay() {
 
 function stopFeaturedAutoPlay() {
 
-    if (
-        featuredTimer
-    ) {
+    if (featuredTimer) {
 
         clearInterval(
             featuredTimer
@@ -3388,6 +3194,10 @@ function stopFeaturedAutoPlay() {
 }
 
 
+/* =====================================================
+   FEATURED RESIZE
+===================================================== */
+
 window.addEventListener(
     "resize",
     updateFeaturedPosition
@@ -3395,68 +3205,9 @@ window.addEventListener(
 
 
 /* =====================================================
-   HERO IMAGE
-===================================================== */
-
-function getHeroImage(
-    item
-) {
-
-    if (!item) {
-
-        return "";
-
-    }
-
-
-    if (
-        [
-            "movie",
-            "natok",
-            "series",
-            "upcoming"
-        ].includes(
-            item.type
-        )
-    ) {
-
-        return (
-
-            item.banner_url
-            ||
-            item.poster_url
-            ||
-            ""
-
-        );
-
-    }
-
-
-    return (
-
-        item.poster_url
-        ||
-        item.banner_url
-        ||
-        ""
-
-    );
-
-}
-
-
-/* =====================================================
-   DYNAMIC HERO
-
-   Movie
-   Natok
-   Series
-   Upcoming
-   Story
-   Book
-   Tutorial
-   repeat
+   HERO
+   IMPORTANT:
+   HERO USES BANNER IMAGE ONLY
 ===================================================== */
 
 function setupDynamicHero() {
@@ -3468,40 +3219,35 @@ function setupDynamicHero() {
     }
 
 
+    /*
+       One latest banner from each type.
+
+       Poster image is NEVER used here.
+    */
+
     heroSlides =
         HERO_SEQUENCE
             .map(
                 type => {
 
-                    return databaseContents
-                        .find(
-                            item =>
-
-                                item.type === type
-
-                                &&
-
-                                getHeroImage(
-                                    item
-                                )
-
-                        );
+                    return databaseContents.find(
+                        item =>
+                            item.type === type
+                            &&
+                            Boolean(
+                                item.banner_url
+                            )
+                    );
 
                 }
             )
-            .filter(
-                Boolean
-            );
+            .filter(Boolean);
 
 
-    if (
-        heroSlides.length ===
-        0
-    ) {
+    if (!heroSlides.length) {
 
         heroBackground.style
             .backgroundImage =
-
             "linear-gradient(120deg,#11001f 0%,#2a075c 48%,#4d0c79 100%)";
 
 
@@ -3518,14 +3264,12 @@ function setupDynamicHero() {
 
 
     showHeroSlide(
-        0,
+        heroIndex,
         false
     );
 
 
-    if (
-        heroTimer
-    ) {
+    if (heroTimer) {
 
         clearInterval(
             heroTimer
@@ -3547,22 +3291,19 @@ function setupDynamicHero() {
 
 
                 showHeroSlide(
-
                     heroIndex,
-
                     true
-
                 );
 
             },
-            3600
+            3800
         );
 
 }
 
 
 /* =====================================================
-   SHOW HERO
+   SHOW HERO SLIDE
 ===================================================== */
 
 function showHeroSlide(
@@ -3570,15 +3311,9 @@ function showHeroSlide(
     animate = true
 ) {
 
-    const item =
-        heroSlides[
-            index
-        ];
-
-
     if (
         !heroBackground ||
-        !item
+        !heroSlides[index]
     ) {
 
         return;
@@ -3586,10 +3321,16 @@ function showHeroSlide(
     }
 
 
+    const item =
+        heroSlides[index];
+
+
+    /*
+       HERO = BANNER ONLY
+    */
+
     const image =
-        getHeroImage(
-            item
-        );
+        item.banner_url;
 
 
     if (!image) {
@@ -3603,7 +3344,7 @@ function showHeroSlide(
         index;
 
 
-    const apply =
+    const applyImage =
         () => {
 
             heroBackground
@@ -3615,7 +3356,6 @@ function showHeroSlide(
 
             heroBackground.style
                 .backgroundImage =
-
                 `url("${escapeCssUrl(
                     image
                 )}")`;
@@ -3666,24 +3406,21 @@ function showHeroSlide(
 
     if (!animate) {
 
-        apply();
+        applyImage();
+
 
         return;
 
     }
 
 
-    heroBackground.style
-        .opacity =
+    heroBackground.style.opacity =
         "0";
 
 
     setTimeout(
-
-        apply,
-
+        applyImage,
         350
-
     );
 
 }
@@ -3720,6 +3457,11 @@ function renderHeroDots() {
                                 ""
                         }"
                         data-hero-index="${index}"
+                        title="${escapeAttribute(
+                            formatType(
+                                item.type
+                            )
+                        )}"
                     ></button>
 
                 `
@@ -3762,9 +3504,7 @@ function renderHeroDots() {
                         );
 
 
-                        if (
-                            heroTimer
-                        ) {
+                        if (heroTimer) {
 
                             clearInterval(
                                 heroTimer
@@ -3791,7 +3531,7 @@ function renderHeroDots() {
                                     );
 
                                 },
-                                3600
+                                3800
                             );
 
                     }
@@ -3804,7 +3544,7 @@ function renderHeroDots() {
 
 
 /* =====================================================
-   UPDATE HERO DOT
+   HERO ACTIVE DOT
 ===================================================== */
 
 function updateHeroDots() {
@@ -3842,7 +3582,7 @@ function updateHeroDots() {
 
 
 /* =====================================================
-   SEARCH
+   SEARCH OPEN
 ===================================================== */
 
 function openSearch() {
@@ -3854,22 +3594,15 @@ function openSearch() {
     }
 
 
-    searchBox.classList
-        .add(
-            "active"
-        );
+    searchBox.classList.add(
+        "active"
+    );
 
 
     setTimeout(
         () => {
 
-            if (
-                searchInput
-            ) {
-
-                searchInput.focus();
-
-            }
+            searchInput?.focus();
 
         },
         100
@@ -3877,6 +3610,10 @@ function openSearch() {
 
 }
 
+
+/* =====================================================
+   SEARCH CLOSE
+===================================================== */
 
 function closeSearch() {
 
@@ -3887,15 +3624,12 @@ function closeSearch() {
     }
 
 
-    searchBox.classList
-        .remove(
-            "active"
-        );
+    searchBox.classList.remove(
+        "active"
+    );
 
 
-    if (
-        searchInput
-    ) {
+    if (searchInput) {
 
         searchInput.value =
             "";
@@ -3903,9 +3637,7 @@ function closeSearch() {
     }
 
 
-    if (
-        searchResults
-    ) {
+    if (searchResults) {
 
         searchResults.innerHTML =
             "";
@@ -3915,79 +3647,80 @@ function closeSearch() {
 }
 
 
-if (
-    searchToggle
-) {
+/* =====================================================
+   SEARCH BUTTON
+===================================================== */
 
-    searchToggle
-        .addEventListener(
-            "click",
-            event => {
+if (searchToggle) {
 
-                event.stopPropagation();
+    searchToggle.addEventListener(
+        "click",
+        event => {
 
-
-                if (
-                    searchBox
-                    &&
-                    searchBox
-                        .classList
-                        .contains(
-                            "active"
-                        )
-                ) {
-
-                    closeSearch();
-
-                }
-
-                else {
-
-                    openSearch();
-
-                }
-
-            }
-        );
-
-}
+            event.stopPropagation();
 
 
-if (
-    searchClose
-) {
-
-    searchClose
-        .addEventListener(
-            "click",
-            event => {
-
-                event.stopPropagation();
+            if (
+                searchBox &&
+                searchBox.classList
+                    .contains(
+                        "active"
+                    )
+            ) {
 
                 closeSearch();
 
             }
-        );
+
+            else {
+
+                openSearch();
+
+            }
+
+        }
+    );
 
 }
 
 
-if (
-    searchInput
-) {
+/* =====================================================
+   SEARCH CLOSE BUTTON
+===================================================== */
 
-    searchInput
-        .addEventListener(
-            "input",
-            event => {
+if (searchClose) {
 
-                performSearch(
-                    event.target
-                        .value
-                );
+    searchClose.addEventListener(
+        "click",
+        event => {
 
-            }
-        );
+            event.stopPropagation();
+
+
+            closeSearch();
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   SEARCH INPUT
+===================================================== */
+
+if (searchInput) {
+
+    searchInput.addEventListener(
+        "input",
+        event => {
+
+            performSearch(
+                event.target.value
+            );
+
+        }
+    );
 
 }
 
@@ -3996,9 +3729,7 @@ if (
    SEARCH FUNCTION
 ===================================================== */
 
-function performSearch(
-    keyword
-) {
+function performSearch(keyword) {
 
     if (!searchResults) {
 
@@ -4029,7 +3760,7 @@ function performSearch(
             .filter(
                 item => {
 
-                    const data = [
+                    const searchableText = [
 
                         item.title,
 
@@ -4042,41 +3773,29 @@ function performSearch(
                         )
 
                     ]
-                        .filter(
-                            Boolean
-                        )
-                        .join(
-                            " "
-                        )
+                        .filter(Boolean)
+                        .join(" ")
                         .toLowerCase();
 
 
-                    return data.includes(
-                        text
-                    );
+                    return searchableText
+                        .includes(
+                            text
+                        );
 
                 }
             );
 
 
-    if (
-        results.length ===
-        0
-    ) {
+    if (!results.length) {
 
         searchResults.innerHTML = `
 
-            <div
-                class="search-result-item"
-            >
+            <div class="search-result-item">
 
-                <div
-                    class="search-result-icon"
-                >
+                <div class="search-result-icon">
 
-                    <i
-                        class="fa-solid fa-magnifying-glass"
-                    ></i>
+                    <i class="fa-solid fa-magnifying-glass"></i>
 
                 </div>
 
@@ -4084,16 +3803,12 @@ function performSearch(
                 <div>
 
                     <h4>
-
                         No result found
-
                     </h4>
 
 
                     <p>
-
                         Try another keyword
-
                     </p>
 
                 </div>
@@ -4124,15 +3839,11 @@ function performSearch(
                         )}"
                     >
 
-                        <div
-                            class="search-result-icon"
-                        >
+                        <div class="search-result-icon">
 
-                            <i
-                                class="${getTypeIcon(
-                                    item.type
-                                )}"
-                            ></i>
+                            <i class="${getTypeIcon(
+                                item.type
+                            )}"></i>
 
                         </div>
 
@@ -4142,8 +3853,7 @@ function performSearch(
                             <h4>
 
                                 ${escapeHTML(
-                                    item.title
-                                    ||
+                                    item.title ||
                                     "Untitled"
                                 )}
 
@@ -4175,69 +3885,64 @@ function performSearch(
    SEARCH RESULT CLICK
 ===================================================== */
 
-if (
-    searchResults
-) {
+if (searchResults) {
 
-    searchResults
-        .addEventListener(
-            "click",
-            event => {
+    searchResults.addEventListener(
+        "click",
+        event => {
 
-                const result =
-                    event.target.closest(
-                        ".dynamic-search-result"
-                    );
+            const result =
+                event.target.closest(
+                    ".dynamic-search-result"
+                );
 
 
-                if (!result) {
+            if (!result) {
 
-                    return;
-
-                }
-
-
-                closeSearch();
-
-
-                const section =
-                    document.getElementById(
-
-                        TYPE_SECTIONS[
-                            result.dataset.type
-                        ]
-                        ||
-                        "home"
-
-                    );
-
-
-                if (
-                    section
-                ) {
-
-                    section.scrollIntoView(
-                        {
-
-                            behavior:
-                                "smooth",
-
-                            block:
-                                "start"
-
-                        }
-                    );
-
-                }
+                return;
 
             }
-        );
+
+
+            const type =
+                result.dataset.type;
+
+
+            closeSearch();
+
+
+            const sectionId =
+                TYPE_SECTIONS[type];
+
+
+            const section =
+                document.getElementById(
+                    sectionId
+                );
+
+
+            if (section) {
+
+                section.scrollIntoView(
+                    {
+                        behavior:
+                            "smooth",
+
+                        block:
+                            "start"
+                    }
+                );
+
+            }
+
+        }
+    );
 
 }
 
 
 /* =====================================================
-   CLICK OUTSIDE SEARCH
+   SEARCH CLICK OUTSIDE
 ===================================================== */
 
 document.addEventListener(
@@ -4251,24 +3956,22 @@ document.addEventListener(
         }
 
 
-        const clickedInside =
+        const insideSearch =
             searchBox.contains(
                 event.target
             );
 
 
-        const clickedButton =
-            searchToggle
-            &&
+        const searchButton =
+            searchToggle &&
             searchToggle.contains(
                 event.target
             );
 
 
         if (
-            !clickedInside
-            &&
-            !clickedButton
+            !insideSearch &&
+            !searchButton
         ) {
 
             closeSearch();
@@ -4285,16 +3988,16 @@ document.addEventListener(
 
 function closeMobileMenu() {
 
-    if (
-        mobileNav
-    ) {
+    if (!mobileNav) {
 
-        mobileNav.classList
-            .remove(
-                "active"
-            );
+        return;
 
     }
+
+
+    mobileNav.classList.remove(
+        "active"
+    );
 
 
     const icon =
@@ -4304,92 +4007,86 @@ function closeMobileMenu() {
             );
 
 
-    if (
-        icon
-    ) {
+    if (icon) {
 
-        icon.classList
-            .remove(
-                "fa-xmark"
-            );
+        icon.classList.remove(
+            "fa-xmark"
+        );
 
 
-        icon.classList
-            .add(
-                "fa-bars"
-            );
+        icon.classList.add(
+            "fa-bars"
+        );
 
     }
 
 }
 
 
-if (
-    mobileMenuButton
-) {
+if (mobileMenuButton) {
 
-    mobileMenuButton
-        .addEventListener(
-            "click",
-            event => {
+    mobileMenuButton.addEventListener(
+        "click",
+        event => {
 
-                event.stopPropagation();
+            event.stopPropagation();
 
 
-                if (!mobileNav) {
+            if (!mobileNav) {
 
-                    return;
+                return;
 
-                }
+            }
 
 
+            mobileNav.classList.toggle(
+                "active"
+            );
+
+
+            const icon =
+                mobileMenuButton
+                    .querySelector(
+                        "i"
+                    );
+
+
+            if (!icon) {
+
+                return;
+
+            }
+
+
+            const active =
                 mobileNav.classList
-                    .toggle(
+                    .contains(
                         "active"
                     );
 
 
-                const icon =
-                    mobileMenuButton
-                        .querySelector(
-                            "i"
-                        );
+            icon.classList.toggle(
+                "fa-bars",
+                !active
+            );
 
 
-                if (!icon) {
+            icon.classList.toggle(
+                "fa-xmark",
+                active
+            );
 
-                    return;
-
-                }
-
-
-                const active =
-                    mobileNav.classList
-                        .contains(
-                            "active"
-                        );
-
-
-                icon.classList.toggle(
-                    "fa-bars",
-                    !active
-                );
-
-
-                icon.classList.toggle(
-                    "fa-xmark",
-                    active
-                );
-
-            }
-        );
+        }
+    );
 
 }
 
 
-if (
-    mobileNav
-) {
+/* =====================================================
+   MOBILE LINKS
+===================================================== */
+
+if (mobileNav) {
 
     mobileNav
         .querySelectorAll(
@@ -4458,13 +4155,11 @@ document
 
                     target.scrollIntoView(
                         {
-
                             behavior:
                                 "smooth",
 
                             block:
                                 "start"
-
                         }
                     );
 
@@ -4515,14 +4210,10 @@ function updateActiveNav() {
 
 
                 if (
-                    window.scrollY
-                    >=
+                    window.scrollY >=
                     top
-
                     &&
-
-                    window.scrollY
-                    <
+                    window.scrollY <
                     bottom
                 ) {
 
@@ -4586,6 +4277,7 @@ document.addEventListener(
 
         closeSearch();
 
+
         closeMobileMenu();
 
 
@@ -4595,9 +4287,7 @@ document.addEventListener(
             );
 
 
-        if (
-            modal
-        ) {
+        if (modal) {
 
             modal.remove();
 
@@ -4608,7 +4298,7 @@ document.addEventListener(
 
 
 /* =====================================================
-   ERROR
+   DATABASE ERROR
 ===================================================== */
 
 function showDatabaseError() {
@@ -4639,9 +4329,7 @@ function showDatabaseError() {
                     );
 
 
-                if (
-                    grid
-                ) {
+                if (grid) {
 
                     grid.innerHTML =
                         emptyMessage(
@@ -4660,53 +4348,32 @@ function showDatabaseError() {
    HELPERS
 ===================================================== */
 
-function hasRating(
-    item
-) {
+function hasRating(item) {
 
     return (
-
-        item
-        &&
-        item.rating
-        !==
-        null
-        &&
-        item.rating
-        !==
-        undefined
-        &&
-        item.rating
-        !==
-        ""
-
+        item &&
+        item.rating !== null &&
+        item.rating !== undefined &&
+        item.rating !== ""
     );
 
 }
 
 
-function formatType(
-    type
-) {
+function formatType(type) {
 
     return (
-
-        TYPE_LABELS[
-            type
-        ]
+        TYPE_LABELS[type]
         ||
         type
         ||
         ""
-
     );
 
 }
 
 
-function getTypeIcon(
-    type
-) {
+function getTypeIcon(type) {
 
     const icons = {
 
@@ -4735,21 +4402,15 @@ function getTypeIcon(
 
 
     return (
-
-        icons[
-            type
-        ]
+        icons[type]
         ||
         "fa-solid fa-film"
-
     );
 
 }
 
 
-function formatDate(
-    date
-) {
+function formatDate(date) {
 
     if (!date) {
 
@@ -4766,7 +4427,6 @@ function formatDate(
             .toLocaleDateString(
                 "en-US",
                 {
-
                     year:
                         "numeric",
 
@@ -4775,15 +4435,12 @@ function formatDate(
 
                     day:
                         "numeric"
-
                 }
             );
 
     }
 
-    catch (
-        error
-    ) {
+    catch (error) {
 
         return date;
 
@@ -4792,9 +4449,7 @@ function formatDate(
 }
 
 
-function emptyMessage(
-    message
-) {
+function emptyMessage(message) {
 
     return `
 
@@ -4821,16 +4476,11 @@ function emptyMessage(
 }
 
 
-function escapeHTML(
-    value
-) {
+function escapeHTML(value) {
 
     if (
-        value ===
-        null
-        ||
-        value ===
-        undefined
+        value === null ||
+        value === undefined
     ) {
 
         return "";
@@ -4838,9 +4488,7 @@ function escapeHTML(
     }
 
 
-    return String(
-        value
-    )
+    return String(value)
 
         .replaceAll(
             "&",
@@ -4870,9 +4518,7 @@ function escapeHTML(
 }
 
 
-function escapeAttribute(
-    value
-) {
+function escapeAttribute(value) {
 
     return escapeHTML(
         value
@@ -4881,14 +4527,10 @@ function escapeAttribute(
 }
 
 
-function escapeCssUrl(
-    value
-) {
+function escapeCssUrl(value) {
 
     return String(
-        value
-        ||
-        ""
+        value || ""
     )
 
         .replaceAll(
@@ -4922,9 +4564,7 @@ document.addEventListener(
     "DOMContentLoaded",
     async () => {
 
-        if (
-            heroBackground
-        ) {
+        if (heroBackground) {
 
             heroBackground.style
                 .backgroundImage =

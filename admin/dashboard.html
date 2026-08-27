@@ -3,18 +3,11 @@
 
 <head>
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Cinema Mella Admin</title>
 
-    <link
-        rel="stylesheet"
-        href="admin.css"
-    >
+    <link rel="stylesheet" href="admin.css">
 
     <link
         rel="stylesheet"
@@ -26,60 +19,57 @@
 
 <div class="admin-layout">
 
-    <!-- SIDEBAR -->
-
     <aside class="admin-sidebar">
 
-        <div class="admin-brand"><span class="admin-logo-cinema">CINEMA</span><span class="logo-changing">MELLA</span></div>
+        <div class="admin-brand">
+            <span class="brand-white">CINEMA</span><span class="logo-changing">MELLA</span>
+        </div>
+
 
         <nav class="admin-menu">
 
-            <button class="admin-menu-item active" data-filter="all" data-view="content">
+            <button class="admin-menu-item active">
                 <i class="fa-solid fa-house"></i>
                 Dashboard
             </button>
 
-            <button class="admin-menu-item" data-filter="movie" data-view="content">
+            <button class="admin-menu-item">
                 <i class="fa-solid fa-film"></i>
                 Movies
             </button>
 
-            <button class="admin-menu-item" data-filter="natok" data-view="content">
+            <button class="admin-menu-item">
                 <i class="fa-solid fa-clapperboard"></i>
                 Natok
             </button>
 
-            <button class="admin-menu-item" data-filter="series" data-view="content">
+            <button class="admin-menu-item">
                 <i class="fa-solid fa-tv"></i>
                 Web Series
             </button>
 
-            <button class="admin-menu-item" data-filter="upcoming" data-view="content">
+            <button class="admin-menu-item">
                 <i class="fa-solid fa-clock"></i>
                 Upcoming
             </button>
 
-            <button class="admin-menu-item" data-filter="story" data-view="content">
+            <button class="admin-menu-item">
                 <i class="fa-solid fa-book-open"></i>
                 Stories
             </button>
 
-            <button class="admin-menu-item" data-filter="book" data-view="content">
+            <button class="admin-menu-item">
                 <i class="fa-solid fa-book"></i>
                 Books
             </button>
 
-            <button class="admin-menu-item" data-filter="tutorial" data-view="content">
+            <button class="admin-menu-item">
                 <i class="fa-solid fa-graduation-cap"></i>
                 Tutorial
             </button>
 
-            <button class="admin-menu-item" data-view="categories">
-                <i class="fa-solid fa-tags"></i>
-                Categories
-            </button>
-
         </nav>
+
 
         <button
             id="logoutButton"
@@ -92,15 +82,13 @@
     </aside>
 
 
-    <!-- MAIN -->
-
     <main class="admin-main">
 
         <header class="admin-topbar">
 
             <div>
 
-                <h1 id="adminPageTitle">Dashboard</h1>
+                <h1>Dashboard</h1>
 
                 <p>
                     Welcome,
@@ -110,6 +98,7 @@
                 </p>
 
             </div>
+
 
             <button
                 id="openAddContent"
@@ -122,9 +111,7 @@
         </header>
 
 
-        <!-- STATS -->
-
-        <section class="dashboard-stats" id="dashboardStatsSection">
+        <section class="dashboard-stats">
 
             <div class="stat-card">
                 <span>Total Content</span>
@@ -169,9 +156,7 @@
         </section>
 
 
-        <!-- FORM -->
-
-        <section class="content-form-section" id="contentFormSection">
+        <section class="content-form-section">
 
             <div class="section-title">
 
@@ -215,8 +200,6 @@
 
                 <div class="form-grid">
 
-
-                    <!-- TYPE -->
 
                     <div class="admin-form-group">
 
@@ -266,8 +249,6 @@
                     </div>
 
 
-                    <!-- TITLE -->
-
                     <div class="admin-form-group">
 
                         <label id="titleLabel">
@@ -284,8 +265,6 @@
                     </div>
 
 
-                    <!-- DESCRIPTION -->
-
                     <div class="admin-form-group full-width">
 
                         <label>
@@ -300,15 +279,13 @@
                     </div>
 
 
-                    <!-- POSTER / COVER -->
-
                     <div
                         class="admin-form-group type-field"
                         data-types="movie,natok,series,upcoming,story,book,tutorial"
                     >
 
                         <label id="posterLabel">
-                            Poster Image
+                            Poster / Cover Image
                         </label>
 
                         <input
@@ -316,6 +293,10 @@
                             id="posterFile"
                             accept="image/*"
                         >
+
+                        <div class="field-note">
+                            This image is used on cards. It will not be used as the hero background.
+                        </div>
 
                         <div
                             class="upload-preview"
@@ -325,11 +306,9 @@
                     </div>
 
 
-                    <!-- BANNER -->
-
                     <div
                         class="admin-form-group type-field"
-                        data-types="movie,natok,series,upcoming"
+                        data-types="movie,natok,series,upcoming,story,book,tutorial"
                     >
 
                         <label>
@@ -342,6 +321,10 @@
                             accept="image/*"
                         >
 
+                        <div class="field-note">
+                            Hero background uses this Banner Image only.
+                        </div>
+
                         <div
                             class="upload-preview"
                             id="bannerPreview"
@@ -349,8 +332,6 @@
 
                     </div>
 
-
-                    <!-- VIDEO -->
 
                     <div
                         class="admin-form-group type-field"
@@ -370,7 +351,23 @@
                     </div>
 
 
-                    <!-- YEAR -->
+                    <div
+                        class="admin-form-group type-field"
+                        data-types="movie,natok,series,tutorial"
+                    >
+
+                        <label>
+                            Download URL
+                        </label>
+
+                        <input
+                            type="url"
+                            id="contentDownloadUrl"
+                            placeholder="Direct download link"
+                        >
+
+                    </div>
+
 
                     <div
                         class="admin-form-group type-field"
@@ -389,8 +386,6 @@
 
                     </div>
 
-
-                    <!-- RATING -->
 
                     <div
                         class="admin-form-group type-field"
@@ -413,8 +408,6 @@
                     </div>
 
 
-                    <!-- GENRE / CATEGORY -->
-
                     <div
                         class="admin-form-group type-field"
                         data-types="movie,natok,series,upcoming,story,book,tutorial"
@@ -424,18 +417,22 @@
                             Category / Genre
                         </label>
 
-                        <select id="contentGenre">
-                            <option value="">Select Category</option>
-                        </select>
+                        <input
+                            type="text"
+                            id="contentGenre"
+                            list="genreSuggestions"
+                            placeholder="Type a category, e.g. Action"
+                            autocomplete="off"
+                        >
 
-                        <small class="field-help">
-                            Add or manage options from the Categories menu.
-                        </small>
+                        <datalist id="genreSuggestions"></datalist>
+
+                        <div class="field-note">
+                            You can type a new category anytime. For multiple categories use commas, e.g. SEO, Coding.
+                        </div>
 
                     </div>
 
-
-                    <!-- SEASON -->
 
                     <div
                         class="admin-form-group type-field"
@@ -456,8 +453,6 @@
                     </div>
 
 
-                    <!-- BADGE -->
-
                     <div
                         class="admin-form-group type-field"
                         data-types="movie,natok,series,upcoming"
@@ -475,8 +470,6 @@
 
                     </div>
 
-
-                    <!-- AUTHOR -->
 
                     <div
                         class="admin-form-group type-field"
@@ -496,8 +489,6 @@
                     </div>
 
 
-                    <!-- RELEASE DATE -->
-
                     <div
                         class="admin-form-group type-field"
                         data-types="movie,natok,series,upcoming,story"
@@ -514,8 +505,6 @@
 
                     </div>
 
-
-                    <!-- BOOK PDF -->
 
                     <div
                         class="admin-form-group type-field"
@@ -540,28 +529,6 @@
                     </div>
 
 
-                    <!-- TUTORIAL DOWNLOAD -->
-
-                    <div
-                        class="admin-form-group type-field"
-                        data-types="tutorial"
-                    >
-
-                        <label>
-                            Download URL
-                        </label>
-
-                        <input
-                            type="url"
-                            id="tutorialDownloadUrl"
-                            placeholder="Direct download link"
-                        >
-
-                    </div>
-
-
-                    <!-- STATUS -->
-
                     <div class="admin-form-group">
 
                         <label>
@@ -583,8 +550,6 @@
                     </div>
 
 
-                    <!-- FEATURED -->
-
                     <div class="admin-form-group checkbox-group">
 
                         <label>
@@ -600,8 +565,6 @@
 
                     </div>
 
-
-                    <!-- FULL STORY -->
 
                     <div
                         class="admin-form-group full-width type-field"
@@ -643,12 +606,11 @@
                         id="cancelEditButton"
                         class="cancel-button"
                     >
-
                         Cancel Edit
-
                     </button>
 
                 </div>
+
 
                 <p id="contentMessage"></p>
 
@@ -657,15 +619,15 @@
         </section>
 
 
-        <!-- CONTENT LIST -->
-
-        <section class="content-list-section" id="contentListSection">
+        <section class="content-list-section">
 
             <div class="section-title">
 
                 <div>
 
-                    <h2>All Content</h2>
+                    <h2>
+                        All Content
+                    </h2>
 
                     <p>
                         Edit or delete your content.
@@ -694,12 +656,15 @@
 
                     </thead>
 
+
                     <tbody id="contentTableBody">
 
                         <tr>
+
                             <td colspan="5">
                                 Loading...
                             </td>
+
                         </tr>
 
                     </tbody>
@@ -710,107 +675,6 @@
 
         </section>
 
-
-
-        <!-- CATEGORY MANAGEMENT -->
-
-        <section
-            class="category-management-section"
-            id="categoryManagementSection"
-            hidden
-        >
-
-            <div class="section-title">
-                <div>
-                    <h2>Manage Categories</h2>
-                    <p>Add, edit or delete categories from the admin panel.</p>
-                </div>
-            </div>
-
-            <form id="categoryForm" class="category-form">
-
-                <input type="hidden" id="categoryId">
-
-                <div class="category-form-grid">
-
-                    <div class="admin-form-group">
-                        <label>Content Type *</label>
-                        <select id="categoryContentType" required>
-                            <option value="">Select Type</option>
-                            <option value="movie">Movie</option>
-                            <option value="natok">Natok</option>
-                            <option value="series">Web Series</option>
-                            <option value="upcoming">Upcoming</option>
-                            <option value="story">Story</option>
-                            <option value="book">Book</option>
-                            <option value="tutorial">Tutorial</option>
-                        </select>
-                    </div>
-
-                    <div class="admin-form-group">
-                        <label>Category Name *</label>
-                        <input
-                            type="text"
-                            id="categoryName"
-                            placeholder="Action / Horror / Romance..."
-                            required
-                        >
-                    </div>
-
-                </div>
-
-                <div class="form-actions">
-                    <button
-                        type="submit"
-                        id="saveCategoryButton"
-                        class="save-content-button"
-                    >
-                        <i class="fa-solid fa-plus"></i>
-                        Add Category
-                    </button>
-
-                    <button
-                        type="button"
-                        id="cancelCategoryEditButton"
-                        class="cancel-button"
-                    >
-                        Cancel Edit
-                    </button>
-                </div>
-
-                <p id="categoryMessage"></p>
-
-            </form>
-
-            <div class="category-table-block">
-
-                <div class="section-title category-list-title">
-                    <div>
-                        <h2>All Categories</h2>
-                        <p>These options will be available in the content form and public menus.</p>
-                    </div>
-                </div>
-
-                <div class="admin-table-wrapper">
-                    <table class="admin-table">
-                        <thead>
-                            <tr>
-                                <th>Category</th>
-                                <th>Content Type</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="categoryTableBody">
-                            <tr>
-                                <td colspan="3">Loading...</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-            </div>
-
-        </section>
     </main>
 
 </div>

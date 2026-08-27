@@ -1,26 +1,9 @@
-/* =====================================================
-   CINEMA MELLA ADMIN
-   NO DATABASE CHANGE VERSION
-
-   - LOGIN
-   - AUTH
-   - CRUD
-   - STORAGE
-   - DYNAMIC CATEGORY / GENRE
-   - RATING FOR ALL CONTENT TYPES
-   - CATEGORY SUGGESTIONS FROM EXISTING CONTENT
-===================================================== */
-
-
-/* =====================================================
-   SUPABASE
-===================================================== */
-
 const SUPABASE_URL =
     "https://vuvstnlalyikvlanxxwy.supabase.co";
 
 const SUPABASE_PUBLISHABLE_KEY =
     "sb_publishable_ed-PGIvnw8yN2OwI2264IA_f1FOdWrp";
+
 
 const supabaseClient =
     window.supabase.createClient(
@@ -29,26 +12,131 @@ const supabaseClient =
     );
 
 
-/* =====================================================
-   PAGE CHECK
-===================================================== */
-
-const currentPath =
+const path =
     window.location.pathname.toLowerCase();
 
 const isLoginPage =
-    currentPath.includes("login.html");
+    path.includes("login.html");
 
 const isDashboardPage =
-    currentPath.includes("dashboard.html");
+    path.includes("dashboard.html");
+
+
+const $ =
+    id =>
+        document.getElementById(id);
+
+
+const loginForm =
+    $("loginForm");
+
+const logoutButton =
+    $("logoutButton");
+
+const contentForm =
+    $("contentForm");
+
+const contentType =
+    $("contentType");
+
+const contentId =
+    $("contentId");
+
+const contentTitle =
+    $("contentTitle");
+
+const contentDescription =
+    $("contentDescription");
+
+const posterFile =
+    $("posterFile");
+
+const bannerFile =
+    $("bannerFile");
+
+const bookFile =
+    $("bookFile");
+
+const videoUrl =
+    $("videoUrl");
+
+const contentDownloadUrl =
+    $("contentDownloadUrl");
+
+const contentYear =
+    $("contentYear");
+
+const contentRating =
+    $("contentRating");
+
+const contentGenre =
+    $("contentGenre");
+
+const contentSeason =
+    $("contentSeason");
+
+const contentBadge =
+    $("contentBadge");
+
+const contentAuthor =
+    $("contentAuthor");
+
+const releaseDate =
+    $("releaseDate");
+
+const contentStatus =
+    $("contentStatus");
+
+const contentFeatured =
+    $("contentFeatured");
+
+const fullContent =
+    $("fullContent");
+
+const currentPosterUrl =
+    $("currentPosterUrl");
+
+const currentBannerUrl =
+    $("currentBannerUrl");
+
+const currentFileUrl =
+    $("currentFileUrl");
+
+const posterPreview =
+    $("posterPreview");
+
+const bannerPreview =
+    $("bannerPreview");
+
+const bookFileStatus =
+    $("bookFileStatus");
+
+const saveContentButton =
+    $("saveContentButton");
+
+const cancelEditButton =
+    $("cancelEditButton");
+
+const contentMessage =
+    $("contentMessage");
+
+const contentTableBody =
+    $("contentTableBody");
+
+const formTitle =
+    $("formTitle");
+
+
+let allContents =
+    [];
+
+let currentFilter =
+    "all";
 
 
 /* =====================================================
    LOGIN
 ===================================================== */
-
-const loginForm =
-    document.getElementById("loginForm");
 
 if (loginForm) {
 
@@ -58,34 +146,36 @@ if (loginForm) {
 
             event.preventDefault();
 
+
             const email =
-                document
-                    .getElementById("email")
+                $("email")
                     .value
                     .trim();
 
+
             const password =
-                document
-                    .getElementById("password")
+                $("password")
                     .value;
 
+
             const loginButton =
-                document.getElementById(
-                    "loginButton"
-                );
+                $("loginButton");
+
 
             const loginMessage =
-                document.getElementById(
-                    "loginMessage"
-                );
+                $("loginMessage");
 
 
-            loginButton.disabled = true;
+            loginButton.disabled =
+                true;
+
 
             loginButton.textContent =
                 "Logging in...";
 
-            loginMessage.textContent = "";
+
+            loginMessage.textContent =
+                "";
 
 
             try {
@@ -110,13 +200,6 @@ if (loginForm) {
 
                 if (data.user) {
 
-                    loginMessage.textContent =
-                        "Login successful";
-
-                    loginMessage.className =
-                        "success";
-
-
                     window.location.href =
                         "dashboard.html";
 
@@ -126,12 +209,10 @@ if (loginForm) {
 
             catch (error) {
 
-                console.error(error);
-
-
                 loginMessage.textContent =
                     error.message ||
-                    "Unable to login.";
+                    "Login failed";
+
 
                 loginMessage.className =
                     "error";
@@ -142,6 +223,7 @@ if (loginForm) {
 
                 loginButton.disabled =
                     false;
+
 
                 loginButton.textContent =
                     "Login";
@@ -155,7 +237,7 @@ if (loginForm) {
 
 
 /* =====================================================
-   LOGIN PAGE SESSION
+   LOGIN SESSION
 ===================================================== */
 
 async function checkLoginPage() {
@@ -167,27 +249,17 @@ async function checkLoginPage() {
     }
 
 
-    try {
-
-        const {
-            data
-        } =
-            await supabaseClient.auth
-                .getSession();
+    const {
+        data
+    } =
+        await supabaseClient.auth
+            .getSession();
 
 
-        if (data.session) {
+    if (data.session) {
 
-            window.location.href =
-                "dashboard.html";
-
-        }
-
-    }
-
-    catch (error) {
-
-        console.error(error);
+        window.location.href =
+            "dashboard.html";
 
     }
 
@@ -195,7 +267,7 @@ async function checkLoginPage() {
 
 
 /* =====================================================
-   PROTECT DASHBOARD
+   DASHBOARD AUTH
 ===================================================== */
 
 async function protectDashboard() {
@@ -207,51 +279,18 @@ async function protectDashboard() {
     }
 
 
-    try {
-
-        const {
-            data,
-            error
-        } =
-            await supabaseClient.auth
-                .getSession();
+    const {
+        data,
+        error
+    } =
+        await supabaseClient.auth
+            .getSession();
 
 
-        if (
-            error ||
-            !data.session
-        ) {
-
-            window.location.href =
-                "login.html";
-
-            return false;
-
-        }
-
-
-        const adminEmail =
-            document.getElementById(
-                "adminEmail"
-            );
-
-
-        if (adminEmail) {
-
-            adminEmail.textContent =
-                data.session.user.email;
-
-        }
-
-
-        return true;
-
-    }
-
-    catch (error) {
-
-        console.error(error);
-
+    if (
+        error ||
+        !data.session
+    ) {
 
         window.location.href =
             "login.html";
@@ -261,17 +300,23 @@ async function protectDashboard() {
 
     }
 
+
+    if ($("adminEmail")) {
+
+        $("adminEmail").textContent =
+            data.session.user.email;
+
+    }
+
+
+    return true;
+
 }
 
 
 /* =====================================================
    LOGOUT
 ===================================================== */
-
-const logoutButton =
-    document.getElementById(
-        "logoutButton"
-    );
 
 if (logoutButton) {
 
@@ -293,389 +338,12 @@ if (logoutButton) {
 
 
 /* =====================================================
-   FORM ELEMENTS
+   DYNAMIC FORM
 ===================================================== */
 
-const contentForm =
-    document.getElementById(
-        "contentForm"
-    );
+function updateDynamicForm() {
 
-const contentType =
-    document.getElementById(
-        "contentType"
-    );
-
-const contentId =
-    document.getElementById(
-        "contentId"
-    );
-
-const contentTitle =
-    document.getElementById(
-        "contentTitle"
-    );
-
-const contentDescription =
-    document.getElementById(
-        "contentDescription"
-    );
-
-const posterFile =
-    document.getElementById(
-        "posterFile"
-    );
-
-const bannerFile =
-    document.getElementById(
-        "bannerFile"
-    );
-
-const bookFile =
-    document.getElementById(
-        "bookFile"
-    );
-
-const videoUrl =
-    document.getElementById(
-        "videoUrl"
-    );
-
-const contentYear =
-    document.getElementById(
-        "contentYear"
-    );
-
-const contentRating =
-    document.getElementById(
-        "contentRating"
-    );
-
-const contentGenre =
-    document.getElementById(
-        "contentGenre"
-    );
-
-const contentSeason =
-    document.getElementById(
-        "contentSeason"
-    );
-
-const contentBadge =
-    document.getElementById(
-        "contentBadge"
-    );
-
-const contentAuthor =
-    document.getElementById(
-        "contentAuthor"
-    );
-
-const releaseDate =
-    document.getElementById(
-        "releaseDate"
-    );
-
-const contentStatus =
-    document.getElementById(
-        "contentStatus"
-    );
-
-const contentFeatured =
-    document.getElementById(
-        "contentFeatured"
-    );
-
-const fullContent =
-    document.getElementById(
-        "fullContent"
-    );
-
-const currentPosterUrl =
-    document.getElementById(
-        "currentPosterUrl"
-    );
-
-const currentBannerUrl =
-    document.getElementById(
-        "currentBannerUrl"
-    );
-
-const currentFileUrl =
-    document.getElementById(
-        "currentFileUrl"
-    );
-
-const posterPreview =
-    document.getElementById(
-        "posterPreview"
-    );
-
-const bannerPreview =
-    document.getElementById(
-        "bannerPreview"
-    );
-
-const bookFileStatus =
-    document.getElementById(
-        "bookFileStatus"
-    );
-
-const tutorialDownloadUrl =
-    document.getElementById(
-        "tutorialDownloadUrl"
-    );
-
-const saveContentButton =
-    document.getElementById(
-        "saveContentButton"
-    );
-
-const cancelEditButton =
-    document.getElementById(
-        "cancelEditButton"
-    );
-
-const contentMessage =
-    document.getElementById(
-        "contentMessage"
-    );
-
-const contentTableBody =
-    document.getElementById(
-        "contentTableBody"
-    );
-
-const formTitle =
-    document.getElementById(
-        "formTitle"
-    );
-
-
-/* =====================================================
-   GLOBAL DATA
-===================================================== */
-
-let allContents = [];
-
-let currentFilter =
-    "all";
-
-
-/* =====================================================
-   ALLOW CATEGORY + RATING FOR ALL TYPES
-   NO HTML CHANGE NEEDED
-===================================================== */
-
-function expandExistingFields() {
-
-    /*
-       Current dashboard.html e genre/rating
-       limited type er jonno chilo.
-
-       JS diye existing field kei
-       sob content type e enable korchi.
-    */
-
-
-    if (contentGenre) {
-
-        const genreField =
-            contentGenre.closest(
-                ".type-field"
-            );
-
-
-        if (genreField) {
-
-            genreField.dataset.types =
-                "movie,natok,series,upcoming,story,book,tutorial";
-
-        }
-
-    }
-
-
-    if (contentRating) {
-
-        const ratingField =
-            contentRating.closest(
-                ".type-field"
-            );
-
-
-        if (ratingField) {
-
-            ratingField.dataset.types =
-                "movie,natok,series,upcoming,story,book,tutorial";
-
-        }
-
-    }
-
-}
-
-
-/* =====================================================
-   CATEGORY / GENRE DATALIST
-   NO NEW DATABASE TABLE
-
-   Existing contents.genre theke suggestions asbe.
-===================================================== */
-
-function setupGenreSuggestions() {
-
-    if (!contentGenre) {
-
-        return;
-
-    }
-
-
-    let datalist =
-        document.getElementById(
-            "genreSuggestions"
-        );
-
-
-    if (!datalist) {
-
-        datalist =
-            document.createElement(
-                "datalist"
-            );
-
-
-        datalist.id =
-            "genreSuggestions";
-
-
-        document.body.appendChild(
-            datalist
-        );
-
-    }
-
-
-    contentGenre.setAttribute(
-        "list",
-        "genreSuggestions"
-    );
-
-
-    updateGenreSuggestions();
-
-}
-
-
-/* =====================================================
-   SPLIT GENRES
-===================================================== */
-
-function splitGenres(value) {
-
-    return String(
-        value || ""
-    )
-        .split(",")
-        .map(
-            item =>
-                item.trim()
-        )
-        .filter(
-            Boolean
-        );
-
-}
-
-
-/* =====================================================
-   UNIQUE GENRE LIST
-===================================================== */
-
-function getExistingGenres(
-    type
-) {
-
-    const genres = [];
-
-
-    allContents
-        .filter(
-            item => {
-
-                if (!type) {
-
-                    return true;
-
-                }
-
-
-                return item.type === type;
-
-            }
-        )
-        .forEach(
-            item => {
-
-                splitGenres(
-                    item.genre
-                )
-                    .forEach(
-                        genre => {
-
-                            const exists =
-                                genres.some(
-                                    existing =>
-                                        existing
-                                            .toLowerCase()
-                                        ===
-                                        genre
-                                            .toLowerCase()
-                                );
-
-
-                            if (!exists) {
-
-                                genres.push(
-                                    genre
-                                );
-
-                            }
-
-                        }
-                    );
-
-            }
-        );
-
-
-    return genres.sort(
-        (
-            a,
-            b
-        ) =>
-            a.localeCompare(
-                b
-            )
-    );
-
-}
-
-
-/* =====================================================
-   UPDATE CATEGORY SUGGESTIONS
-===================================================== */
-
-function updateGenreSuggestions() {
-
-    const datalist =
-        document.getElementById(
-            "genreSuggestions"
-        );
-
-
-    if (!datalist) {
+    if (!contentType) {
 
         return;
 
@@ -683,47 +351,170 @@ function updateGenreSuggestions() {
 
 
     const type =
-        contentType
-            ?.value
-        ||
-        "";
+        contentType.value;
 
 
-    const genres =
-        getExistingGenres(
-            type
+    document
+        .querySelectorAll(
+            ".type-field"
+        )
+        .forEach(
+            field => {
+
+                const types =
+                    (
+                        field.dataset.types ||
+                        ""
+                    )
+                        .split(",")
+                        .map(
+                            value =>
+                                value.trim()
+                        );
+
+
+                field.classList.toggle(
+                    "show-field",
+
+                    Boolean(
+                        type &&
+                        types.includes(type)
+                    )
+                );
+
+            }
         );
 
 
-    datalist.innerHTML =
-        genres
-            .map(
-                genre => `
+    const titleLabel =
+        $("titleLabel");
 
-                    <option
-                        value="${escapeAttribute(
-                            genre
-                        )}"
-                    ></option>
+    const posterLabel =
+        $("posterLabel");
 
-                `
-            )
-            .join("");
+    const genreLabel =
+        $("genreLabel");
 
-}
+    const yearLabel =
+        $("yearLabel");
+
+    const releaseDateLabel =
+        $("releaseDateLabel");
 
 
-/* =====================================================
-   CATEGORY PLACEHOLDER
-===================================================== */
+    const titleMap = {
 
-function updateGenrePlaceholder(
-    type
-) {
+        movie:
+            "Movie Title *",
 
-    if (!contentGenre) {
+        natok:
+            "Natok Title *",
 
-        return;
+        series:
+            "Series Name *",
+
+        upcoming:
+            "Upcoming Title *",
+
+        story:
+            "Story Title *",
+
+        book:
+            "Book Name *",
+
+        tutorial:
+            "Course / Tutorial Title *"
+
+    };
+
+
+    if (titleLabel) {
+
+        titleLabel.textContent =
+            titleMap[type] ||
+            "Title *";
+
+    }
+
+
+    const posterMap = {
+
+        story:
+            "Story Cover Image",
+
+        book:
+            "Book Cover Image",
+
+        tutorial:
+            "Tutorial Cover Image"
+
+    };
+
+
+    if (posterLabel) {
+
+        posterLabel.textContent =
+            posterMap[type] ||
+            "Poster Image";
+
+    }
+
+
+    const genreMap = {
+
+        movie:
+            "Movie Category / Genre",
+
+        natok:
+            "Natok Category / Language",
+
+        series:
+            "Series Category / Genre",
+
+        upcoming:
+            "Upcoming Category",
+
+        story:
+            "Story Category",
+
+        book:
+            "Book Category",
+
+        tutorial:
+            "Tutorial Category"
+
+    };
+
+
+    if (genreLabel) {
+
+        genreLabel.textContent =
+            genreMap[type] ||
+            "Category / Genre";
+
+    }
+
+
+    if (yearLabel) {
+
+        yearLabel.textContent =
+            type === "book"
+                ?
+                "Publication Year"
+                :
+                "Year";
+
+    }
+
+
+    if (releaseDateLabel) {
+
+        releaseDateLabel.textContent =
+            type === "story"
+                ?
+                "Publish Date"
+                :
+                "Release Date";
 
     }
 
@@ -754,290 +545,19 @@ function updateGenrePlaceholder(
     };
 
 
-    contentGenre.placeholder =
-        placeholders[type]
-        ||
-        "Enter category";
+    if (contentGenre) {
+
+        contentGenre.placeholder =
+            placeholders[type] ||
+            "Type category";
+
+    }
+
+
+    refreshGenreSuggestions();
 
 }
 
-
-/* =====================================================
-   DYNAMIC FORM
-===================================================== */
-
-function updateDynamicForm() {
-
-    if (!contentType) {
-
-        return;
-
-    }
-
-
-    const type =
-        contentType.value;
-
-
-    document
-        .querySelectorAll(
-            ".type-field"
-        )
-        .forEach(
-            field => {
-
-                const dataTypes =
-                    field.dataset.types
-                    ||
-                    "";
-
-
-                const allowedTypes =
-                    dataTypes
-                        .split(",")
-                        .map(
-                            item =>
-                                item.trim()
-                        )
-                        .filter(
-                            Boolean
-                        );
-
-
-                if (
-                    type &&
-                    allowedTypes.includes(
-                        type
-                    )
-                ) {
-
-                    field.classList.add(
-                        "show-field"
-                    );
-
-                }
-
-                else {
-
-                    field.classList.remove(
-                        "show-field"
-                    );
-
-                }
-
-            }
-        );
-
-
-    /* POSTER LABEL */
-
-    const posterLabel =
-        document.getElementById(
-            "posterLabel"
-        );
-
-
-    if (posterLabel) {
-
-        const labels = {
-
-            story:
-                "Story Cover Image",
-
-            book:
-                "Book Cover Image",
-
-            tutorial:
-                "Tutorial Cover Image"
-
-        };
-
-
-        posterLabel.textContent =
-            labels[type]
-            ||
-            "Poster Image";
-
-    }
-
-
-    /* TITLE LABEL */
-
-    const titleLabel =
-        document.getElementById(
-            "titleLabel"
-        );
-
-
-    if (titleLabel) {
-
-        const labels = {
-
-            movie:
-                "Movie Title *",
-
-            natok:
-                "Natok Title *",
-
-            series:
-                "Series Name *",
-
-            upcoming:
-                "Upcoming Title *",
-
-            story:
-                "Story Title *",
-
-            book:
-                "Book Name *",
-
-            tutorial:
-                "Course / Tutorial Title *"
-
-        };
-
-
-        titleLabel.textContent =
-            labels[type]
-            ||
-            "Title *";
-
-    }
-
-
-    /* GENRE LABEL */
-
-    const genreLabel =
-        document.getElementById(
-            "genreLabel"
-        );
-
-
-    if (genreLabel) {
-
-        if (
-            type ===
-            "movie"
-        ) {
-
-            genreLabel.textContent =
-                "Movie Category / Genre";
-
-        }
-
-        else if (
-            type ===
-            "natok"
-        ) {
-
-            genreLabel.textContent =
-                "Natok Category / Language";
-
-        }
-
-        else if (
-            type ===
-            "series"
-        ) {
-
-            genreLabel.textContent =
-                "Series Category / Genre";
-
-        }
-
-        else if (
-            type ===
-            "tutorial"
-        ) {
-
-            genreLabel.textContent =
-                "Tutorial Category";
-
-        }
-
-        else if (
-            type ===
-            "story"
-        ) {
-
-            genreLabel.textContent =
-                "Story Category";
-
-        }
-
-        else if (
-            type ===
-            "book"
-        ) {
-
-            genreLabel.textContent =
-                "Book Category";
-
-        }
-
-        else {
-
-            genreLabel.textContent =
-                "Category / Genre";
-
-        }
-
-    }
-
-
-    /* YEAR LABEL */
-
-    const yearLabel =
-        document.getElementById(
-            "yearLabel"
-        );
-
-
-    if (yearLabel) {
-
-        yearLabel.textContent =
-            type === "book"
-                ?
-                "Publication Year"
-                :
-                "Year";
-
-    }
-
-
-    /* RELEASE DATE LABEL */
-
-    const releaseDateLabel =
-        document.getElementById(
-            "releaseDateLabel"
-        );
-
-
-    if (releaseDateLabel) {
-
-        releaseDateLabel.textContent =
-            type === "story"
-                ?
-                "Publish Date"
-                :
-                "Release Date";
-
-    }
-
-
-    updateGenrePlaceholder(
-        type
-    );
-
-
-    updateGenreSuggestions();
-
-}
-
-
-/* =====================================================
-   CONTENT TYPE CHANGE
-===================================================== */
 
 if (contentType) {
 
@@ -1050,13 +570,143 @@ if (contentType) {
 
 
 /* =====================================================
+   CATEGORY
+===================================================== */
+
+function splitGenres(value) {
+
+    return String(
+        value || ""
+    )
+        .split(",")
+        .map(
+            value =>
+                value.trim()
+        )
+        .filter(Boolean);
+
+}
+
+
+function normalizeGenres(value) {
+
+    const genres =
+        [];
+
+
+    splitGenres(value)
+        .forEach(
+            genre => {
+
+                const exists =
+                    genres.some(
+                        item =>
+                            item.toLowerCase() ===
+                            genre.toLowerCase()
+                    );
+
+
+                if (!exists) {
+
+                    genres.push(genre);
+
+                }
+
+            }
+        );
+
+
+    return genres.join(", ");
+
+}
+
+
+function refreshGenreSuggestions() {
+
+    const list =
+        $("genreSuggestions");
+
+
+    if (!list) {
+
+        return;
+
+    }
+
+
+    const type =
+        contentType?.value ||
+        "";
+
+
+    const genres =
+        [];
+
+
+    allContents
+        .filter(
+            item =>
+                !type ||
+                item.type === type
+        )
+        .forEach(
+            item => {
+
+                splitGenres(item.genre)
+                    .forEach(
+                        genre => {
+
+                            const exists =
+                                genres.some(
+                                    current =>
+                                        current.toLowerCase() ===
+                                        genre.toLowerCase()
+                                );
+
+
+                            if (!exists) {
+
+                                genres.push(genre);
+
+                            }
+
+                        }
+                    );
+
+            }
+        );
+
+
+    genres.sort(
+        (
+            a,
+            b
+        ) =>
+            a.localeCompare(b)
+    );
+
+
+    list.innerHTML =
+        genres
+            .map(
+                genre =>
+                    `<option value="${escapeAttribute(
+                        genre
+                    )}"></option>`
+            )
+            .join("");
+
+}
+
+
+/* =====================================================
    IMAGE PREVIEW
 ===================================================== */
 
-function showImagePreview(
+function bindPreview(
     input,
     preview,
-    banner = false
+    isBanner = false
 ) {
 
     if (
@@ -1082,18 +732,13 @@ function showImagePreview(
                 preview.innerHTML =
                     "";
 
+
                 return;
 
             }
 
 
-            const imageUrl =
-                URL.createObjectURL(
-                    file
-                );
-
-
-            if (banner) {
+            if (isBanner) {
 
                 preview.classList.add(
                     "banner-preview"
@@ -1105,7 +750,7 @@ function showImagePreview(
             preview.innerHTML = `
 
                 <img
-                    src="${imageUrl}"
+                    src="${URL.createObjectURL(file)}"
                     alt="Preview"
                 >
 
@@ -1117,22 +762,18 @@ function showImagePreview(
 }
 
 
-showImagePreview(
+bindPreview(
     posterFile,
     posterPreview
 );
 
 
-showImagePreview(
+bindPreview(
     bannerFile,
     bannerPreview,
     true
 );
 
-
-/* =====================================================
-   BOOK FILE STATUS
-===================================================== */
 
 if (bookFile) {
 
@@ -1140,29 +781,16 @@ if (bookFile) {
         "change",
         () => {
 
-            if (!bookFileStatus) {
-
-                return;
-
-            }
-
-
-            const file =
-                bookFile.files[0];
-
-
-            if (!file) {
+            if (bookFileStatus) {
 
                 bookFileStatus.textContent =
-                    "";
-
-                return;
+                    bookFile.files[0]
+                        ?
+                        `Selected: ${bookFile.files[0].name}`
+                        :
+                        "";
 
             }
-
-
-            bookFileStatus.textContent =
-                `Selected: ${file.name}`;
 
         }
     );
@@ -1171,7 +799,7 @@ if (bookFile) {
 
 
 /* =====================================================
-   UPLOAD FILE
+   UPLOAD
 ===================================================== */
 
 async function uploadFile(
@@ -1193,14 +821,10 @@ async function uploadFile(
             .toLowerCase();
 
 
-    const randomName =
-        `${Date.now()}-${Math.random()
-            .toString(36)
-            .substring(2, 10)}.${extension}`;
-
-
     const filePath =
-        `${folder}/${randomName}`;
+        `${folder}/${Date.now()}-${Math.random()
+            .toString(36)
+            .slice(2, 10)}.${extension}`;
 
 
     const {
@@ -1229,18 +853,62 @@ async function uploadFile(
     }
 
 
-    const {
-        data
-    } =
-        supabaseClient
-            .storage
-            .from("media")
-            .getPublicUrl(
-                filePath
-            );
+    return supabaseClient
+        .storage
+        .from("media")
+        .getPublicUrl(
+            filePath
+        )
+        .data
+        .publicUrl;
+
+}
 
 
-    return data.publicUrl;
+/* =====================================================
+   REMOVE STORAGE
+===================================================== */
+
+async function removeStorageFile(url) {
+
+    if (!url) {
+
+        return;
+
+    }
+
+
+    const marker =
+        "/storage/v1/object/public/media/";
+
+
+    if (!url.includes(marker)) {
+
+        return;
+
+    }
+
+
+    const filePath =
+        decodeURIComponent(
+            url.split(marker)[1] ||
+            ""
+        );
+
+
+    if (!filePath) {
+
+        return;
+
+    }
+
+
+    await supabaseClient
+        .storage
+        .from("media")
+        .remove([
+            filePath
+        ]);
 
 }
 
@@ -1260,19 +928,8 @@ async function loadContents() {
 
     if (contentTableBody) {
 
-        contentTableBody.innerHTML = `
-
-            <tr>
-
-                <td colspan="5">
-
-                    Loading...
-
-                </td>
-
-            </tr>
-
-        `;
+        contentTableBody.innerHTML =
+            `<tr><td colspan="5">Loading...</td></tr>`;
 
     }
 
@@ -1306,7 +963,7 @@ async function loadContents() {
             data || [];
 
 
-        updateGenreSuggestions();
+        refreshGenreSuggestions();
 
         updateStats();
 
@@ -1315,9 +972,6 @@ async function loadContents() {
     }
 
     catch (error) {
-
-        console.error(error);
-
 
         if (contentTableBody) {
 
@@ -1329,8 +983,6 @@ async function loadContents() {
 
                         ${escapeHTML(
                             error.message
-                            ||
-                            "Unable to load content."
                         )}
 
                     </td>
@@ -1342,53 +994,6 @@ async function loadContents() {
         }
 
     }
-
-}
-
-
-/* =====================================================
-   NORMALIZE CATEGORY
-===================================================== */
-
-function normalizeGenreInput(
-    value
-) {
-
-    const genres = [];
-
-
-    splitGenres(
-        value
-    )
-        .forEach(
-            genre => {
-
-                const exists =
-                    genres.some(
-                        current =>
-                            current
-                                .toLowerCase()
-                            ===
-                            genre
-                                .toLowerCase()
-                    );
-
-
-                if (!exists) {
-
-                    genres.push(
-                        genre
-                    );
-
-                }
-
-            }
-        );
-
-
-    return genres.join(
-        ", "
-    );
 
 }
 
@@ -1421,13 +1026,10 @@ if (contentForm) {
                 !title
             ) {
 
-                showMessage(
+                return showMessage(
                     "Content type and title are required.",
                     "error"
                 );
-
-
-                return;
 
             }
 
@@ -1436,62 +1038,41 @@ if (contentForm) {
                 true;
 
 
-            saveContentButton.innerHTML = `
-
-                <i
-                    class="fa-solid fa-spinner fa-spin"
-                ></i>
-
-                Uploading & Saving...
-
-            `;
+            saveContentButton.innerHTML =
+                `<i class="fa-solid fa-spinner fa-spin"></i> Saving...`;
 
 
             try {
 
                 let posterUrl =
-                    currentPosterUrl.value
-                    ||
+                    currentPosterUrl.value ||
                     null;
 
 
                 let bannerUrl =
-                    currentBannerUrl.value
-                    ||
+                    currentBannerUrl.value ||
                     null;
 
 
                 let pdfUrl =
-                    currentFileUrl.value
-                    ||
+                    currentFileUrl.value ||
                     null;
 
 
-                /* POSTER / COVER */
-
                 if (
-                    posterFile &&
-                    posterFile.files.length > 0
+                    posterFile.files.length
                 ) {
 
-                    let folder =
-                        "posters";
-
-
-                    if (
+                    const folder =
                         [
                             "story",
                             "book",
                             "tutorial"
-                        ].includes(
-                            type
-                        )
-                    ) {
-
-                        folder =
-                            "covers";
-
-                    }
+                        ].includes(type)
+                            ?
+                            "covers"
+                            :
+                            "posters";
 
 
                     posterUrl =
@@ -1503,20 +1084,8 @@ if (contentForm) {
                 }
 
 
-                /* BANNER */
-
                 if (
-                    bannerFile &&
-                    [
-                        "movie",
-                        "natok",
-                        "series",
-                        "upcoming"
-                    ].includes(
-                        type
-                    )
-                    &&
-                    bannerFile.files.length > 0
+                    bannerFile.files.length
                 ) {
 
                     bannerUrl =
@@ -1528,14 +1097,9 @@ if (contentForm) {
                 }
 
 
-                /* BOOK PDF */
-
                 if (
-                    type === "book"
-                    &&
-                    bookFile
-                    &&
-                    bookFile.files.length > 0
+                    type === "book" &&
+                    bookFile.files.length
                 ) {
 
                     pdfUrl =
@@ -1547,63 +1111,35 @@ if (contentForm) {
                 }
 
 
-                /* CATEGORY */
-
-                const genreValue =
-                    contentGenre
-                        ?
-                        normalizeGenreInput(
-                            contentGenre.value
-                        )
-                        :
-                        "";
-
-
-                /* RATING */
-
-                let ratingValue =
+                let rating =
                     null;
 
 
                 if (
-                    contentRating &&
                     contentRating.value !==
                     ""
                 ) {
 
-                    const number =
+                    rating =
                         Number(
                             contentRating.value
                         );
 
 
                     if (
-                        Number.isFinite(
-                            number
-                        )
+                        !Number.isFinite(rating) ||
+                        rating < 0 ||
+                        rating > 10
                     ) {
 
-                        if (
-                            number < 0 ||
-                            number > 10
-                        ) {
-
-                            throw new Error(
-                                "Rating must be between 0 and 10."
-                            );
-
-                        }
-
-
-                        ratingValue =
-                            number;
+                        throw new Error(
+                            "Rating must be between 0 and 10."
+                        );
 
                     }
 
                 }
 
-
-                /* DATA */
 
                 const contentData = {
 
@@ -1613,25 +1149,15 @@ if (contentForm) {
 
                     description:
                         contentDescription
-                            ?.value
-                            .trim()
-                        ||
+                            .value
+                            .trim() ||
                         null,
 
                     poster_url:
                         posterUrl,
 
                     banner_url:
-                        [
-                            "movie",
-                            "natok",
-                            "series",
-                            "upcoming"
-                        ].includes(type)
-                            ?
-                            bannerUrl
-                            :
-                            null,
+                        bannerUrl,
 
                     video_url:
                         [
@@ -1643,16 +1169,38 @@ if (contentForm) {
                             ?
                             (
                                 videoUrl
-                                    ?.value
-                                    .trim()
-                                ||
+                                    .value
+                                    .trim() ||
+                                null
+                            )
+                            :
+                            null,
+
+                    download_url:
+                        [
+                            "movie",
+                            "natok",
+                            "series",
+                            "tutorial"
+                        ].includes(type)
+                            ?
+                            (
+                                contentDownloadUrl
+                                    .value
+                                    .trim() ||
                                 null
                             )
                             :
                             null,
 
                     year:
-                        contentYear &&
+                        [
+                            "movie",
+                            "natok",
+                            "series",
+                            "book",
+                            "tutorial"
+                        ].includes(type) &&
                         contentYear.value
                             ?
                             Number(
@@ -1661,33 +1209,16 @@ if (contentForm) {
                             :
                             null,
 
-                    /*
-                       Existing rating column e
-                       sob type er rating save hobe.
-                       New column lagbe na.
-                    */
-
-                    rating:
-                        ratingValue,
-
-                    /*
-                       Existing genre column e
-                       category save hobe.
-                       New table / column lagbe na.
-                    */
+                    rating,
 
                     genre:
-                        genreValue
-                            ?
-                            genreValue
-                            :
-                            null,
+                        normalizeGenres(
+                            contentGenre.value
+                        ) ||
+                        null,
 
                     season:
-                        type === "series"
-                        &&
-                        contentSeason
-                        &&
+                        type === "series" &&
                         contentSeason.value
                             ?
                             Number(
@@ -1706,9 +1237,8 @@ if (contentForm) {
                             ?
                             (
                                 contentBadge
-                                    ?.value
-                                    .trim()
-                                ||
+                                    .value
+                                    .trim() ||
                                 null
                             )
                             :
@@ -1722,9 +1252,8 @@ if (contentForm) {
                             ?
                             (
                                 contentAuthor
-                                    ?.value
-                                    .trim()
-                                ||
+                                    .value
+                                    .trim() ||
                                 null
                             )
                             :
@@ -1735,9 +1264,8 @@ if (contentForm) {
                             ?
                             (
                                 fullContent
-                                    ?.value
-                                    .trim()
-                                ||
+                                    .value
+                                    .trim() ||
                                 null
                             )
                             :
@@ -1753,9 +1281,7 @@ if (contentForm) {
                         ].includes(type)
                             ?
                             (
-                                releaseDate
-                                    ?.value
-                                ||
+                                releaseDate.value ||
                                 null
                             )
                             :
@@ -1768,31 +1294,11 @@ if (contentForm) {
                             :
                             null,
 
-                    download_url:
-                        type === "tutorial"
-                            ?
-                            (
-                                tutorialDownloadUrl
-                                    ?.value
-                                    .trim()
-                                ||
-                                null
-                            )
-                            :
-                            null,
-
                     featured:
-                        contentFeatured
-                            ?
-                            contentFeatured.checked
-                            :
-                            false,
+                        contentFeatured.checked,
 
                     status:
-                        contentStatus
-                            ?.value
-                        ||
-                        "published"
+                        contentStatus.value
 
                 };
 
@@ -1871,8 +1377,7 @@ if (contentForm) {
 
 
                 showMessage(
-                    error.message
-                    ||
+                    error.message ||
                     "Unable to save content.",
                     "error"
                 );
@@ -1885,15 +1390,8 @@ if (contentForm) {
                     false;
 
 
-                saveContentButton.innerHTML = `
-
-                    <i
-                        class="fa-solid fa-floppy-disk"
-                    ></i>
-
-                    Save Content
-
-                `;
+                saveContentButton.innerHTML =
+                    `<i class="fa-solid fa-floppy-disk"></i> Save Content`;
 
             }
 
@@ -1904,7 +1402,7 @@ if (contentForm) {
 
 
 /* =====================================================
-   RENDER CONTENT TABLE
+   TABLE
 ===================================================== */
 
 function renderContents() {
@@ -1917,40 +1415,21 @@ function renderContents() {
 
 
     let data =
-        allContents;
-
-
-    if (
-        currentFilter !== "all"
-    ) {
-
-        data =
+        currentFilter === "all"
+            ?
+            allContents
+            :
             allContents.filter(
                 item =>
                     item.type ===
                     currentFilter
             );
 
-    }
 
+    if (!data.length) {
 
-    if (
-        data.length === 0
-    ) {
-
-        contentTableBody.innerHTML = `
-
-            <tr>
-
-                <td colspan="5">
-
-                    No content found.
-
-                </td>
-
-            </tr>
-
-        `;
+        contentTableBody.innerHTML =
+            `<tr><td colspan="5">No content found.</td></tr>`;
 
 
         return;
@@ -1999,35 +1478,24 @@ function renderContents() {
 
                             <td>
 
-                                <div
-                                    class="content-title-wrap"
-                                >
+                                <div class="content-title-wrap">
 
                                     ${image}
 
                                     <div>
 
                                         <strong>
-
                                             ${escapeHTML(
                                                 item.title
                                             )}
-
                                         </strong>
-
 
                                         ${
                                             item.genre
                                                 ?
                                                 `
 
-                                                    <div
-                                                        style="
-                                                            margin-top:5px;
-                                                            font-size:11px;
-                                                            color:rgba(255,255,255,.4);
-                                                        "
-                                                    >
+                                                    <div class="table-subtext">
 
                                                         ${escapeHTML(
                                                             item.genre
@@ -2048,30 +1516,23 @@ function renderContents() {
 
 
                             <td>
-
                                 ${formatType(
                                     item.type
                                 )}
-
                             </td>
 
 
                             <td>
 
                                 ${
-                                    item.type === "series"
-                                    &&
+                                    item.type ===
+                                    "series" &&
                                     item.season
-
                                         ?
-
                                         `S${item.season}`
-
                                         :
-
                                         (
-                                            item.year
-                                            ||
+                                            item.year ||
                                             "-"
                                         )
                                 }
@@ -2096,8 +1557,7 @@ function renderContents() {
                                 >
 
                                     ${escapeHTML(
-                                        item.status
-                                        ||
+                                        item.status ||
                                         "published"
                                     )}
 
@@ -2108,38 +1568,28 @@ function renderContents() {
 
                             <td>
 
-                                <div
-                                    class="table-actions"
-                                >
+                                <div class="table-actions">
 
                                     <button
                                         class="edit-button"
-                                        type="button"
                                         onclick="editContent(${Number(
                                             item.id
                                         )})"
-                                        title="Edit"
                                     >
 
-                                        <i
-                                            class="fa-solid fa-pen"
-                                        ></i>
+                                        <i class="fa-solid fa-pen"></i>
 
                                     </button>
 
 
                                     <button
                                         class="delete-button"
-                                        type="button"
                                         onclick="deleteContent(${Number(
                                             item.id
                                         )})"
-                                        title="Delete"
                                     >
 
-                                        <i
-                                            class="fa-solid fa-trash"
-                                        ></i>
+                                        <i class="fa-solid fa-trash"></i>
 
                                     </button>
 
@@ -2159,7 +1609,7 @@ function renderContents() {
 
 
 /* =====================================================
-   EDIT CONTENT
+   EDIT
 ===================================================== */
 
 window.editContent =
@@ -2170,11 +1620,8 @@ window.editContent =
                 content =>
                     Number(
                         content.id
-                    )
-                    ===
-                    Number(
-                        id
-                    )
+                    ) ===
+                    Number(id)
             );
 
 
@@ -2190,8 +1637,7 @@ window.editContent =
 
 
         contentType.value =
-            item.type
-            ||
+            item.type ||
             "";
 
 
@@ -2199,162 +1645,95 @@ window.editContent =
 
 
         contentTitle.value =
-            item.title
-            ||
+            item.title ||
             "";
 
 
         contentDescription.value =
-            item.description
-            ||
+            item.description ||
             "";
 
 
-        if (videoUrl) {
-
-            videoUrl.value =
-                item.video_url
-                ||
-                "";
-
-        }
+        videoUrl.value =
+            item.video_url ||
+            "";
 
 
-        if (contentYear) {
-
-            contentYear.value =
-                item.year
-                ??
-                "";
-
-        }
+        contentDownloadUrl.value =
+            item.download_url ||
+            "";
 
 
-        if (contentRating) {
-
-            contentRating.value =
-                item.rating
-                ??
-                "";
-
-        }
+        contentYear.value =
+            item.year ??
+            "";
 
 
-        if (contentGenre) {
-
-            contentGenre.value =
-                item.genre
-                ||
-                "";
-
-        }
+        contentRating.value =
+            item.rating ??
+            "";
 
 
-        if (contentSeason) {
-
-            contentSeason.value =
-                item.season
-                ??
-                "";
-
-        }
+        contentGenre.value =
+            item.genre ||
+            "";
 
 
-        if (contentBadge) {
-
-            contentBadge.value =
-                item.badge
-                ||
-                "";
-
-        }
+        contentSeason.value =
+            item.season ??
+            "";
 
 
-        if (contentAuthor) {
-
-            contentAuthor.value =
-                item.author
-                ||
-                "";
-
-        }
+        contentBadge.value =
+            item.badge ||
+            "";
 
 
-        if (releaseDate) {
-
-            releaseDate.value =
-                item.release_date
-                ||
-                "";
-
-        }
+        contentAuthor.value =
+            item.author ||
+            "";
 
 
-        if (tutorialDownloadUrl) {
-
-            tutorialDownloadUrl.value =
-                item.download_url
-                ||
-                "";
-
-        }
+        releaseDate.value =
+            item.release_date ||
+            "";
 
 
-        if (contentStatus) {
-
-            contentStatus.value =
-                item.status
-                ||
-                "published";
-
-        }
+        contentStatus.value =
+            item.status ||
+            "published";
 
 
-        if (contentFeatured) {
-
-            contentFeatured.checked =
-                Boolean(
-                    item.featured
-                );
-
-        }
+        contentFeatured.checked =
+            Boolean(
+                item.featured
+            );
 
 
-        if (fullContent) {
-
-            fullContent.value =
-                item.full_content
-                ||
-                "";
-
-        }
+        fullContent.value =
+            item.full_content ||
+            "";
 
 
         currentPosterUrl.value =
-            item.poster_url
-            ||
+            item.poster_url ||
             "";
 
 
         currentBannerUrl.value =
-            item.banner_url
-            ||
+            item.banner_url ||
             "";
 
 
         currentFileUrl.value =
-            item.file_url
-            ||
+            item.file_url ||
             "";
 
 
-        /* POSTER */
-
-        if (posterPreview) {
-
-            if (item.poster_url) {
-
-                posterPreview.innerHTML = `
+        posterPreview.innerHTML =
+            item.poster_url
+                ?
+                `
 
                     <img
                         src="${escapeAttribute(
@@ -2363,32 +1742,20 @@ window.editContent =
                         alt="Poster"
                     >
 
-                `;
-
-            }
-
-            else {
-
-                posterPreview.innerHTML =
-                    "";
-
-            }
-
-        }
+                `
+                :
+                "";
 
 
-        /* BANNER */
-
-        if (bannerPreview) {
-
-            if (item.banner_url) {
-
-                bannerPreview.classList.add(
-                    "banner-preview"
-                );
+        bannerPreview.classList.add(
+            "banner-preview"
+        );
 
 
-                bannerPreview.innerHTML = `
+        bannerPreview.innerHTML =
+            item.banner_url
+                ?
+                `
 
                     <img
                         src="${escapeAttribute(
@@ -2397,55 +1764,25 @@ window.editContent =
                         alt="Banner"
                     >
 
-                `;
-
-            }
-
-            else {
-
-                bannerPreview.innerHTML =
-                    "";
-
-            }
-
-        }
+                `
+                :
+                "";
 
 
-        /* BOOK PDF */
-
-        if (bookFileStatus) {
-
-            if (item.file_url) {
-
-                bookFileStatus.textContent =
-                    "Current PDF already uploaded.";
-
-            }
-
-            else {
-
-                bookFileStatus.textContent =
-                    "";
-
-            }
-
-        }
+        bookFileStatus.textContent =
+            item.file_url
+                ?
+                "Current PDF already uploaded."
+                :
+                "";
 
 
-        if (formTitle) {
-
-            formTitle.textContent =
-                "Edit Content";
-
-        }
+        formTitle.textContent =
+            "Edit Content";
 
 
-        if (cancelEditButton) {
-
-            cancelEditButton.style.display =
-                "inline-flex";
-
-        }
+        cancelEditButton.style.display =
+            "inline-flex";
 
 
         document
@@ -2461,7 +1798,7 @@ window.editContent =
 
 
 /* =====================================================
-   DELETE CONTENT
+   DELETE
 ===================================================== */
 
 window.deleteContent =
@@ -2472,28 +1809,17 @@ window.deleteContent =
                 content =>
                     Number(
                         content.id
-                    )
-                    ===
-                    Number(
-                        id
-                    )
+                    ) ===
+                    Number(id)
             );
 
 
-        if (!item) {
-
-            return;
-
-        }
-
-
-        const confirmed =
-            confirm(
+        if (
+            !item ||
+            !confirm(
                 `Delete "${item.title}"?`
-            );
-
-
-        if (!confirmed) {
+            )
+        ) {
 
             return;
 
@@ -2521,24 +1847,19 @@ window.deleteContent =
             }
 
 
-            /*
-               Database row delete successful hole
-               tarpor storage files remove korbo.
-            */
+            await Promise.allSettled([
+                removeStorageFile(
+                    item.poster_url
+                ),
 
-            await removeStorageFile(
-                item.poster_url
-            );
+                removeStorageFile(
+                    item.banner_url
+                ),
 
-
-            await removeStorageFile(
-                item.banner_url
-            );
-
-
-            await removeStorageFile(
-                item.file_url
-            );
+                removeStorageFile(
+                    item.file_url
+                )
+            ]);
 
 
             showMessage(
@@ -2553,12 +1874,8 @@ window.deleteContent =
 
         catch (error) {
 
-            console.error(error);
-
-
             showMessage(
-                error.message
-                ||
+                error.message ||
                 "Unable to delete content.",
                 "error"
             );
@@ -2569,88 +1886,7 @@ window.deleteContent =
 
 
 /* =====================================================
-   REMOVE STORAGE FILE
-===================================================== */
-
-async function removeStorageFile(
-    url
-) {
-
-    if (!url) {
-
-        return;
-
-    }
-
-
-    const marker =
-        "/storage/v1/object/public/media/";
-
-
-    if (
-        !url.includes(
-            marker
-        )
-    ) {
-
-        return;
-
-    }
-
-
-    try {
-
-        const filePath =
-            decodeURIComponent(
-                url.split(
-                    marker
-                )[1]
-            );
-
-
-        if (!filePath) {
-
-            return;
-
-        }
-
-
-        const {
-            error
-        } =
-            await supabaseClient
-                .storage
-                .from("media")
-                .remove([
-                    filePath
-                ]);
-
-
-        if (error) {
-
-            console.warn(
-                "Storage delete warning:",
-                error.message
-            );
-
-        }
-
-    }
-
-    catch (error) {
-
-        console.warn(
-            "Unable to delete storage file:",
-            error
-        );
-
-    }
-
-}
-
-
-/* =====================================================
-   RESET FORM
+   RESET
 ===================================================== */
 
 function resetForm() {
@@ -2681,59 +1917,35 @@ function resetForm() {
         "";
 
 
-    if (posterPreview) {
-
-        posterPreview.innerHTML =
-            "";
-
-    }
+    posterPreview.innerHTML =
+        "";
 
 
-    if (bannerPreview) {
-
-        bannerPreview.innerHTML =
-            "";
+    bannerPreview.innerHTML =
+        "";
 
 
-        bannerPreview.classList.remove(
-            "banner-preview"
-        );
-
-    }
+    bannerPreview.classList.remove(
+        "banner-preview"
+    );
 
 
-    if (bookFileStatus) {
-
-        bookFileStatus.innerHTML =
-            "";
-
-    }
+    bookFileStatus.textContent =
+        "";
 
 
-    if (formTitle) {
-
-        formTitle.textContent =
-            "Add New Content";
-
-    }
+    formTitle.textContent =
+        "Add New Content";
 
 
-    if (cancelEditButton) {
-
-        cancelEditButton.style.display =
-            "none";
-
-    }
+    cancelEditButton.style.display =
+        "none";
 
 
     updateDynamicForm();
 
 }
 
-
-/* =====================================================
-   CANCEL EDIT
-===================================================== */
 
 if (cancelEditButton) {
 
@@ -2745,36 +1957,27 @@ if (cancelEditButton) {
 }
 
 
-/* =====================================================
-   ADD CONTENT BUTTON
-===================================================== */
+if ($("openAddContent")) {
 
-const openAddContent =
-    document.getElementById(
-        "openAddContent"
-    );
+    $("openAddContent")
+        .addEventListener(
+            "click",
+            () => {
 
-
-if (openAddContent) {
-
-    openAddContent.addEventListener(
-        "click",
-        () => {
-
-            resetForm();
+                resetForm();
 
 
-            document
-                .querySelector(
-                    ".content-form-section"
-                )
-                ?.scrollIntoView({
-                    behavior:
-                        "smooth"
-                });
+                document
+                    .querySelector(
+                        ".content-form-section"
+                    )
+                    ?.scrollIntoView({
+                        behavior:
+                            "smooth"
+                    });
 
-        }
-    );
+            }
+        );
 
 }
 
@@ -2788,15 +1991,9 @@ function setStat(
     value
 ) {
 
-    const element =
-        document.getElementById(
-            id
-        );
+    if ($(id)) {
 
-
-    if (element) {
-
-        element.textContent =
+        $(id).textContent =
             value;
 
     }
@@ -2933,13 +2130,11 @@ document
                             ".admin-menu-item"
                         )
                         .forEach(
-                            item => {
-
-                                item.classList.remove(
-                                    "active"
-                                );
-
-                            }
+                            item =>
+                                item.classList
+                                    .remove(
+                                        "active"
+                                    )
                         );
 
 
@@ -2948,16 +2143,11 @@ document
                     );
 
 
-                    const buttonText =
-                        button.textContent
-                            .trim();
-
-
                     currentFilter =
                         filterMap[
-                            buttonText
-                        ]
-                        ||
+                            button.textContent
+                                .trim()
+                        ] ||
                         "all";
 
 
@@ -2971,12 +2161,12 @@ document
 
 
 /* =====================================================
-   FORMAT TYPE
+   HELPERS
 ===================================================== */
 
 function formatType(type) {
 
-    const names = {
+    return {
 
         movie:
             "Movie",
@@ -2999,21 +2189,12 @@ function formatType(type) {
         tutorial:
             "Tutorial"
 
-    };
-
-
-    return names[type]
-        ||
-        type
-        ||
-        "-";
+    }[type] ||
+    type ||
+    "-";
 
 }
 
-
-/* =====================================================
-   MESSAGE
-===================================================== */
 
 function showMessage(
     message,
@@ -3032,16 +2213,11 @@ function showMessage(
 
 
     contentMessage.className =
-        type
-        ||
+        type ||
         "";
 
 }
 
-
-/* =====================================================
-   ESCAPE HTML
-===================================================== */
 
 function escapeHTML(value) {
 
@@ -3085,23 +2261,15 @@ function escapeHTML(value) {
 }
 
 
-/* =====================================================
-   ESCAPE ATTRIBUTE
-===================================================== */
+function escapeAttribute(value) {
 
-function escapeAttribute(
-    value
-) {
-
-    return escapeHTML(
-        value
-    );
+    return escapeHTML(value);
 
 }
 
 
 /* =====================================================
-   INITIALIZE DASHBOARD
+   INIT
 ===================================================== */
 
 async function initializeDashboard() {
@@ -3113,26 +2281,13 @@ async function initializeDashboard() {
     }
 
 
-    const authorized =
-        await protectDashboard();
-
-
-    if (!authorized) {
+    if (
+        !await protectDashboard()
+    ) {
 
         return;
 
     }
-
-
-    /*
-       Existing HTML field kei expand korchi.
-       Database change kora hocche na.
-    */
-
-    expandExistingFields();
-
-
-    setupGenreSuggestions();
 
 
     updateDynamicForm();
@@ -3142,10 +2297,6 @@ async function initializeDashboard() {
 
 }
 
-
-/* =====================================================
-   START
-===================================================== */
 
 document.addEventListener(
     "DOMContentLoaded",
@@ -3160,20 +2311,17 @@ document.addEventListener(
 
 
 /* =====================================================
-   LOGO ANIMATION
-   CINEMAMELLA <-> CINEMAHUB
+   LOGO
 ===================================================== */
 
 const logoWords = [
-
     "MELLA",
-
     "HUB"
-
 ];
 
 
-let logoIndex = 0;
+let logoIndex =
+    0;
 
 
 setInterval(
@@ -3182,8 +2330,7 @@ setInterval(
         logoIndex =
             (
                 logoIndex + 1
-            )
-            %
+            ) %
             logoWords.length;
 
 
