@@ -1,19 +1,37 @@
-/* =====================================================
-   CINEMA MELLA
+/* =========================================================
+   CINEMA MELLA / CINEMA HUB
    PUBLIC WEBSITE - FINAL SCRIPT
-   NO DATABASE CHANGE
-===================================================== */
+
+   DATABASE CHANGE = NO
+
+   FEATURES
+   ---------------------------------------------------------
+   1. Header MELLA <-> HUB animation
+   2. Footer logo static
+   3. Category dropdown from existing genre field
+   4. Rating 8+ Featured slider
+   5. Description only on hover
+   6. Hero uses banner_url ONLY
+   7. Hero sequence:
+      Movie -> Natok -> Series -> Upcoming
+      -> Story -> Book -> Tutorial -> Repeat
+   8. Movie/Natok/Series/Tutorial Download button
+   9. Story reader
+   10. Book PDF open
+   11. Search
+========================================================= */
 
 
-/* =====================================================
+/* =========================================================
    SUPABASE
-===================================================== */
+========================================================= */
 
 const SUPABASE_URL =
     "https://vuvstnlalyikvlanxxwy.supabase.co";
 
 const SUPABASE_PUBLISHABLE_KEY =
     "sb_publishable_ed-PGIvnw8yN2OwI2264IA_f1FOdWrp";
+
 
 const publicSupabase =
     window.supabase.createClient(
@@ -22,16 +40,16 @@ const publicSupabase =
     );
 
 
-/* =====================================================
-   DATA
-===================================================== */
+/* =========================================================
+   GLOBAL CONTENT
+========================================================= */
 
 let databaseContents = [];
 
 
-/* =====================================================
-   TYPE SETTINGS
-===================================================== */
+/* =========================================================
+   TYPE LABELS
+========================================================= */
 
 const TYPE_LABELS = {
 
@@ -52,6 +70,10 @@ const TYPE_LABELS = {
 };
 
 
+/* =========================================================
+   SECTION MAP
+========================================================= */
+
 const TYPE_SECTIONS = {
 
     movie: "movies",
@@ -71,9 +93,9 @@ const TYPE_SECTIONS = {
 };
 
 
-/* =====================================================
+/* =========================================================
    HERO ORDER
-===================================================== */
+========================================================= */
 
 const HERO_SEQUENCE = [
 
@@ -94,9 +116,9 @@ const HERO_SEQUENCE = [
 ];
 
 
-/* =====================================================
-   CATEGORY FILTERS
-===================================================== */
+/* =========================================================
+   CATEGORY FILTER STATE
+========================================================= */
 
 const activeGenreFilters = {
 
@@ -117,9 +139,9 @@ const activeGenreFilters = {
 };
 
 
-/* =====================================================
+/* =========================================================
    HERO STATE
-===================================================== */
+========================================================= */
 
 let heroSlides = [];
 
@@ -128,9 +150,9 @@ let heroIndex = 0;
 let heroTimer = null;
 
 
-/* =====================================================
+/* =========================================================
    FEATURED STATE
-===================================================== */
+========================================================= */
 
 let featuredItems = [];
 
@@ -139,49 +161,57 @@ let featuredIndex = 0;
 let featuredTimer = null;
 
 
-/* =====================================================
-   DOM ELEMENTS
-===================================================== */
+/* =========================================================
+   DOM
+========================================================= */
 
 const heroBackground =
     document.getElementById(
         "heroBackground"
     );
 
+
 const heroDotsContainer =
     document.getElementById(
         "heroDots"
     );
+
 
 const searchToggle =
     document.getElementById(
         "searchToggle"
     );
 
+
 const searchBox =
     document.getElementById(
         "searchBox"
     );
+
 
 const searchInput =
     document.getElementById(
         "searchInput"
     );
 
+
 const searchClose =
     document.getElementById(
         "searchClose"
     );
+
 
 const searchResults =
     document.getElementById(
         "searchResults"
     );
 
+
 const mobileMenuButton =
     document.getElementById(
         "mobileMenuButton"
     );
+
 
 const mobileNav =
     document.getElementById(
@@ -189,18 +219,11 @@ const mobileNav =
     );
 
 
-/* =====================================================
+/* =========================================================
    HEADER LOGO ANIMATION ONLY
 
-   Footer logo will NOT animate.
-===================================================== */
-
-const logoWords = [
-    "MELLA",
-    "HUB"
-];
-
-let logoIndex = 0;
+   FOOTER WILL NOT ANIMATE
+========================================================= */
 
 const headerChangingLogo =
     document.getElementById(
@@ -208,17 +231,29 @@ const headerChangingLogo =
     );
 
 
+const headerLogoWords = [
+
+    "MELLA",
+
+    "HUB"
+
+];
+
+
+let headerLogoIndex = 0;
+
+
 if (headerChangingLogo) {
 
     setInterval(
         () => {
 
-            logoIndex =
+            headerLogoIndex =
                 (
-                    logoIndex + 1
+                    headerLogoIndex + 1
                 )
                 %
-                logoWords.length;
+                headerLogoWords.length;
 
 
             headerChangingLogo.style.opacity =
@@ -233,8 +268,8 @@ if (headerChangingLogo) {
                 () => {
 
                     headerChangingLogo.textContent =
-                        logoWords[
-                            logoIndex
+                        headerLogoWords[
+                            headerLogoIndex
                         ];
 
 
@@ -256,9 +291,9 @@ if (headerChangingLogo) {
 }
 
 
-/* =====================================================
+/* =========================================================
    LOAD CONTENT
-===================================================== */
+========================================================= */
 
 async function loadWebsiteContents() {
 
@@ -296,28 +331,27 @@ async function loadWebsiteContents() {
 
         createNavbarDropdowns();
 
+
         renderNavbarCategories();
+
 
         createFeaturedSection();
 
+
         renderAllSections();
+
 
         setupFeaturedSlider();
 
+
         setupDynamicHero();
-
-
-        console.log(
-            "Cinema Mella loaded:",
-            databaseContents
-        );
 
     }
 
     catch (error) {
 
         console.error(
-            "Supabase Error:",
+            "Unable to load Cinema Mella:",
             error
         );
 
@@ -329,9 +363,9 @@ async function loadWebsiteContents() {
 }
 
 
-/* =====================================================
-   CATEGORY HELPERS
-===================================================== */
+/* =========================================================
+   GENRE SPLITTER
+========================================================= */
 
 function splitGenres(value) {
 
@@ -340,17 +374,17 @@ function splitGenres(value) {
     )
         .split(",")
         .map(
-            item =>
-                item.trim()
+            genre =>
+                genre.trim()
         )
         .filter(Boolean);
 
 }
 
 
-/* =====================================================
-   UNIQUE GENRES BY TYPE
-===================================================== */
+/* =========================================================
+   GET UNIQUE CATEGORIES FROM EXISTING CONTENT
+========================================================= */
 
 function getGenresForType(type) {
 
@@ -373,8 +407,8 @@ function getGenresForType(type) {
 
                             const exists =
                                 genres.some(
-                                    existing =>
-                                        existing
+                                    oldGenre =>
+                                        oldGenre
                                             .toLowerCase()
                                         ===
                                         genre
@@ -397,7 +431,7 @@ function getGenresForType(type) {
         );
 
 
-    return genres.sort(
+    genres.sort(
         (
             a,
             b
@@ -405,14 +439,15 @@ function getGenresForType(type) {
             a.localeCompare(b)
     );
 
+
+    return genres;
+
 }
 
 
-/* =====================================================
-   CREATE NAV DROPDOWNS
-
-   Uses existing normal nav links.
-===================================================== */
+/* =========================================================
+   CREATE CATEGORY DROPDOWN WRAPPERS
+========================================================= */
 
 function createNavbarDropdowns() {
 
@@ -480,6 +515,10 @@ function createNavbarDropdowns() {
                 }
 
 
+                /*
+                   Already wrapped hole duplicate korbe na
+                */
+
                 if (
                     link.parentElement &&
                     link.parentElement
@@ -525,9 +564,7 @@ function createNavbarDropdowns() {
                     >
 
                         ${escapeHTML(
-                            TYPE_LABELS[
-                                type
-                            ]
+                            TYPE_LABELS[type]
                         )}
 
                     </div>
@@ -562,9 +599,9 @@ function createNavbarDropdowns() {
 }
 
 
-/* =====================================================
-   RENDER NAV CATEGORIES
-===================================================== */
+/* =========================================================
+   RENDER CATEGORY DROPDOWNS
+========================================================= */
 
 function renderNavbarCategories() {
 
@@ -614,7 +651,9 @@ function renderNavbarCategories() {
                     >
 
                         All ${escapeHTML(
-                            TYPE_LABELS[type]
+                            TYPE_LABELS[
+                                type
+                            ]
                         )}
 
                     </button>
@@ -659,9 +698,9 @@ function renderNavbarCategories() {
 }
 
 
-/* =====================================================
-   CATEGORY CLICK
-===================================================== */
+/* =========================================================
+   CATEGORY BUTTON CLICK
+========================================================= */
 
 document.addEventListener(
     "click",
@@ -729,9 +768,9 @@ document.addEventListener(
                     ".genre-menu-item"
                 )
                 .forEach(
-                    item => {
+                    menuButton => {
 
-                        item.classList.remove(
+                        menuButton.classList.remove(
                             "active"
                         );
 
@@ -777,18 +816,18 @@ document.addEventListener(
 );
 
 
-/* =====================================================
-   GENRE MATCH
-===================================================== */
+/* =========================================================
+   CATEGORY MATCH
+========================================================= */
 
 function itemMatchesGenre(
     item,
-    genre
+    selectedGenre
 ) {
 
     if (
-        !genre ||
-        genre === "all"
+        !selectedGenre ||
+        selectedGenre === "all"
     ) {
 
         return true;
@@ -800,20 +839,20 @@ function itemMatchesGenre(
         item.genre
     )
         .some(
-            current =>
-                current
+            genre =>
+                genre
                     .toLowerCase()
                 ===
-                genre
+                selectedGenre
                     .toLowerCase()
         );
 
 }
 
 
-/* =====================================================
+/* =========================================================
    FILTER CONTENT
-===================================================== */
+========================================================= */
 
 function getFilteredContents(type) {
 
@@ -835,24 +874,24 @@ function getFilteredContents(type) {
 }
 
 
-/* =====================================================
-   EMPTY FILTER MESSAGE
-===================================================== */
+/* =========================================================
+   EMPTY CATEGORY TEXT
+========================================================= */
 
 function getEmptyText(
     type,
     normalText
 ) {
 
-    const genre =
+    const category =
         activeGenreFilters[
             type
         ];
 
 
     if (
-        !genre ||
-        genre === "all"
+        !category ||
+        category === "all"
     ) {
 
         return normalText;
@@ -860,14 +899,14 @@ function getEmptyText(
     }
 
 
-    return `No ${genre} content found.`;
+    return `No ${category} content found.`;
 
 }
 
 
-/* =====================================================
-   RENDER ALL
-===================================================== */
+/* =========================================================
+   RENDER ALL SECTIONS
+========================================================= */
 
 function renderAllSections() {
 
@@ -888,13 +927,13 @@ function renderAllSections() {
 }
 
 
-/* =====================================================
-   RENDER ONE TYPE
-===================================================== */
+/* =========================================================
+   RENDER SECTION BY TYPE
+========================================================= */
 
 function renderSectionByType(type) {
 
-    const renderers = {
+    const rendererMap = {
 
         movie:
             renderMovies,
@@ -921,12 +960,12 @@ function renderSectionByType(type) {
 
 
     if (
-        renderers[
+        rendererMap[
             type
         ]
     ) {
 
-        renderers[
+        rendererMap[
             type
         ]();
 
@@ -935,9 +974,9 @@ function renderSectionByType(type) {
 }
 
 
-/* =====================================================
+/* =========================================================
    MOVIES
-===================================================== */
+========================================================= */
 
 function renderMovies() {
 
@@ -951,9 +990,9 @@ function renderMovies() {
 }
 
 
-/* =====================================================
+/* =========================================================
    NATOK
-===================================================== */
+========================================================= */
 
 function renderNatok() {
 
@@ -967,9 +1006,9 @@ function renderNatok() {
 }
 
 
-/* =====================================================
+/* =========================================================
    SERIES
-===================================================== */
+========================================================= */
 
 function renderSeries() {
 
@@ -983,9 +1022,9 @@ function renderSeries() {
 }
 
 
-/* =====================================================
-   VIDEO GRID
-===================================================== */
+/* =========================================================
+   MOVIE / NATOK / SERIES GRID
+========================================================= */
 
 function renderVideoGrid(
     gridId,
@@ -1043,9 +1082,12 @@ function renderVideoGrid(
 }
 
 
-/* =====================================================
-   VIDEO CARD
-===================================================== */
+/* =========================================================
+   MOVIE / NATOK / SERIES CARD
+
+   IMPORTANT:
+   DOWNLOAD BUTTON IS HERE
+========================================================= */
 
 function createVideoCard(
     item,
@@ -1063,9 +1105,7 @@ function createVideoCard(
 
 
     if (
-        item.type ===
-        "series"
-        &&
+        item.type === "series" &&
         item.season
     ) {
 
@@ -1099,6 +1139,7 @@ function createVideoCard(
                         ""
                 }'
             >
+
 
                 ${
                     item.badge
@@ -1135,7 +1176,9 @@ function createVideoCard(
                                 type="button"
                                 class="poster-play content-video-button"
                                 data-content-id="${item.id}"
-                                aria-label="Watch"
+                                aria-label="Watch ${escapeAttribute(
+                                    item.title
+                                )}"
                             >
 
                                 <i
@@ -1152,9 +1195,13 @@ function createVideoCard(
             </div>
 
 
-            <div class="card-info">
+            <div
+                class="card-info"
+            >
 
-                <span class="card-category">
+                <span
+                    class="card-category"
+                >
 
                     ${label}
 
@@ -1171,7 +1218,9 @@ function createVideoCard(
                 </h3>
 
 
-                <div class="card-meta">
+                <div
+                    class="card-meta"
+                >
 
                     <span>
 
@@ -1185,7 +1234,9 @@ function createVideoCard(
                     <span>
 
                         ${
-                            hasRating(item)
+                            hasRating(
+                                item
+                            )
                                 ?
                                 `
 
@@ -1206,6 +1257,10 @@ function createVideoCard(
 
                 </div>
 
+
+                <!-- ======================================
+                     MOVIE / NATOK / SERIES DOWNLOAD
+                ======================================= -->
 
                 ${
                     item.download_url
@@ -1240,9 +1295,9 @@ function createVideoCard(
 }
 
 
-/* =====================================================
+/* =========================================================
    UPCOMING
-===================================================== */
+========================================================= */
 
 function renderUpcoming() {
 
@@ -1330,7 +1385,9 @@ function renderUpcoming() {
                             </div>
 
 
-                            <div class="upcoming-info">
+                            <div
+                                class="upcoming-info"
+                            >
 
                                 <span>
                                     RELEASE DATE
@@ -1376,9 +1433,9 @@ function renderUpcoming() {
 }
 
 
-/* =====================================================
+/* =========================================================
    STORIES
-===================================================== */
+========================================================= */
 
 function renderStories() {
 
@@ -1469,7 +1526,9 @@ function renderStories() {
                             </div>
 
 
-                            <div class="story-info">
+                            <div
+                                class="story-info"
+                            >
 
                                 <span
                                     class="story-date"
@@ -1546,9 +1605,9 @@ function renderStories() {
 }
 
 
-/* =====================================================
+/* =========================================================
    BOOKS
-===================================================== */
+========================================================= */
 
 function renderBooks() {
 
@@ -1639,7 +1698,9 @@ function renderBooks() {
                             </div>
 
 
-                            <div class="book-info">
+                            <div
+                                class="book-info"
+                            >
 
                                 <span
                                     class="book-category"
@@ -1719,9 +1780,11 @@ function renderBooks() {
 }
 
 
-/* =====================================================
+/* =========================================================
    TUTORIAL
-===================================================== */
+
+   DOWNLOAD BUTTON INCLUDED
+========================================================= */
 
 function renderTutorial() {
 
@@ -1790,6 +1853,7 @@ function renderTutorial() {
                                 }'
                             >
 
+
                                 ${
                                     item.genre
                                         ?
@@ -1841,7 +1905,9 @@ function renderTutorial() {
                             </div>
 
 
-                            <div class="card-info">
+                            <div
+                                class="card-info"
+                            >
 
                                 <span
                                     class="card-category"
@@ -1862,7 +1928,9 @@ function renderTutorial() {
                                 </h3>
 
 
-                                <div class="card-meta">
+                                <div
+                                    class="card-meta"
+                                >
 
                                     <span>
 
@@ -1877,7 +1945,9 @@ function renderTutorial() {
                                     <span>
 
                                         ${
-                                            hasRating(item)
+                                            hasRating(
+                                                item
+                                            )
                                                 ?
                                                 `
 
@@ -1936,9 +2006,9 @@ function renderTutorial() {
 }
 
 
-/* =====================================================
+/* =========================================================
    HOVER DESCRIPTION
-===================================================== */
+========================================================= */
 
 function createHoverOverlay(item) {
 
@@ -1991,9 +2061,9 @@ function createHoverOverlay(item) {
 }
 
 
-/* =====================================================
+/* =========================================================
    ACTION TEXT
-===================================================== */
+========================================================= */
 
 function getActionText(item) {
 
@@ -2005,8 +2075,7 @@ function getActionText(item) {
 
 
     if (
-        item.type ===
-        "story"
+        item.type === "story"
     ) {
 
         return "Read Story";
@@ -2015,8 +2084,7 @@ function getActionText(item) {
 
 
     if (
-        item.type ===
-        "book"
+        item.type === "book"
     ) {
 
         return "Read Book";
@@ -2025,18 +2093,21 @@ function getActionText(item) {
 
 
     if (
-        item.type ===
-        "tutorial"
+        item.type === "tutorial"
     ) {
 
-        if (item.video_url) {
+        if (
+            item.video_url
+        ) {
 
             return "Watch Tutorial";
 
         }
 
 
-        if (item.download_url) {
+        if (
+            item.download_url
+        ) {
 
             return "Download";
 
@@ -2049,8 +2120,7 @@ function getActionText(item) {
 
 
     if (
-        item.type ===
-        "upcoming"
+        item.type === "upcoming"
     ) {
 
         return "Coming Soon";
@@ -2063,9 +2133,9 @@ function getActionText(item) {
 }
 
 
-/* =====================================================
-   FIND CONTENT
-===================================================== */
+/* =========================================================
+   FIND CONTENT BY ID
+========================================================= */
 
 function findContentById(id) {
 
@@ -2083,9 +2153,9 @@ function findContentById(id) {
 }
 
 
-/* =====================================================
+/* =========================================================
    VIDEO CLICK
-===================================================== */
+========================================================= */
 
 document.addEventListener(
     "click",
@@ -2133,9 +2203,14 @@ document.addEventListener(
 );
 
 
-/* =====================================================
+/* =========================================================
    DOWNLOAD CLICK
-===================================================== */
+
+   MOVIE
+   NATOK
+   SERIES
+   TUTORIAL
+========================================================= */
 
 document.addEventListener(
     "click",
@@ -2167,25 +2242,28 @@ document.addEventListener(
 
 
         if (
-            item &&
-            item.download_url
+            !item ||
+            !item.download_url
         ) {
 
-            window.open(
-                item.download_url,
-                "_blank",
-                "noopener,noreferrer"
-            );
+            return;
 
         }
+
+
+        window.open(
+            item.download_url,
+            "_blank",
+            "noopener,noreferrer"
+        );
 
     }
 );
 
 
-/* =====================================================
-   STORY CLICK
-===================================================== */
+/* =========================================================
+   STORY BUTTON
+========================================================= */
 
 document.addEventListener(
     "click",
@@ -2228,9 +2306,9 @@ document.addEventListener(
 );
 
 
-/* =====================================================
-   BOOK CLICK
-===================================================== */
+/* =========================================================
+   BOOK BUTTON
+========================================================= */
 
 document.addEventListener(
     "click",
@@ -2278,13 +2356,17 @@ document.addEventListener(
 );
 
 
-/* =====================================================
+/* =========================================================
    CARD CLICK
-===================================================== */
+========================================================= */
 
 document.addEventListener(
     "click",
     event => {
+
+        /*
+           Button click hole card click trigger korbe na
+        */
 
         if (
             event.target.closest(
@@ -2329,9 +2411,9 @@ document.addEventListener(
 );
 
 
-/* =====================================================
+/* =========================================================
    OPEN CONTENT
-===================================================== */
+========================================================= */
 
 function openContent(item) {
 
@@ -2342,9 +2424,10 @@ function openContent(item) {
     }
 
 
+    /* STORY */
+
     if (
-        item.type ===
-        "story"
+        item.type === "story"
     ) {
 
         openStoryReader(
@@ -2357,12 +2440,15 @@ function openContent(item) {
     }
 
 
+    /* BOOK */
+
     if (
-        item.type ===
-        "book"
+        item.type === "book"
     ) {
 
-        if (item.file_url) {
+        if (
+            item.file_url
+        ) {
 
             window.open(
                 item.file_url,
@@ -2378,7 +2464,11 @@ function openContent(item) {
     }
 
 
-    if (item.video_url) {
+    /* VIDEO FIRST */
+
+    if (
+        item.video_url
+    ) {
 
         window.open(
             item.video_url,
@@ -2392,7 +2482,11 @@ function openContent(item) {
     }
 
 
-    if (item.download_url) {
+    /* DOWNLOAD FALLBACK */
+
+    if (
+        item.download_url
+    ) {
 
         window.open(
             item.download_url,
@@ -2405,21 +2499,23 @@ function openContent(item) {
 }
 
 
-/* =====================================================
-   STORY MODAL
-===================================================== */
+/* =========================================================
+   STORY READER
+========================================================= */
 
 function openStoryReader(story) {
 
-    const oldModal =
+    const existingModal =
         document.getElementById(
             "storyReaderModal"
         );
 
 
-    if (oldModal) {
+    if (
+        existingModal
+    ) {
 
-        oldModal.remove();
+        existingModal.remove();
 
     }
 
@@ -2446,7 +2542,7 @@ function openStoryReader(story) {
                 align-items:center;
                 justify-content:center;
                 padding:20px;
-                background:rgba(0,0,0,.90);
+                background:rgba(0,0,0,.9);
             "
         >
 
@@ -2464,8 +2560,8 @@ function openStoryReader(story) {
             >
 
                 <button
-                    id="closeStoryReader"
                     type="button"
+                    id="closeStoryReader"
                     style="
                         position:absolute;
                         top:18px;
@@ -2475,7 +2571,7 @@ function openStoryReader(story) {
                         border:none;
                         border-radius:50%;
                         background:#ef1024;
-                        color:#ffffff;
+                        color:#fff;
                         cursor:pointer;
                     "
                 >
@@ -2489,7 +2585,7 @@ function openStoryReader(story) {
 
                 <h2
                     style="
-                        padding-right:50px;
+                        padding-right:55px;
                         margin-bottom:8px;
                     "
                 >
@@ -2509,8 +2605,8 @@ function openStoryReader(story) {
 
                             <p
                                 style="
-                                    color:#ff1b2d;
                                     margin-bottom:24px;
+                                    color:#ff1b2d;
                                 "
                             >
 
@@ -2593,11 +2689,15 @@ function openStoryReader(story) {
 }
 
 
-/* =====================================================
+/* =========================================================
    CREATE FEATURED SECTION
-===================================================== */
+========================================================= */
 
 function createFeaturedSection() {
+
+    /*
+       Already ache hole abar create korbe na
+    */
 
     if (
         document.getElementById(
@@ -2727,9 +2827,10 @@ function createFeaturedSection() {
 }
 
 
-/* =====================================================
-   FEATURED - RATING 8+
-===================================================== */
+/* =========================================================
+   FEATURED SLIDER
+   RATING 8+
+========================================================= */
 
 function setupFeaturedSlider() {
 
@@ -2826,7 +2927,9 @@ function setupFeaturedSlider() {
                             <span
                                 class="featured-badge"
                             >
+
                                 FEATURED
+
                             </span>
 
 
@@ -2898,7 +3001,8 @@ function setupFeaturedSlider() {
             .join("");
 
 
-    featuredIndex = 0;
+    featuredIndex =
+        0;
 
 
     updateFeaturedPosition();
@@ -2959,9 +3063,9 @@ function setupFeaturedSlider() {
 }
 
 
-/* =====================================================
+/* =========================================================
    FEATURED META
-===================================================== */
+========================================================= */
 
 function getFeaturedMeta(item) {
 
@@ -3001,9 +3105,9 @@ function getFeaturedMeta(item) {
 }
 
 
-/* =====================================================
-   FEATURED RESPONSIVE COUNT
-===================================================== */
+/* =========================================================
+   FEATURED VISIBLE COUNT
+========================================================= */
 
 function getFeaturedVisibleCount() {
 
@@ -3030,9 +3134,9 @@ function getFeaturedVisibleCount() {
 }
 
 
-/* =====================================================
+/* =========================================================
    FEATURED MAX INDEX
-===================================================== */
+========================================================= */
 
 function getFeaturedMaxIndex() {
 
@@ -3049,9 +3153,9 @@ function getFeaturedMaxIndex() {
 }
 
 
-/* =====================================================
+/* =========================================================
    FEATURED POSITION
-===================================================== */
+========================================================= */
 
 function updateFeaturedPosition() {
 
@@ -3077,7 +3181,7 @@ function updateFeaturedPosition() {
     }
 
 
-    const style =
+    const trackStyle =
         getComputedStyle(
             track
         );
@@ -3085,7 +3189,8 @@ function updateFeaturedPosition() {
 
     const gap =
         parseFloat(
-            style.gap || "0"
+            trackStyle.gap ||
+            "0"
         )
         ||
         0;
@@ -3101,16 +3206,16 @@ function updateFeaturedPosition() {
         cardWidth + gap;
 
 
-    const max =
+    const maxIndex =
         getFeaturedMaxIndex();
 
 
     if (
-        featuredIndex > max
+        featuredIndex > maxIndex
     ) {
 
         featuredIndex =
-            max;
+            maxIndex;
 
     }
 
@@ -3121,18 +3226,18 @@ function updateFeaturedPosition() {
 }
 
 
-/* =====================================================
+/* =========================================================
    FEATURED NEXT
-===================================================== */
+========================================================= */
 
 function featuredGoNext() {
 
-    const max =
+    const maxIndex =
         getFeaturedMaxIndex();
 
 
     if (
-        max <= 0
+        maxIndex <= 0
     ) {
 
         return;
@@ -3141,7 +3246,7 @@ function featuredGoNext() {
 
 
     featuredIndex =
-        featuredIndex >= max
+        featuredIndex >= maxIndex
             ?
             0
             :
@@ -3153,18 +3258,18 @@ function featuredGoNext() {
 }
 
 
-/* =====================================================
+/* =========================================================
    FEATURED PREVIOUS
-===================================================== */
+========================================================= */
 
 function featuredGoPrev() {
 
-    const max =
+    const maxIndex =
         getFeaturedMaxIndex();
 
 
     if (
-        max <= 0
+        maxIndex <= 0
     ) {
 
         return;
@@ -3175,7 +3280,7 @@ function featuredGoPrev() {
     featuredIndex =
         featuredIndex <= 0
             ?
-            max
+            maxIndex
             :
             featuredIndex - 1;
 
@@ -3185,9 +3290,9 @@ function featuredGoPrev() {
 }
 
 
-/* =====================================================
-   FEATURED AUTO
-===================================================== */
+/* =========================================================
+   FEATURED AUTO PLAY
+========================================================= */
 
 function startFeaturedAutoPlay() {
 
@@ -3202,6 +3307,10 @@ function startFeaturedAutoPlay() {
 
 }
 
+
+/* =========================================================
+   STOP FEATURED
+========================================================= */
 
 function stopFeaturedAutoPlay() {
 
@@ -3228,12 +3337,13 @@ window.addEventListener(
 );
 
 
-/* =====================================================
+/* =========================================================
    HERO SETUP
 
-   HERO USES BANNER IMAGE ONLY.
-   POSTER IS NEVER USED HERE.
-===================================================== */
+   IMPORTANT:
+   HERO USES banner_url ONLY
+   poster_url NEVER USED HERE
+========================================================= */
 
 function setupDynamicHero() {
 
@@ -3275,7 +3385,8 @@ function setupDynamicHero() {
     }
 
 
-    heroIndex = 0;
+    heroIndex =
+        0;
 
 
     renderHeroDots();
@@ -3287,46 +3398,14 @@ function setupDynamicHero() {
     );
 
 
-    if (
-        heroTimer
-    ) {
-
-        clearInterval(
-            heroTimer
-        );
-
-    }
-
-
-    heroTimer =
-        setInterval(
-            () => {
-
-                heroIndex =
-                    (
-                        heroIndex + 1
-                    )
-                    %
-                    heroSlides.length;
-
-
-                showHeroSlide(
-                    heroIndex,
-                    true
-                );
-
-            },
-            3800
-        );
+    restartHeroTimer();
 
 }
 
 
-/* =====================================================
-   SHOW HERO
-
-   banner_url ONLY
-===================================================== */
+/* =========================================================
+   SHOW HERO SLIDE
+========================================================= */
 
 function showHeroSlide(
     index,
@@ -3354,11 +3433,11 @@ function showHeroSlide(
         index;
 
 
-    const image =
+    const banner =
         item.banner_url;
 
 
-    const applyImage =
+    const applyBanner =
         () => {
 
             heroBackground
@@ -3371,7 +3450,7 @@ function showHeroSlide(
             heroBackground.style
                 .backgroundImage =
                 `url("${escapeCssUrl(
-                    image
+                    banner
                 )}")`;
 
 
@@ -3388,6 +3467,10 @@ function showHeroSlide(
             heroBackground.style.opacity =
                 "1";
 
+
+            /*
+               Restart zoom animation
+            */
 
             void heroBackground
                 .offsetWidth;
@@ -3419,7 +3502,7 @@ function showHeroSlide(
 
     if (!animate) {
 
-        applyImage();
+        applyBanner();
 
 
         return;
@@ -3432,20 +3515,72 @@ function showHeroSlide(
 
 
     setTimeout(
-        applyImage,
+        applyBanner,
         350
     );
 
 }
 
 
-/* =====================================================
+/* =========================================================
+   HERO TIMER
+========================================================= */
+
+function restartHeroTimer() {
+
+    if (
+        heroTimer
+    ) {
+
+        clearInterval(
+            heroTimer
+        );
+
+    }
+
+
+    if (
+        heroSlides.length <= 1
+    ) {
+
+        return;
+
+    }
+
+
+    heroTimer =
+        setInterval(
+            () => {
+
+                heroIndex =
+                    (
+                        heroIndex + 1
+                    )
+                    %
+                    heroSlides.length;
+
+
+                showHeroSlide(
+                    heroIndex,
+                    true
+                );
+
+            },
+            3800
+        );
+
+}
+
+
+/* =========================================================
    HERO DOTS
-===================================================== */
+========================================================= */
 
 function renderHeroDots() {
 
-    if (!heroDotsContainer) {
+    if (
+        !heroDotsContainer
+    ) {
 
         return;
 
@@ -3528,54 +3663,15 @@ function renderHeroDots() {
 }
 
 
-/* =====================================================
-   HERO TIMER RESTART
-===================================================== */
-
-function restartHeroTimer() {
-
-    if (
-        heroTimer
-    ) {
-
-        clearInterval(
-            heroTimer
-        );
-
-    }
-
-
-    heroTimer =
-        setInterval(
-            () => {
-
-                heroIndex =
-                    (
-                        heroIndex + 1
-                    )
-                    %
-                    heroSlides.length;
-
-
-                showHeroSlide(
-                    heroIndex,
-                    true
-                );
-
-            },
-            3800
-        );
-
-}
-
-
-/* =====================================================
-   ACTIVE HERO DOT
-===================================================== */
+/* =========================================================
+   HERO ACTIVE DOT
+========================================================= */
 
 function updateHeroDots() {
 
-    if (!heroDotsContainer) {
+    if (
+        !heroDotsContainer
+    ) {
 
         return;
 
@@ -3607,13 +3703,15 @@ function updateHeroDots() {
 }
 
 
-/* =====================================================
+/* =========================================================
    SEARCH OPEN
-===================================================== */
+========================================================= */
 
 function openSearch() {
 
-    if (!searchBox) {
+    if (
+        !searchBox
+    ) {
 
         return;
 
@@ -3637,13 +3735,15 @@ function openSearch() {
 }
 
 
-/* =====================================================
+/* =========================================================
    SEARCH CLOSE
-===================================================== */
+========================================================= */
 
 function closeSearch() {
 
-    if (!searchBox) {
+    if (
+        !searchBox
+    ) {
 
         return;
 
@@ -3677,9 +3777,9 @@ function closeSearch() {
 }
 
 
-/* =====================================================
+/* =========================================================
    SEARCH BUTTON
-===================================================== */
+========================================================= */
 
 if (
     searchToggle
@@ -3716,9 +3816,9 @@ if (
 }
 
 
-/* =====================================================
+/* =========================================================
    SEARCH CLOSE BUTTON
-===================================================== */
+========================================================= */
 
 if (
     searchClose
@@ -3739,9 +3839,9 @@ if (
 }
 
 
-/* =====================================================
+/* =========================================================
    SEARCH INPUT
-===================================================== */
+========================================================= */
 
 if (
     searchInput
@@ -3761,9 +3861,9 @@ if (
 }
 
 
-/* =====================================================
-   PERFORM SEARCH
-===================================================== */
+/* =========================================================
+   SEARCH FUNCTION
+========================================================= */
 
 function performSearch(keyword) {
 
@@ -3798,7 +3898,7 @@ function performSearch(keyword) {
             .filter(
                 item => {
 
-                    const searchable = [
+                    const searchableText = [
 
                         item.title,
 
@@ -3806,9 +3906,9 @@ function performSearch(keyword) {
 
                         item.author,
 
-                        formatType(
+                        TYPE_LABELS[
                             item.type
-                        )
+                        ]
 
                     ]
                         .filter(Boolean)
@@ -3816,7 +3916,7 @@ function performSearch(keyword) {
                         .toLowerCase();
 
 
-                    return searchable.includes(
+                    return searchableText.includes(
                         text
                     );
 
@@ -3848,7 +3948,6 @@ function performSearch(keyword) {
                     <h4>
                         No result found
                     </h4>
-
 
                     <p>
                         Try another keyword
@@ -3928,9 +4027,9 @@ function performSearch(keyword) {
 }
 
 
-/* =====================================================
+/* =========================================================
    SEARCH RESULT CLICK
-===================================================== */
+========================================================= */
 
 if (
     searchResults
@@ -3990,9 +4089,9 @@ if (
 }
 
 
-/* =====================================================
+/* =========================================================
    CLICK OUTSIDE SEARCH
-===================================================== */
+========================================================= */
 
 document.addEventListener(
     "click",
@@ -4007,13 +4106,13 @@ document.addEventListener(
         }
 
 
-        const inside =
+        const insideSearch =
             searchBox.contains(
                 event.target
             );
 
 
-        const button =
+        const clickedSearchButton =
             searchToggle &&
             searchToggle.contains(
                 event.target
@@ -4021,8 +4120,8 @@ document.addEventListener(
 
 
         if (
-            !inside &&
-            !button
+            !insideSearch &&
+            !clickedSearchButton
         ) {
 
             closeSearch();
@@ -4033,9 +4132,9 @@ document.addEventListener(
 );
 
 
-/* =====================================================
+/* =========================================================
    MOBILE MENU
-===================================================== */
+========================================================= */
 
 function closeMobileMenu() {
 
@@ -4078,6 +4177,10 @@ function closeMobileMenu() {
 }
 
 
+/* =========================================================
+   MOBILE MENU BUTTON
+========================================================= */
+
 if (
     mobileMenuButton
 ) {
@@ -4117,7 +4220,7 @@ if (
             }
 
 
-            const active =
+            const open =
                 mobileNav.classList
                     .contains(
                         "active"
@@ -4126,13 +4229,13 @@ if (
 
             icon.classList.toggle(
                 "fa-bars",
-                !active
+                !open
             );
 
 
             icon.classList.toggle(
                 "fa-xmark",
-                active
+                open
             );
 
         }
@@ -4141,9 +4244,9 @@ if (
 }
 
 
-/* =====================================================
-   MOBILE LINKS
-===================================================== */
+/* =========================================================
+   MOBILE NAV LINKS
+========================================================= */
 
 if (
     mobileNav
@@ -4167,9 +4270,9 @@ if (
 }
 
 
-/* =====================================================
+/* =========================================================
    SMOOTH SCROLL
-===================================================== */
+========================================================= */
 
 document
     .querySelectorAll(
@@ -4233,9 +4336,9 @@ document
     );
 
 
-/* =====================================================
-   ACTIVE NAV
-===================================================== */
+/* =========================================================
+   ACTIVE NAVBAR LINK
+========================================================= */
 
 function updateActiveNav() {
 
@@ -4260,21 +4363,24 @@ function updateActiveNav() {
                 }
 
 
-                const top =
+                const sectionTop =
                     section.offsetTop
                     -
                     150;
 
 
-                const bottom =
-                    top +
+                const sectionBottom =
+                    sectionTop
+                    +
                     section.offsetHeight;
 
 
                 if (
-                    window.scrollY >= top
+                    window.scrollY >=
+                    sectionTop
                     &&
-                    window.scrollY < bottom
+                    window.scrollY <
+                    sectionBottom
                 ) {
 
                     current =
@@ -4317,9 +4423,9 @@ window.addEventListener(
 );
 
 
-/* =====================================================
+/* =========================================================
    ESC KEY
-===================================================== */
+========================================================= */
 
 document.addEventListener(
     "keydown",
@@ -4337,20 +4443,21 @@ document.addEventListener(
 
         closeSearch();
 
+
         closeMobileMenu();
 
 
-        const modal =
+        const storyModal =
             document.getElementById(
                 "storyReaderModal"
             );
 
 
         if (
-            modal
+            storyModal
         ) {
 
-            modal.remove();
+            storyModal.remove();
 
         }
 
@@ -4358,13 +4465,13 @@ document.addEventListener(
 );
 
 
-/* =====================================================
+/* =========================================================
    DATABASE ERROR
-===================================================== */
+========================================================= */
 
 function showDatabaseError() {
 
-    [
+    const gridIds = [
 
         "moviesGrid",
 
@@ -4380,36 +4487,38 @@ function showDatabaseError() {
 
         "tutorialGrid"
 
-    ]
-        .forEach(
-            id => {
+    ];
 
-                const grid =
-                    document.getElementById(
-                        id
+
+    gridIds.forEach(
+        id => {
+
+            const grid =
+                document.getElementById(
+                    id
+                );
+
+
+            if (
+                grid
+            ) {
+
+                grid.innerHTML =
+                    emptyMessage(
+                        "Unable to load content."
                     );
 
-
-                if (
-                    grid
-                ) {
-
-                    grid.innerHTML =
-                        emptyMessage(
-                            "Unable to load content."
-                        );
-
-                }
-
             }
-        );
+
+        }
+    );
 
 }
 
 
-/* =====================================================
-   HELPERS
-===================================================== */
+/* =========================================================
+   HAS RATING
+========================================================= */
 
 function hasRating(item) {
 
@@ -4422,6 +4531,10 @@ function hasRating(item) {
 
 }
 
+
+/* =========================================================
+   FORMAT TYPE
+========================================================= */
 
 function formatType(type) {
 
@@ -4437,6 +4550,10 @@ function formatType(type) {
 
 }
 
+
+/* =========================================================
+   TYPE ICON
+========================================================= */
 
 function getTypeIcon(type) {
 
@@ -4477,6 +4594,10 @@ function getTypeIcon(type) {
 }
 
 
+/* =========================================================
+   FORMAT DATE
+========================================================= */
+
 function formatDate(date) {
 
     if (
@@ -4496,7 +4617,6 @@ function formatDate(date) {
             .toLocaleDateString(
                 "en-US",
                 {
-
                     year:
                         "numeric",
 
@@ -4505,7 +4625,6 @@ function formatDate(date) {
 
                     day:
                         "numeric"
-
                 }
             );
 
@@ -4520,20 +4639,16 @@ function formatDate(date) {
 }
 
 
+/* =========================================================
+   EMPTY MESSAGE
+========================================================= */
+
 function emptyMessage(message) {
 
     return `
 
         <div
-            style="
-                grid-column:1/-1;
-                padding:35px 20px;
-                text-align:center;
-                color:rgba(255,255,255,.42);
-                background:#101116;
-                border:1px solid rgba(255,255,255,.06);
-                border-radius:12px;
-            "
+            class="database-loading"
         >
 
             ${escapeHTML(
@@ -4546,6 +4661,10 @@ function emptyMessage(message) {
 
 }
 
+
+/* =========================================================
+   ESCAPE HTML
+========================================================= */
 
 function escapeHTML(value) {
 
@@ -4562,22 +4681,27 @@ function escapeHTML(value) {
     return String(
         value
     )
+
         .replaceAll(
             "&",
             "&amp;"
         )
+
         .replaceAll(
             "<",
             "&lt;"
         )
+
         .replaceAll(
             ">",
             "&gt;"
         )
+
         .replaceAll(
             '"',
             "&quot;"
         )
+
         .replaceAll(
             "'",
             "&#039;"
@@ -4585,6 +4709,10 @@ function escapeHTML(value) {
 
 }
 
+
+/* =========================================================
+   ESCAPE ATTRIBUTE
+========================================================= */
 
 function escapeAttribute(value) {
 
@@ -4595,23 +4723,31 @@ function escapeAttribute(value) {
 }
 
 
+/* =========================================================
+   ESCAPE CSS URL
+========================================================= */
+
 function escapeCssUrl(value) {
 
     return String(
         value || ""
     )
+
         .replaceAll(
             "\\",
             "\\\\"
         )
+
         .replaceAll(
             '"',
             '\\"'
         )
+
         .replaceAll(
             "\n",
             ""
         )
+
         .replaceAll(
             "\r",
             ""
@@ -4620,13 +4756,17 @@ function escapeCssUrl(value) {
 }
 
 
-/* =====================================================
-   START
-===================================================== */
+/* =========================================================
+   START WEBSITE
+========================================================= */
 
 document.addEventListener(
     "DOMContentLoaded",
     async () => {
+
+        /*
+           Temporary fallback while DB loads
+        */
 
         if (
             heroBackground
@@ -4634,7 +4774,6 @@ document.addEventListener(
 
             heroBackground.style
                 .backgroundImage =
-
                 "linear-gradient(120deg,#11001f 0%,#2a075c 48%,#4d0c79 100%)";
 
 

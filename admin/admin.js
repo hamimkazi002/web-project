@@ -1,5 +1,17 @@
+/* =========================================================
+   CINEMA MELLA ADMIN
+   FINAL VERSION
+   NO DATABASE CHANGE
+========================================================= */
+
+
+/* =========================================================
+   SUPABASE
+========================================================= */
+
 const SUPABASE_URL =
     "https://vuvstnlalyikvlanxxwy.supabase.co";
+
 
 const SUPABASE_PUBLISHABLE_KEY =
     "sb_publishable_ed-PGIvnw8yN2OwI2264IA_f1FOdWrp";
@@ -12,131 +24,200 @@ const supabaseClient =
     );
 
 
-const path =
-    window.location.pathname.toLowerCase();
+/* =========================================================
+   PAGE DETECTION
+========================================================= */
+
+const currentPath =
+    window.location.pathname
+        .toLowerCase();
+
 
 const isLoginPage =
-    path.includes("login.html");
+    currentPath.includes(
+        "login.html"
+    );
+
 
 const isDashboardPage =
-    path.includes("dashboard.html");
+    currentPath.includes(
+        "dashboard.html"
+    );
 
 
-const $ =
-    id =>
-        document.getElementById(id);
+/* =========================================================
+   SHORT DOM HELPER
+========================================================= */
 
+function $(id) {
+
+    return document.getElementById(
+        id
+    );
+
+}
+
+
+/* =========================================================
+   LOGIN ELEMENTS
+========================================================= */
 
 const loginForm =
     $("loginForm");
 
+
+/* =========================================================
+   DASHBOARD ELEMENTS
+========================================================= */
+
 const logoutButton =
     $("logoutButton");
+
 
 const contentForm =
     $("contentForm");
 
+
 const contentType =
     $("contentType");
+
 
 const contentId =
     $("contentId");
 
+
 const contentTitle =
     $("contentTitle");
+
 
 const contentDescription =
     $("contentDescription");
 
+
 const posterFile =
     $("posterFile");
+
 
 const bannerFile =
     $("bannerFile");
 
+
 const bookFile =
     $("bookFile");
+
 
 const videoUrl =
     $("videoUrl");
 
+
+/*
+   IMPORTANT:
+   Movie/Natok/Series/Tutorial
+   Download URL
+*/
+
 const contentDownloadUrl =
     $("contentDownloadUrl");
+
 
 const contentYear =
     $("contentYear");
 
+
 const contentRating =
     $("contentRating");
+
 
 const contentGenre =
     $("contentGenre");
 
+
 const contentSeason =
     $("contentSeason");
+
 
 const contentBadge =
     $("contentBadge");
 
+
 const contentAuthor =
     $("contentAuthor");
+
 
 const releaseDate =
     $("releaseDate");
 
+
 const contentStatus =
     $("contentStatus");
+
 
 const contentFeatured =
     $("contentFeatured");
 
+
 const fullContent =
     $("fullContent");
+
 
 const currentPosterUrl =
     $("currentPosterUrl");
 
+
 const currentBannerUrl =
     $("currentBannerUrl");
+
 
 const currentFileUrl =
     $("currentFileUrl");
 
+
 const posterPreview =
     $("posterPreview");
+
 
 const bannerPreview =
     $("bannerPreview");
 
+
 const bookFileStatus =
     $("bookFileStatus");
+
 
 const saveContentButton =
     $("saveContentButton");
 
+
 const cancelEditButton =
     $("cancelEditButton");
+
 
 const contentMessage =
     $("contentMessage");
 
+
 const contentTableBody =
     $("contentTableBody");
+
 
 const formTitle =
     $("formTitle");
 
 
-let allContents =
-    [];
+/* =========================================================
+   GLOBAL DATA
+========================================================= */
+
+let allContents = [];
+
 
 let currentFilter =
     "all";
 
 
-/* =====================================================
+/* =========================================================
    LOGIN
-===================================================== */
+========================================================= */
 
 if (loginForm) {
 
@@ -166,6 +247,24 @@ if (loginForm) {
                 $("loginMessage");
 
 
+            if (
+                !email ||
+                !password
+            ) {
+
+                loginMessage.textContent =
+                    "Enter email and password.";
+
+
+                loginMessage.className =
+                    "error";
+
+
+                return;
+
+            }
+
+
             loginButton.disabled =
                 true;
 
@@ -184,7 +283,8 @@ if (loginForm) {
                     data,
                     error
                 } =
-                    await supabaseClient.auth
+                    await supabaseClient
+                        .auth
                         .signInWithPassword({
                             email,
                             password
@@ -200,6 +300,14 @@ if (loginForm) {
 
                 if (data.user) {
 
+                    loginMessage.textContent =
+                        "Login successful.";
+
+
+                    loginMessage.className =
+                        "success";
+
+
                     window.location.href =
                         "dashboard.html";
 
@@ -209,9 +317,14 @@ if (loginForm) {
 
             catch (error) {
 
+                console.error(
+                    error
+                );
+
+
                 loginMessage.textContent =
                     error.message ||
-                    "Login failed";
+                    "Login failed.";
 
 
                 loginMessage.className =
@@ -236,9 +349,9 @@ if (loginForm) {
 }
 
 
-/* =====================================================
-   LOGIN SESSION
-===================================================== */
+/* =========================================================
+   CHECK LOGIN PAGE SESSION
+========================================================= */
 
 async function checkLoginPage() {
 
@@ -249,26 +362,39 @@ async function checkLoginPage() {
     }
 
 
-    const {
-        data
-    } =
-        await supabaseClient.auth
-            .getSession();
+    try {
+
+        const {
+            data
+        } =
+            await supabaseClient
+                .auth
+                .getSession();
 
 
-    if (data.session) {
+        if (data.session) {
 
-        window.location.href =
-            "dashboard.html";
+            window.location.href =
+                "dashboard.html";
+
+        }
+
+    }
+
+    catch (error) {
+
+        console.error(
+            error
+        );
 
     }
 
 }
 
 
-/* =====================================================
-   DASHBOARD AUTH
-===================================================== */
+/* =========================================================
+   PROTECT DASHBOARD
+========================================================= */
 
 async function protectDashboard() {
 
@@ -279,18 +405,53 @@ async function protectDashboard() {
     }
 
 
-    const {
-        data,
-        error
-    } =
-        await supabaseClient.auth
-            .getSession();
+    try {
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+                .auth
+                .getSession();
 
 
-    if (
-        error ||
-        !data.session
-    ) {
+        if (
+            error ||
+            !data.session
+        ) {
+
+            window.location.href =
+                "login.html";
+
+
+            return false;
+
+        }
+
+
+        const adminEmail =
+            $("adminEmail");
+
+
+        if (adminEmail) {
+
+            adminEmail.textContent =
+                data.session.user.email;
+
+        }
+
+
+        return true;
+
+    }
+
+    catch (error) {
+
+        console.error(
+            error
+        );
+
 
         window.location.href =
             "login.html";
@@ -300,23 +461,12 @@ async function protectDashboard() {
 
     }
 
-
-    if ($("adminEmail")) {
-
-        $("adminEmail").textContent =
-            data.session.user.email;
-
-    }
-
-
-    return true;
-
 }
 
 
-/* =====================================================
+/* =========================================================
    LOGOUT
-===================================================== */
+========================================================= */
 
 if (logoutButton) {
 
@@ -324,7 +474,8 @@ if (logoutButton) {
         "click",
         async () => {
 
-            await supabaseClient.auth
+            await supabaseClient
+                .auth
                 .signOut();
 
 
@@ -337,9 +488,9 @@ if (logoutButton) {
 }
 
 
-/* =====================================================
+/* =========================================================
    DYNAMIC FORM
-===================================================== */
+========================================================= */
 
 function updateDynamicForm() {
 
@@ -361,46 +512,79 @@ function updateDynamicForm() {
         .forEach(
             field => {
 
-                const types =
+                const allowedTypes =
                     (
                         field.dataset.types ||
                         ""
                     )
                         .split(",")
                         .map(
-                            value =>
-                                value.trim()
-                        );
+                            item =>
+                                item.trim()
+                        )
+                        .filter(Boolean);
+
+
+                const shouldShow =
+                    Boolean(
+                        type &&
+                        allowedTypes.includes(
+                            type
+                        )
+                    );
 
 
                 field.classList.toggle(
                     "show-field",
-
-                    Boolean(
-                        type &&
-                        types.includes(type)
-                    )
+                    shouldShow
                 );
 
             }
         );
 
 
+    updateLabels(
+        type
+    );
+
+
+    updateGenrePlaceholder(
+        type
+    );
+
+
+    refreshGenreSuggestions();
+
+}
+
+
+/* =========================================================
+   DYNAMIC LABELS
+========================================================= */
+
+function updateLabels(type) {
+
     const titleLabel =
         $("titleLabel");
+
 
     const posterLabel =
         $("posterLabel");
 
+
     const genreLabel =
         $("genreLabel");
+
 
     const yearLabel =
         $("yearLabel");
 
+
     const releaseDateLabel =
         $("releaseDateLabel");
 
+
+    /* TITLE */
 
     const titleMap = {
 
@@ -437,7 +621,21 @@ function updateDynamicForm() {
     }
 
 
+    /* POSTER */
+
     const posterMap = {
+
+        movie:
+            "Poster Image",
+
+        natok:
+            "Poster Image",
+
+        series:
+            "Poster Image",
+
+        upcoming:
+            "Poster Image",
 
         story:
             "Story Cover Image",
@@ -459,6 +657,8 @@ function updateDynamicForm() {
 
     }
 
+
+    /* CATEGORY */
 
     const genreMap = {
 
@@ -495,6 +695,8 @@ function updateDynamicForm() {
     }
 
 
+    /* YEAR */
+
     if (yearLabel) {
 
         yearLabel.textContent =
@@ -507,6 +709,8 @@ function updateDynamicForm() {
     }
 
 
+    /* DATE */
+
     if (releaseDateLabel) {
 
         releaseDateLabel.textContent =
@@ -518,11 +722,26 @@ function updateDynamicForm() {
 
     }
 
+}
+
+
+/* =========================================================
+   CATEGORY PLACEHOLDER
+========================================================= */
+
+function updateGenrePlaceholder(type) {
+
+    if (!contentGenre) {
+
+        return;
+
+    }
+
 
     const placeholders = {
 
         movie:
-            "Action, Horror, Romance...",
+            "Action, Horror, Comedy...",
 
         natok:
             "Bangla, Hindi, Comedy...",
@@ -545,19 +764,16 @@ function updateDynamicForm() {
     };
 
 
-    if (contentGenre) {
-
-        contentGenre.placeholder =
-            placeholders[type] ||
-            "Type category";
-
-    }
-
-
-    refreshGenreSuggestions();
+    contentGenre.placeholder =
+        placeholders[type] ||
+        "Type category";
 
 }
 
+
+/* =========================================================
+   CONTENT TYPE CHANGE
+========================================================= */
 
 if (contentType) {
 
@@ -569,9 +785,9 @@ if (contentType) {
 }
 
 
-/* =====================================================
-   CATEGORY
-===================================================== */
+/* =========================================================
+   CATEGORY HELPERS
+========================================================= */
 
 function splitGenres(value) {
 
@@ -580,35 +796,43 @@ function splitGenres(value) {
     )
         .split(",")
         .map(
-            value =>
-                value.trim()
+            item =>
+                item.trim()
         )
         .filter(Boolean);
 
 }
 
 
+/* =========================================================
+   NORMALIZE CATEGORY
+========================================================= */
+
 function normalizeGenres(value) {
 
-    const genres =
-        [];
+    const result = [];
 
 
     splitGenres(value)
         .forEach(
             genre => {
 
-                const exists =
-                    genres.some(
-                        item =>
-                            item.toLowerCase() ===
-                            genre.toLowerCase()
+                const alreadyExists =
+                    result.some(
+                        existing =>
+                            existing
+                                .toLowerCase()
+                            ===
+                            genre
+                                .toLowerCase()
                     );
 
 
-                if (!exists) {
+                if (!alreadyExists) {
 
-                    genres.push(genre);
+                    result.push(
+                        genre
+                    );
 
                 }
 
@@ -616,57 +840,81 @@ function normalizeGenres(value) {
         );
 
 
-    return genres.join(", ");
+    return result.join(
+        ", "
+    );
 
 }
 
 
+/* =========================================================
+   CATEGORY SUGGESTIONS
+   EXISTING CONTENT ONLY
+========================================================= */
+
 function refreshGenreSuggestions() {
 
-    const list =
+    const datalist =
         $("genreSuggestions");
 
 
-    if (!list) {
+    if (!datalist) {
 
         return;
 
     }
 
 
-    const type =
-        contentType?.value ||
+    const selectedType =
+        contentType
+            ?.value ||
         "";
 
 
-    const genres =
-        [];
+    const genres = [];
 
 
     allContents
         .filter(
-            item =>
-                !type ||
-                item.type === type
+            item => {
+
+                if (!selectedType) {
+
+                    return true;
+
+                }
+
+
+                return item.type ===
+                    selectedType;
+
+            }
         )
         .forEach(
             item => {
 
-                splitGenres(item.genre)
+                splitGenres(
+                    item.genre
+                )
                     .forEach(
                         genre => {
 
                             const exists =
                                 genres.some(
                                     current =>
-                                        current.toLowerCase() ===
-                                        genre.toLowerCase()
+                                        current
+                                            .toLowerCase()
+                                        ===
+                                        genre
+                                            .toLowerCase()
                                 );
 
 
                             if (!exists) {
 
-                                genres.push(genre);
+                                genres.push(
+                                    genre
+                                );
 
                             }
 
@@ -682,31 +930,38 @@ function refreshGenreSuggestions() {
             a,
             b
         ) =>
-            a.localeCompare(b)
+            a.localeCompare(
+                b
+            )
     );
 
 
-    list.innerHTML =
+    datalist.innerHTML =
         genres
             .map(
-                genre =>
-                    `<option value="${escapeAttribute(
-                        genre
-                    )}"></option>`
+                genre => `
+
+                    <option
+                        value="${escapeAttribute(
+                            genre
+                        )}"
+                    ></option>
+
+                `
             )
             .join("");
 
 }
 
 
-/* =====================================================
+/* =========================================================
    IMAGE PREVIEW
-===================================================== */
+========================================================= */
 
-function bindPreview(
+function bindImagePreview(
     input,
     preview,
-    isBanner = false
+    banner = false
 ) {
 
     if (
@@ -738,7 +993,7 @@ function bindPreview(
             }
 
 
-            if (isBanner) {
+            if (banner) {
 
                 preview.classList.add(
                     "banner-preview"
@@ -747,10 +1002,16 @@ function bindPreview(
             }
 
 
+            const previewUrl =
+                URL.createObjectURL(
+                    file
+                );
+
+
             preview.innerHTML = `
 
                 <img
-                    src="${URL.createObjectURL(file)}"
+                    src="${previewUrl}"
                     alt="Preview"
                 >
 
@@ -762,18 +1023,22 @@ function bindPreview(
 }
 
 
-bindPreview(
+bindImagePreview(
     posterFile,
     posterPreview
 );
 
 
-bindPreview(
+bindImagePreview(
     bannerFile,
     bannerPreview,
     true
 );
 
+
+/* =========================================================
+   BOOK PDF STATUS
+========================================================= */
 
 if (bookFile) {
 
@@ -781,14 +1046,28 @@ if (bookFile) {
         "change",
         () => {
 
-            if (bookFileStatus) {
+            if (!bookFileStatus) {
+
+                return;
+
+            }
+
+
+            const file =
+                bookFile.files[0];
+
+
+            if (file) {
 
                 bookFileStatus.textContent =
-                    bookFile.files[0]
-                        ?
-                        `Selected: ${bookFile.files[0].name}`
-                        :
-                        "";
+                    `Selected: ${file.name}`;
+
+            }
+
+            else {
+
+                bookFileStatus.textContent =
+                    "";
 
             }
 
@@ -798,9 +1077,9 @@ if (bookFile) {
 }
 
 
-/* =====================================================
-   UPLOAD
-===================================================== */
+/* =========================================================
+   STORAGE UPLOAD
+========================================================= */
 
 async function uploadFile(
     file,
@@ -821,10 +1100,17 @@ async function uploadFile(
             .toLowerCase();
 
 
-    const filePath =
-        `${folder}/${Date.now()}-${Math.random()
+    const randomId =
+        Math.random()
             .toString(36)
-            .slice(2, 10)}.${extension}`;
+            .slice(
+                2,
+                10
+            );
+
+
+    const filePath =
+        `${folder}/${Date.now()}-${randomId}.${extension}`;
 
 
     const {
@@ -853,21 +1139,25 @@ async function uploadFile(
     }
 
 
-    return supabaseClient
-        .storage
-        .from("media")
-        .getPublicUrl(
-            filePath
-        )
-        .data
-        .publicUrl;
+    const {
+        data
+    } =
+        supabaseClient
+            .storage
+            .from("media")
+            .getPublicUrl(
+                filePath
+            );
+
+
+    return data.publicUrl;
 
 }
 
 
-/* =====================================================
-   REMOVE STORAGE
-===================================================== */
+/* =========================================================
+   STORAGE DELETE
+========================================================= */
 
 async function removeStorageFile(url) {
 
@@ -882,40 +1172,59 @@ async function removeStorageFile(url) {
         "/storage/v1/object/public/media/";
 
 
-    if (!url.includes(marker)) {
+    if (
+        !url.includes(
+            marker
+        )
+    ) {
 
         return;
 
     }
 
 
-    const filePath =
-        decodeURIComponent(
-            url.split(marker)[1] ||
-            ""
+    try {
+
+        const filePath =
+            decodeURIComponent(
+                url.split(
+                    marker
+                )[1] ||
+                ""
+            );
+
+
+        if (!filePath) {
+
+            return;
+
+        }
+
+
+        await supabaseClient
+            .storage
+            .from("media")
+            .remove([
+                filePath
+            ]);
+
+    }
+
+    catch (error) {
+
+        console.warn(
+            "Storage delete failed:",
+            error
         );
 
-
-    if (!filePath) {
-
-        return;
-
     }
-
-
-    await supabaseClient
-        .storage
-        .from("media")
-        .remove([
-            filePath
-        ]);
 
 }
 
 
-/* =====================================================
-   LOAD CONTENT
-===================================================== */
+/* =========================================================
+   LOAD ALL CONTENT
+========================================================= */
 
 async function loadContents() {
 
@@ -928,8 +1237,17 @@ async function loadContents() {
 
     if (contentTableBody) {
 
-        contentTableBody.innerHTML =
-            `<tr><td colspan="5">Loading...</td></tr>`;
+        contentTableBody.innerHTML = `
+
+            <tr>
+
+                <td colspan="5">
+                    Loading...
+                </td>
+
+            </tr>
+
+        `;
 
     }
 
@@ -946,8 +1264,7 @@ async function loadContents() {
                 .order(
                     "created_at",
                     {
-                        ascending:
-                            false
+                        ascending: false
                     }
                 );
 
@@ -965,13 +1282,20 @@ async function loadContents() {
 
         refreshGenreSuggestions();
 
+
         updateStats();
+
 
         renderContents();
 
     }
 
     catch (error) {
+
+        console.error(
+            error
+        );
+
 
         if (contentTableBody) {
 
@@ -982,7 +1306,8 @@ async function loadContents() {
                     <td colspan="5">
 
                         ${escapeHTML(
-                            error.message
+                            error.message ||
+                            "Unable to load content."
                         )}
 
                     </td>
@@ -998,9 +1323,9 @@ async function loadContents() {
 }
 
 
-/* =====================================================
-   SAVE CONTENT
-===================================================== */
+/* =========================================================
+   SAVE / UPDATE CONTENT
+========================================================= */
 
 if (contentForm) {
 
@@ -1021,15 +1346,28 @@ if (contentForm) {
                     .trim();
 
 
-            if (
-                !type ||
-                !title
-            ) {
+            if (!type) {
 
-                return showMessage(
-                    "Content type and title are required.",
+                showMessage(
+                    "Please select a content type.",
                     "error"
                 );
+
+
+                return;
+
+            }
+
+
+            if (!title) {
+
+                showMessage(
+                    "Title is required.",
+                    "error"
+                );
+
+
+                return;
 
             }
 
@@ -1038,11 +1376,22 @@ if (contentForm) {
                 true;
 
 
-            saveContentButton.innerHTML =
-                `<i class="fa-solid fa-spinner fa-spin"></i> Saving...`;
+            saveContentButton.innerHTML = `
+
+                <i
+                    class="fa-solid fa-spinner fa-spin"
+                ></i>
+
+                Saving...
+
+            `;
 
 
             try {
+
+                /* =========================================
+                   EXISTING URLS
+                ========================================= */
 
                 let posterUrl =
                     currentPosterUrl.value ||
@@ -1054,12 +1403,17 @@ if (contentForm) {
                     null;
 
 
-                let pdfUrl =
+                let bookPdfUrl =
                     currentFileUrl.value ||
                     null;
 
 
+                /* =========================================
+                   POSTER
+                ========================================= */
+
                 if (
+                    posterFile &&
                     posterFile.files.length
                 ) {
 
@@ -1084,7 +1438,15 @@ if (contentForm) {
                 }
 
 
+                /* =========================================
+                   BANNER
+
+                   ALL CONTENT TYPES
+                   HERO USES THIS
+                ========================================= */
+
                 if (
+                    bannerFile &&
                     bannerFile.files.length
                 ) {
 
@@ -1097,12 +1459,17 @@ if (contentForm) {
                 }
 
 
+                /* =========================================
+                   BOOK PDF
+                ========================================= */
+
                 if (
                     type === "book" &&
+                    bookFile &&
                     bookFile.files.length
                 ) {
 
-                    pdfUrl =
+                    bookPdfUrl =
                         await uploadFile(
                             bookFile.files[0],
                             "books"
@@ -1110,6 +1477,10 @@ if (contentForm) {
 
                 }
 
+
+                /* =========================================
+                   RATING
+                ========================================= */
 
                 let rating =
                     null;
@@ -1127,8 +1498,12 @@ if (contentForm) {
 
 
                     if (
-                        !Number.isFinite(rating) ||
-                        rating < 0 ||
+                        !Number.isFinite(
+                            rating
+                        )
+                        ||
+                        rating < 0
+                        ||
                         rating > 10
                     ) {
 
@@ -1141,6 +1516,42 @@ if (contentForm) {
                 }
 
 
+                /* =========================================
+                   DOWNLOAD URL
+
+                   MOVIE
+                   NATOK
+                   SERIES
+                   TUTORIAL
+                ========================================= */
+
+                let downloadUrl =
+                    null;
+
+
+                if (
+                    [
+                        "movie",
+                        "natok",
+                        "series",
+                        "tutorial"
+                    ].includes(type)
+                ) {
+
+                    downloadUrl =
+                        contentDownloadUrl
+                            ?.value
+                            .trim()
+                        ||
+                        null;
+
+                }
+
+
+                /* =========================================
+                   CREATE DATA OBJECT
+                ========================================= */
+
                 const contentData = {
 
                     type,
@@ -1149,15 +1560,25 @@ if (contentForm) {
 
                     description:
                         contentDescription
-                            .value
-                            .trim() ||
+                            ?.value
+                            .trim()
+                        ||
                         null,
+
+
+                    /* POSTER */
 
                     poster_url:
                         posterUrl,
 
+
+                    /* BANNER - ALL TYPES */
+
                     banner_url:
                         bannerUrl,
+
+
+                    /* VIDEO */
 
                     video_url:
                         [
@@ -1169,29 +1590,22 @@ if (contentForm) {
                             ?
                             (
                                 videoUrl
-                                    .value
-                                    .trim() ||
+                                    ?.value
+                                    .trim()
+                                ||
                                 null
                             )
                             :
                             null,
 
+
+                    /* DOWNLOAD */
+
                     download_url:
-                        [
-                            "movie",
-                            "natok",
-                            "series",
-                            "tutorial"
-                        ].includes(type)
-                            ?
-                            (
-                                contentDownloadUrl
-                                    .value
-                                    .trim() ||
-                                null
-                            )
-                            :
-                            null,
+                        downloadUrl,
+
+
+                    /* YEAR */
 
                     year:
                         [
@@ -1200,7 +1614,8 @@ if (contentForm) {
                             "series",
                             "book",
                             "tutorial"
-                        ].includes(type) &&
+                        ].includes(type)
+                        &&
                         contentYear.value
                             ?
                             Number(
@@ -1209,16 +1624,29 @@ if (contentForm) {
                             :
                             null,
 
-                    rating,
+
+                    /* RATING - ALL TYPES */
+
+                    rating:
+                        rating,
+
+
+                    /* CATEGORY - EXISTING GENRE FIELD */
 
                     genre:
                         normalizeGenres(
-                            contentGenre.value
-                        ) ||
+                            contentGenre
+                                ?.value
+                        )
+                        ||
                         null,
 
+
+                    /* SEASON */
+
                     season:
-                        type === "series" &&
+                        type === "series"
+                        &&
                         contentSeason.value
                             ?
                             Number(
@@ -1226,6 +1654,9 @@ if (contentForm) {
                             )
                             :
                             null,
+
+
+                    /* BADGE */
 
                     badge:
                         [
@@ -1237,12 +1668,16 @@ if (contentForm) {
                             ?
                             (
                                 contentBadge
-                                    .value
-                                    .trim() ||
+                                    ?.value
+                                    .trim()
+                                ||
                                 null
                             )
                             :
                             null,
+
+
+                    /* AUTHOR */
 
                     author:
                         [
@@ -1252,24 +1687,32 @@ if (contentForm) {
                             ?
                             (
                                 contentAuthor
-                                    .value
-                                    .trim() ||
+                                    ?.value
+                                    .trim()
+                                ||
                                 null
                             )
                             :
                             null,
+
+
+                    /* FULL STORY */
 
                     full_content:
                         type === "story"
                             ?
                             (
                                 fullContent
-                                    .value
-                                    .trim() ||
+                                    ?.value
+                                    .trim()
+                                ||
                                 null
                             )
                             :
                             null,
+
+
+                    /* DATE */
 
                     release_date:
                         [
@@ -1281,27 +1724,48 @@ if (contentForm) {
                         ].includes(type)
                             ?
                             (
-                                releaseDate.value ||
+                                releaseDate
+                                    ?.value
+                                ||
                                 null
                             )
                             :
                             null,
 
+
+                    /* BOOK PDF */
+
                     file_url:
                         type === "book"
                             ?
-                            pdfUrl
+                            bookPdfUrl
                             :
                             null,
 
+
+                    /* FEATURED */
+
                     featured:
-                        contentFeatured.checked,
+                        Boolean(
+                            contentFeatured
+                                ?.checked
+                        ),
+
+
+                    /* STATUS */
 
                     status:
-                        contentStatus.value
+                        contentStatus
+                            ?.value
+                        ||
+                        "published"
 
                 };
 
+
+                /* =========================================
+                   UPDATE EXISTING CONTENT
+                ========================================= */
 
                 const editingId =
                     contentId.value;
@@ -1336,6 +1800,11 @@ if (contentForm) {
                     );
 
                 }
+
+
+                /* =========================================
+                   INSERT NEW CONTENT
+                ========================================= */
 
                 else {
 
@@ -1373,7 +1842,9 @@ if (contentForm) {
 
             catch (error) {
 
-                console.error(error);
+                console.error(
+                    error
+                );
 
 
                 showMessage(
@@ -1390,8 +1861,15 @@ if (contentForm) {
                     false;
 
 
-                saveContentButton.innerHTML =
-                    `<i class="fa-solid fa-floppy-disk"></i> Save Content`;
+                saveContentButton.innerHTML = `
+
+                    <i
+                        class="fa-solid fa-floppy-disk"
+                    ></i>
+
+                    Save Content
+
+                `;
 
             }
 
@@ -1401,9 +1879,9 @@ if (contentForm) {
 }
 
 
-/* =====================================================
-   TABLE
-===================================================== */
+/* =========================================================
+   RENDER TABLE
+========================================================= */
 
 function renderContents() {
 
@@ -1415,21 +1893,38 @@ function renderContents() {
 
 
     let data =
-        currentFilter === "all"
-            ?
-            allContents
-            :
+        allContents;
+
+
+    if (
+        currentFilter !== "all"
+    ) {
+
+        data =
             allContents.filter(
                 item =>
                     item.type ===
                     currentFilter
             );
 
+    }
+
 
     if (!data.length) {
 
-        contentTableBody.innerHTML =
-            `<tr><td colspan="5">No content found.</td></tr>`;
+        contentTableBody.innerHTML = `
+
+            <tr>
+
+                <td colspan="5">
+
+                    No content found.
+
+                </td>
+
+            </tr>
+
+        `;
 
 
         return;
@@ -1442,7 +1937,7 @@ function renderContents() {
             .map(
                 item => {
 
-                    const image =
+                    const thumbnail =
                         item.poster_url
                             ?
                             `
@@ -1476,26 +1971,35 @@ function renderContents() {
 
                         <tr>
 
+
                             <td>
 
-                                <div class="content-title-wrap">
+                                <div
+                                    class="content-title-wrap"
+                                >
 
-                                    ${image}
+                                    ${thumbnail}
+
 
                                     <div>
 
                                         <strong>
+
                                             ${escapeHTML(
                                                 item.title
                                             )}
+
                                         </strong>
+
 
                                         ${
                                             item.genre
                                                 ?
                                                 `
 
-                                                    <div class="table-subtext">
+                                                    <div
+                                                        class="table-subtext"
+                                                    >
 
                                                         ${escapeHTML(
                                                             item.genre
@@ -1516,9 +2020,13 @@ function renderContents() {
 
 
                             <td>
-                                ${formatType(
-                                    item.type
+
+                                ${escapeHTML(
+                                    formatType(
+                                        item.type
+                                    )
                                 )}
+
                             </td>
 
 
@@ -1526,7 +2034,8 @@ function renderContents() {
 
                                 ${
                                     item.type ===
-                                    "series" &&
+                                    "series"
+                                    &&
                                     item.season
                                         ?
                                         `S${item.season}`
@@ -1568,34 +2077,45 @@ function renderContents() {
 
                             <td>
 
-                                <div class="table-actions">
+                                <div
+                                    class="table-actions"
+                                >
 
                                     <button
+                                        type="button"
                                         class="edit-button"
                                         onclick="editContent(${Number(
                                             item.id
                                         )})"
+                                        title="Edit"
                                     >
 
-                                        <i class="fa-solid fa-pen"></i>
+                                        <i
+                                            class="fa-solid fa-pen"
+                                        ></i>
 
                                     </button>
 
 
                                     <button
+                                        type="button"
                                         class="delete-button"
                                         onclick="deleteContent(${Number(
                                             item.id
                                         )})"
+                                        title="Delete"
                                     >
 
-                                        <i class="fa-solid fa-trash"></i>
+                                        <i
+                                            class="fa-solid fa-trash"
+                                        ></i>
 
                                     </button>
 
                                 </div>
 
                             </td>
+
 
                         </tr>
 
@@ -1608,9 +2128,9 @@ function renderContents() {
 }
 
 
-/* =====================================================
-   EDIT
-===================================================== */
+/* =========================================================
+   EDIT CONTENT
+========================================================= */
 
 window.editContent =
     function (id) {
@@ -1620,8 +2140,11 @@ window.editContent =
                 content =>
                     Number(
                         content.id
-                    ) ===
-                    Number(id)
+                    )
+                    ===
+                    Number(
+                        id
+                    )
             );
 
 
@@ -1632,9 +2155,13 @@ window.editContent =
         }
 
 
+        /* ID */
+
         contentId.value =
             item.id;
 
+
+        /* TYPE */
 
         contentType.value =
             item.type ||
@@ -1644,76 +2171,159 @@ window.editContent =
         updateDynamicForm();
 
 
+        /* TITLE */
+
         contentTitle.value =
             item.title ||
             "";
 
+
+        /* DESCRIPTION */
 
         contentDescription.value =
             item.description ||
             "";
 
 
-        videoUrl.value =
-            item.video_url ||
-            "";
+        /* VIDEO */
+
+        if (videoUrl) {
+
+            videoUrl.value =
+                item.video_url ||
+                "";
+
+        }
 
 
-        contentDownloadUrl.value =
-            item.download_url ||
-            "";
+        /* =========================================
+           DOWNLOAD URL
+
+           VERY IMPORTANT:
+           Movie download link returns here
+        ========================================= */
+
+        if (contentDownloadUrl) {
+
+            contentDownloadUrl.value =
+                item.download_url ||
+                "";
+
+        }
 
 
-        contentYear.value =
-            item.year ??
-            "";
+        /* YEAR */
+
+        if (contentYear) {
+
+            contentYear.value =
+                item.year ??
+                "";
+
+        }
 
 
-        contentRating.value =
-            item.rating ??
-            "";
+        /* RATING */
+
+        if (contentRating) {
+
+            contentRating.value =
+                item.rating ??
+                "";
+
+        }
 
 
-        contentGenre.value =
-            item.genre ||
-            "";
+        /* GENRE */
+
+        if (contentGenre) {
+
+            contentGenre.value =
+                item.genre ||
+                "";
+
+        }
 
 
-        contentSeason.value =
-            item.season ??
-            "";
+        /* SEASON */
+
+        if (contentSeason) {
+
+            contentSeason.value =
+                item.season ??
+                "";
+
+        }
 
 
-        contentBadge.value =
-            item.badge ||
-            "";
+        /* BADGE */
+
+        if (contentBadge) {
+
+            contentBadge.value =
+                item.badge ||
+                "";
+
+        }
 
 
-        contentAuthor.value =
-            item.author ||
-            "";
+        /* AUTHOR */
+
+        if (contentAuthor) {
+
+            contentAuthor.value =
+                item.author ||
+                "";
+
+        }
 
 
-        releaseDate.value =
-            item.release_date ||
-            "";
+        /* RELEASE DATE */
+
+        if (releaseDate) {
+
+            releaseDate.value =
+                item.release_date ||
+                "";
+
+        }
 
 
-        contentStatus.value =
-            item.status ||
-            "published";
+        /* STATUS */
+
+        if (contentStatus) {
+
+            contentStatus.value =
+                item.status ||
+                "published";
+
+        }
 
 
-        contentFeatured.checked =
-            Boolean(
-                item.featured
-            );
+        /* FEATURED */
+
+        if (contentFeatured) {
+
+            contentFeatured.checked =
+                Boolean(
+                    item.featured
+                );
+
+        }
 
 
-        fullContent.value =
-            item.full_content ||
-            "";
+        /* FULL STORY */
 
+        if (fullContent) {
+
+            fullContent.value =
+                item.full_content ||
+                "";
+
+        }
+
+
+        /* EXISTING URLS */
 
         currentPosterUrl.value =
             item.poster_url ||
@@ -1730,60 +2340,96 @@ window.editContent =
             "";
 
 
-        posterPreview.innerHTML =
-            item.poster_url
-                ?
-                `
+        /* =========================================
+           POSTER PREVIEW
+        ========================================= */
 
-                    <img
-                        src="${escapeAttribute(
-                            item.poster_url
-                        )}"
-                        alt="Poster"
-                    >
+        if (posterPreview) {
 
-                `
-                :
-                "";
+            posterPreview.innerHTML =
+                item.poster_url
+                    ?
+                    `
 
+                        <img
+                            src="${escapeAttribute(
+                                item.poster_url
+                            )}"
+                            alt="Poster"
+                        >
 
-        bannerPreview.classList.add(
-            "banner-preview"
-        );
+                    `
+                    :
+                    "";
 
-
-        bannerPreview.innerHTML =
-            item.banner_url
-                ?
-                `
-
-                    <img
-                        src="${escapeAttribute(
-                            item.banner_url
-                        )}"
-                        alt="Banner"
-                    >
-
-                `
-                :
-                "";
+        }
 
 
-        bookFileStatus.textContent =
-            item.file_url
-                ?
-                "Current PDF already uploaded."
-                :
-                "";
+        /* =========================================
+           BANNER PREVIEW
+        ========================================= */
+
+        if (bannerPreview) {
+
+            bannerPreview.classList.add(
+                "banner-preview"
+            );
 
 
-        formTitle.textContent =
-            "Edit Content";
+            bannerPreview.innerHTML =
+                item.banner_url
+                    ?
+                    `
+
+                        <img
+                            src="${escapeAttribute(
+                                item.banner_url
+                            )}"
+                            alt="Banner"
+                        >
+
+                    `
+                    :
+                    "";
+
+        }
 
 
-        cancelEditButton.style.display =
-            "inline-flex";
+        /* BOOK PDF */
 
+        if (bookFileStatus) {
+
+            bookFileStatus.textContent =
+                item.file_url
+                    ?
+                    "Current PDF already uploaded."
+                    :
+                    "";
+
+        }
+
+
+        /* FORM TITLE */
+
+        if (formTitle) {
+
+            formTitle.textContent =
+                "Edit Content";
+
+        }
+
+
+        /* CANCEL BUTTON */
+
+        if (cancelEditButton) {
+
+            cancelEditButton.style.display =
+                "inline-flex";
+
+        }
+
+
+        /* SCROLL TO FORM */
 
         document
             .querySelector(
@@ -1791,15 +2437,18 @@ window.editContent =
             )
             ?.scrollIntoView({
                 behavior:
-                    "smooth"
+                    "smooth",
+
+                block:
+                    "start"
             });
 
     };
 
 
-/* =====================================================
-   DELETE
-===================================================== */
+/* =========================================================
+   DELETE CONTENT
+========================================================= */
 
 window.deleteContent =
     async function (id) {
@@ -1809,17 +2458,28 @@ window.deleteContent =
                 content =>
                     Number(
                         content.id
-                    ) ===
-                    Number(id)
+                    )
+                    ===
+                    Number(
+                        id
+                    )
             );
 
 
-        if (
-            !item ||
-            !confirm(
+        if (!item) {
+
+            return;
+
+        }
+
+
+        const confirmed =
+            confirm(
                 `Delete "${item.title}"?`
-            )
-        ) {
+            );
+
+
+        if (!confirmed) {
 
             return;
 
@@ -1847,7 +2507,12 @@ window.deleteContent =
             }
 
 
+            /*
+               Delete uploaded storage files
+            */
+
             await Promise.allSettled([
+
                 removeStorageFile(
                     item.poster_url
                 ),
@@ -1859,6 +2524,7 @@ window.deleteContent =
                 removeStorageFile(
                     item.file_url
                 )
+
             ]);
 
 
@@ -1874,6 +2540,11 @@ window.deleteContent =
 
         catch (error) {
 
+            console.error(
+                error
+            );
+
+
             showMessage(
                 error.message ||
                 "Unable to delete content.",
@@ -1885,9 +2556,9 @@ window.deleteContent =
     };
 
 
-/* =====================================================
-   RESET
-===================================================== */
+/* =========================================================
+   RESET FORM
+========================================================= */
 
 function resetForm() {
 
@@ -1901,51 +2572,99 @@ function resetForm() {
     contentForm.reset();
 
 
-    contentId.value =
-        "";
+    if (contentId) {
+
+        contentId.value =
+            "";
+
+    }
 
 
-    currentPosterUrl.value =
-        "";
+    if (currentPosterUrl) {
+
+        currentPosterUrl.value =
+            "";
+
+    }
 
 
-    currentBannerUrl.value =
-        "";
+    if (currentBannerUrl) {
+
+        currentBannerUrl.value =
+            "";
+
+    }
 
 
-    currentFileUrl.value =
-        "";
+    if (currentFileUrl) {
+
+        currentFileUrl.value =
+            "";
+
+    }
 
 
-    posterPreview.innerHTML =
-        "";
+    if (posterPreview) {
+
+        posterPreview.innerHTML =
+            "";
+
+    }
 
 
-    bannerPreview.innerHTML =
-        "";
+    if (bannerPreview) {
+
+        bannerPreview.innerHTML =
+            "";
 
 
-    bannerPreview.classList.remove(
-        "banner-preview"
-    );
+        bannerPreview.classList.remove(
+            "banner-preview"
+        );
+
+    }
 
 
-    bookFileStatus.textContent =
-        "";
+    if (bookFileStatus) {
+
+        bookFileStatus.textContent =
+            "";
+
+    }
 
 
-    formTitle.textContent =
-        "Add New Content";
+    if (formTitle) {
+
+        formTitle.textContent =
+            "Add New Content";
+
+    }
 
 
-    cancelEditButton.style.display =
-        "none";
+    if (cancelEditButton) {
+
+        cancelEditButton.style.display =
+            "none";
+
+    }
+
+
+    if (contentMessage) {
+
+        contentMessage.textContent =
+            "";
+
+    }
 
 
     updateDynamicForm();
 
 }
 
+
+/* =========================================================
+   CANCEL EDIT
+========================================================= */
 
 if (cancelEditButton) {
 
@@ -1957,49 +2676,67 @@ if (cancelEditButton) {
 }
 
 
-if ($("openAddContent")) {
+/* =========================================================
+   ADD CONTENT TOP BUTTON
+========================================================= */
 
-    $("openAddContent")
-        .addEventListener(
-            "click",
-            () => {
-
-                resetForm();
+const openAddContent =
+    $("openAddContent");
 
 
-                document
-                    .querySelector(
-                        ".content-form-section"
-                    )
-                    ?.scrollIntoView({
-                        behavior:
-                            "smooth"
-                    });
+if (openAddContent) {
 
-            }
-        );
+    openAddContent.addEventListener(
+        "click",
+        () => {
+
+            resetForm();
+
+
+            document
+                .querySelector(
+                    ".content-form-section"
+                )
+                ?.scrollIntoView({
+                    behavior:
+                        "smooth",
+
+                    block:
+                        "start"
+                });
+
+        }
+    );
 
 }
 
 
-/* =====================================================
+/* =========================================================
    STATS
-===================================================== */
+========================================================= */
 
 function setStat(
     id,
     value
 ) {
 
-    if ($(id)) {
+    const element =
+        $(id);
 
-        $(id).textContent =
+
+    if (element) {
+
+        element.textContent =
             value;
 
     }
 
 }
 
+
+/* =========================================================
+   UPDATE STATS
+========================================================= */
 
 function updateStats() {
 
@@ -2081,9 +2818,9 @@ function updateStats() {
 }
 
 
-/* =====================================================
+/* =========================================================
    SIDEBAR FILTER
-===================================================== */
+========================================================= */
 
 const filterMap = {
 
@@ -2114,6 +2851,10 @@ const filterMap = {
 };
 
 
+/* =========================================================
+   SIDEBAR CLICK
+========================================================= */
+
 document
     .querySelectorAll(
         ".admin-menu-item"
@@ -2130,11 +2871,13 @@ document
                             ".admin-menu-item"
                         )
                         .forEach(
-                            item =>
-                                item.classList
-                                    .remove(
-                                        "active"
-                                    )
+                            item => {
+
+                                item.classList.remove(
+                                    "active"
+                                );
+
+                            }
                         );
 
 
@@ -2143,11 +2886,16 @@ document
                     );
 
 
+                    const menuName =
+                        button.textContent
+                            .trim();
+
+
                     currentFilter =
                         filterMap[
-                            button.textContent
-                                .trim()
-                        ] ||
+                            menuName
+                        ]
+                        ||
                         "all";
 
 
@@ -2160,13 +2908,13 @@ document
     );
 
 
-/* =====================================================
-   HELPERS
-===================================================== */
+/* =========================================================
+   FORMAT TYPE
+========================================================= */
 
 function formatType(type) {
 
-    return {
+    const names = {
 
         movie:
             "Movie",
@@ -2189,12 +2937,23 @@ function formatType(type) {
         tutorial:
             "Tutorial"
 
-    }[type] ||
-    type ||
-    "-";
+    };
+
+
+    return (
+        names[type]
+        ||
+        type
+        ||
+        "-"
+    );
 
 }
 
+
+/* =========================================================
+   MESSAGE
+========================================================= */
 
 function showMessage(
     message,
@@ -2218,6 +2977,10 @@ function showMessage(
 
 }
 
+
+/* =========================================================
+   ESCAPE HTML
+========================================================= */
 
 function escapeHTML(value) {
 
@@ -2261,82 +3024,47 @@ function escapeHTML(value) {
 }
 
 
+/* =========================================================
+   ESCAPE ATTRIBUTE
+========================================================= */
+
 function escapeAttribute(value) {
 
-    return escapeHTML(value);
+    return escapeHTML(
+        value
+    );
 
 }
 
 
-/* =====================================================
-   INIT
-===================================================== */
+/* =========================================================
+   ADMIN LOGO ANIMATION
+========================================================= */
 
-async function initializeDashboard() {
-
-    if (!isDashboardPage) {
-
-        return;
-
-    }
-
-
-    if (
-        !await protectDashboard()
-    ) {
-
-        return;
-
-    }
-
-
-    updateDynamicForm();
-
-
-    await loadContents();
-
-}
-
-
-document.addEventListener(
-    "DOMContentLoaded",
-    () => {
-
-        checkLoginPage();
-
-        initializeDashboard();
-
-    }
-);
-
-
-/* =====================================================
-   LOGO
-===================================================== */
-
-const logoWords = [
+const adminLogoWords = [
     "MELLA",
     "HUB"
 ];
 
 
-let logoIndex =
+let adminLogoIndex =
     0;
 
 
 setInterval(
     () => {
 
-        logoIndex =
+        adminLogoIndex =
             (
-                logoIndex + 1
-            ) %
-            logoWords.length;
+                adminLogoIndex + 1
+            )
+            %
+            adminLogoWords.length;
 
 
         document
             .querySelectorAll(
-                ".logo-changing"
+                ".admin-brand .logo-changing"
             )
             .forEach(
                 logo => {
@@ -2353,8 +3081,8 @@ setInterval(
                         () => {
 
                             logo.textContent =
-                                logoWords[
-                                    logoIndex
+                                adminLogoWords[
+                                    adminLogoIndex
                                 ];
 
 
@@ -2374,4 +3102,53 @@ setInterval(
 
     },
     2500
+);
+
+
+/* =========================================================
+   INITIALIZE DASHBOARD
+========================================================= */
+
+async function initializeDashboard() {
+
+    if (!isDashboardPage) {
+
+        return;
+
+    }
+
+
+    const authorized =
+        await protectDashboard();
+
+
+    if (!authorized) {
+
+        return;
+
+    }
+
+
+    updateDynamicForm();
+
+
+    await loadContents();
+
+}
+
+
+/* =========================================================
+   START
+========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        checkLoginPage();
+
+
+        initializeDashboard();
+
+    }
 );

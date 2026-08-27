@@ -2,99 +2,216 @@
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Cinema Mella Admin</title>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-    <link rel="stylesheet" href="admin.css">
+    <title>
+        Cinema Mella Admin
+    </title>
+
+
+    <!-- ADMIN CSS -->
+
+    <link
+        rel="stylesheet"
+        href="admin.css"
+    >
+
+
+    <!-- FONT AWESOME -->
 
     <link
         rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
     >
+
 </head>
+
 
 <body>
 
+
 <div class="admin-layout">
+
+
+    <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
 
     <aside class="admin-sidebar">
 
+
+        <!-- LOGO -->
+
         <div class="admin-brand">
-            <span class="brand-white">CINEMA</span><span class="logo-changing">MELLA</span>
+
+            <span class="brand-white">
+                CINEMA
+            </span>
+
+            <span class="logo-changing">
+                MELLA
+            </span>
+
         </div>
 
 
+        <!-- MENU -->
+
         <nav class="admin-menu">
 
-            <button class="admin-menu-item active">
+
+            <button
+                class="admin-menu-item active"
+                type="button"
+            >
+
                 <i class="fa-solid fa-house"></i>
+
                 Dashboard
+
             </button>
 
-            <button class="admin-menu-item">
+
+            <button
+                class="admin-menu-item"
+                type="button"
+            >
+
                 <i class="fa-solid fa-film"></i>
+
                 Movies
+
             </button>
 
-            <button class="admin-menu-item">
+
+            <button
+                class="admin-menu-item"
+                type="button"
+            >
+
                 <i class="fa-solid fa-clapperboard"></i>
+
                 Natok
+
             </button>
 
-            <button class="admin-menu-item">
+
+            <button
+                class="admin-menu-item"
+                type="button"
+            >
+
                 <i class="fa-solid fa-tv"></i>
+
                 Web Series
+
             </button>
 
-            <button class="admin-menu-item">
+
+            <button
+                class="admin-menu-item"
+                type="button"
+            >
+
                 <i class="fa-solid fa-clock"></i>
+
                 Upcoming
+
             </button>
 
-            <button class="admin-menu-item">
+
+            <button
+                class="admin-menu-item"
+                type="button"
+            >
+
                 <i class="fa-solid fa-book-open"></i>
+
                 Stories
+
             </button>
 
-            <button class="admin-menu-item">
+
+            <button
+                class="admin-menu-item"
+                type="button"
+            >
+
                 <i class="fa-solid fa-book"></i>
+
                 Books
+
             </button>
 
-            <button class="admin-menu-item">
+
+            <button
+                class="admin-menu-item"
+                type="button"
+            >
+
                 <i class="fa-solid fa-graduation-cap"></i>
+
                 Tutorial
+
             </button>
+
 
         </nav>
 
 
+        <!-- LOGOUT -->
+
         <button
             id="logoutButton"
             class="sidebar-logout"
+            type="button"
         >
+
             <i class="fa-solid fa-right-from-bracket"></i>
+
             Logout
+
         </button>
+
 
     </aside>
 
 
+    <!-- =====================================================
+         MAIN
+    ====================================================== -->
+
     <main class="admin-main">
+
+
+        <!-- =================================================
+             TOP BAR
+        ================================================== -->
 
         <header class="admin-topbar">
 
+
             <div>
 
-                <h1>Dashboard</h1>
+                <h1>
+                    Dashboard
+                </h1>
+
 
                 <p>
+
                     Welcome,
+
                     <strong id="adminEmail">
                         Admin
                     </strong>
+
                 </p>
 
             </div>
@@ -103,60 +220,139 @@
             <button
                 id="openAddContent"
                 class="add-content-button"
+                type="button"
             >
+
                 <i class="fa-solid fa-plus"></i>
+
                 Add Content
+
             </button>
+
 
         </header>
 
 
+        <!-- =================================================
+             STATS
+        ================================================== -->
+
         <section class="dashboard-stats">
 
-            <div class="stat-card">
-                <span>Total Content</span>
-                <strong id="totalContent">0</strong>
-            </div>
 
             <div class="stat-card">
-                <span>Movies</span>
-                <strong id="totalMovies">0</strong>
+
+                <span>
+                    Total Content
+                </span>
+
+                <strong id="totalContent">
+                    0
+                </strong>
+
             </div>
 
-            <div class="stat-card">
-                <span>Natok</span>
-                <strong id="totalNatok">0</strong>
-            </div>
 
             <div class="stat-card">
-                <span>Series</span>
-                <strong id="totalSeries">0</strong>
+
+                <span>
+                    Movies
+                </span>
+
+                <strong id="totalMovies">
+                    0
+                </strong>
+
             </div>
 
-            <div class="stat-card">
-                <span>Upcoming</span>
-                <strong id="totalUpcoming">0</strong>
-            </div>
 
             <div class="stat-card">
-                <span>Stories</span>
-                <strong id="totalStories">0</strong>
+
+                <span>
+                    Natok
+                </span>
+
+                <strong id="totalNatok">
+                    0
+                </strong>
+
             </div>
 
-            <div class="stat-card">
-                <span>Books</span>
-                <strong id="totalBooks">0</strong>
-            </div>
 
             <div class="stat-card">
-                <span>Tutorial</span>
-                <strong id="totalTutorial">0</strong>
+
+                <span>
+                    Web Series
+                </span>
+
+                <strong id="totalSeries">
+                    0
+                </strong>
+
             </div>
+
+
+            <div class="stat-card">
+
+                <span>
+                    Upcoming
+                </span>
+
+                <strong id="totalUpcoming">
+                    0
+                </strong>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <span>
+                    Stories
+                </span>
+
+                <strong id="totalStories">
+                    0
+                </strong>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <span>
+                    Books
+                </span>
+
+                <strong id="totalBooks">
+                    0
+                </strong>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <span>
+                    Tutorial
+                </span>
+
+                <strong id="totalTutorial">
+                    0
+                </strong>
+
+            </div>
+
 
         </section>
 
 
+        <!-- =================================================
+             ADD / EDIT CONTENT
+        ================================================== -->
+
         <section class="content-form-section">
+
 
             <div class="section-title">
 
@@ -167,7 +363,7 @@
                     </h2>
 
                     <p>
-                        Select a content type. The form will change automatically.
+                        Select a content type and fill in the information.
                     </p>
 
                 </div>
@@ -177,20 +373,26 @@
 
             <form id="contentForm">
 
+
+                <!-- HIDDEN VALUES -->
+
                 <input
                     type="hidden"
                     id="contentId"
                 >
+
 
                 <input
                     type="hidden"
                     id="currentPosterUrl"
                 >
 
+
                 <input
                     type="hidden"
                     id="currentBannerUrl"
                 >
+
 
                 <input
                     type="hidden"
@@ -201,11 +403,18 @@
                 <div class="form-grid">
 
 
+                    <!-- =====================================
+                         CONTENT TYPE
+                    ====================================== -->
+
                     <div class="admin-form-group">
 
-                        <label>
+                        <label for="contentType">
+
                             Content Type *
+
                         </label>
+
 
                         <select
                             id="contentType"
@@ -216,29 +425,36 @@
                                 Select Type
                             </option>
 
+
                             <option value="movie">
                                 Movie
                             </option>
+
 
                             <option value="natok">
                                 Natok
                             </option>
 
+
                             <option value="series">
                                 Web Series
                             </option>
+
 
                             <option value="upcoming">
                                 Upcoming
                             </option>
 
+
                             <option value="story">
                                 Story
                             </option>
 
+
                             <option value="book">
                                 Book
                             </option>
+
 
                             <option value="tutorial">
                                 Tutorial
@@ -249,11 +465,21 @@
                     </div>
 
 
+                    <!-- =====================================
+                         TITLE
+                    ====================================== -->
+
                     <div class="admin-form-group">
 
-                        <label id="titleLabel">
+                        <label
+                            for="contentTitle"
+                            id="titleLabel"
+                        >
+
                             Title *
+
                         </label>
+
 
                         <input
                             type="text"
@@ -265,28 +491,45 @@
                     </div>
 
 
+                    <!-- =====================================
+                         DESCRIPTION
+                    ====================================== -->
+
                     <div class="admin-form-group full-width">
 
-                        <label>
+                        <label for="contentDescription">
+
                             Short Description
+
                         </label>
+
 
                         <textarea
                             id="contentDescription"
-                            placeholder="Short description..."
+                            placeholder="Write a short description..."
                         ></textarea>
 
                     </div>
 
+
+                    <!-- =====================================
+                         POSTER / COVER
+                    ====================================== -->
 
                     <div
                         class="admin-form-group type-field"
                         data-types="movie,natok,series,upcoming,story,book,tutorial"
                     >
 
-                        <label id="posterLabel">
-                            Poster / Cover Image
+                        <label
+                            for="posterFile"
+                            id="posterLabel"
+                        >
+
+                            Poster Image
+
                         </label>
+
 
                         <input
                             type="file"
@@ -294,9 +537,13 @@
                             accept="image/*"
                         >
 
+
                         <div class="field-note">
-                            This image is used on cards. It will not be used as the hero background.
+
+                            This image will show on the content card.
+
                         </div>
+
 
                         <div
                             class="upload-preview"
@@ -306,14 +553,22 @@
                     </div>
 
 
+                    <!-- =====================================
+                         BANNER IMAGE
+                         HERO USES THIS
+                    ====================================== -->
+
                     <div
                         class="admin-form-group type-field"
                         data-types="movie,natok,series,upcoming,story,book,tutorial"
                     >
 
-                        <label>
+                        <label for="bannerFile">
+
                             Banner Image
+
                         </label>
+
 
                         <input
                             type="file"
@@ -321,9 +576,13 @@
                             accept="image/*"
                         >
 
+
                         <div class="field-note">
-                            Hero background uses this Banner Image only.
+
+                            Hero background uses this Banner Image.
+
                         </div>
+
 
                         <div
                             class="upload-preview"
@@ -333,50 +592,86 @@
                     </div>
 
 
+                    <!-- =====================================
+                         VIDEO / WATCH URL
+                    ====================================== -->
+
                     <div
                         class="admin-form-group type-field"
                         data-types="movie,natok,series,tutorial"
                     >
 
-                        <label>
+                        <label for="videoUrl">
+
                             Video / Watch URL
+
                         </label>
+
 
                         <input
                             type="url"
                             id="videoUrl"
-                            placeholder="YouTube / Vimeo / Video URL"
+                            placeholder="https://youtube.com/..."
                         >
 
                     </div>
 
+
+                    <!-- =====================================
+                         DOWNLOAD URL
+
+                         MOVIE
+                         NATOK
+                         SERIES
+                         TUTORIAL
+                    ====================================== -->
 
                     <div
                         class="admin-form-group type-field"
                         data-types="movie,natok,series,tutorial"
                     >
 
-                        <label>
+                        <label for="contentDownloadUrl">
+
                             Download URL
+
                         </label>
+
 
                         <input
                             type="url"
                             id="contentDownloadUrl"
-                            placeholder="Direct download link"
+                            placeholder="Paste direct download link"
                         >
+
+
+                        <div class="field-note">
+
+                            If you add a link here, a Download button will show on the public website.
+
+                        </div>
 
                     </div>
 
+
+                    <!-- =====================================
+                         YEAR
+                    ====================================== -->
 
                     <div
                         class="admin-form-group type-field"
                         data-types="movie,natok,series,book,tutorial"
                     >
 
-                        <label id="yearLabel">
+                        <label
+                            for="contentYear"
+                            id="yearLabel"
+                        >
+
                             Year
+
                         </label>
+
 
                         <input
                             type="number"
@@ -387,61 +682,96 @@
                     </div>
 
 
+                    <!-- =====================================
+                         RATING
+                    ====================================== -->
+
                     <div
                         class="admin-form-group type-field"
                         data-types="movie,natok,series,upcoming,story,book,tutorial"
                     >
 
-                        <label>
+                        <label for="contentRating">
+
                             Rating
+
                         </label>
+
 
                         <input
                             type="number"
                             id="contentRating"
-                            step="0.1"
                             min="0"
                             max="10"
+                            step="0.1"
                             placeholder="8.5"
                         >
 
+
+                        <div class="field-note">
+
+                            Rating 8.0 or higher will appear in Featured.
+
+                        </div>
+
                     </div>
 
+
+                    <!-- =====================================
+                         CATEGORY / GENRE
+                    ====================================== -->
 
                     <div
                         class="admin-form-group type-field"
                         data-types="movie,natok,series,upcoming,story,book,tutorial"
                     >
 
-                        <label id="genreLabel">
+                        <label
+                            for="contentGenre"
+                            id="genreLabel"
+                        >
+
                             Category / Genre
+
                         </label>
+
 
                         <input
                             type="text"
                             id="contentGenre"
                             list="genreSuggestions"
-                            placeholder="Type a category, e.g. Action"
+                            placeholder="Action, Horror..."
                             autocomplete="off"
                         >
 
+
                         <datalist id="genreSuggestions"></datalist>
 
+
                         <div class="field-note">
-                            You can type a new category anytime. For multiple categories use commas, e.g. SEO, Coding.
+
+                            Type any category. Multiple categories: Action, Comedy
+
                         </div>
 
                     </div>
 
+
+                    <!-- =====================================
+                         SERIES SEASON
+                    ====================================== -->
 
                     <div
                         class="admin-form-group type-field"
                         data-types="series"
                     >
 
-                        <label>
+                        <label for="contentSeason">
+
                             Season
+
                         </label>
+
 
                         <input
                             type="number"
@@ -453,32 +783,46 @@
                     </div>
 
 
+                    <!-- =====================================
+                         BADGE
+                    ====================================== -->
+
                     <div
                         class="admin-form-group type-field"
                         data-types="movie,natok,series,upcoming"
                     >
 
-                        <label>
+                        <label for="contentBadge">
+
                             Badge
+
                         </label>
+
 
                         <input
                             type="text"
                             id="contentBadge"
-                            placeholder="NEW / HD / 4K"
+                            placeholder="NEW / HD / 4K / OLD"
                         >
 
                     </div>
 
+
+                    <!-- =====================================
+                         AUTHOR
+                    ====================================== -->
 
                     <div
                         class="admin-form-group type-field"
                         data-types="story,book"
                     >
 
-                        <label>
+                        <label for="contentAuthor">
+
                             Author
+
                         </label>
+
 
                         <input
                             type="text"
@@ -489,14 +833,24 @@
                     </div>
 
 
+                    <!-- =====================================
+                         RELEASE DATE
+                    ====================================== -->
+
                     <div
                         class="admin-form-group type-field"
                         data-types="movie,natok,series,upcoming,story"
                     >
 
-                        <label id="releaseDateLabel">
+                        <label
+                            for="releaseDate"
+                            id="releaseDateLabel"
+                        >
+
                             Release Date
+
                         </label>
+
 
                         <input
                             type="date"
@@ -506,20 +860,28 @@
                     </div>
 
 
+                    <!-- =====================================
+                         BOOK PDF
+                    ====================================== -->
+
                     <div
                         class="admin-form-group type-field"
                         data-types="book"
                     >
 
-                        <label>
+                        <label for="bookFile">
+
                             Book PDF
+
                         </label>
+
 
                         <input
                             type="file"
                             id="bookFile"
                             accept="application/pdf"
                         >
+
 
                         <div
                             class="file-status"
@@ -529,26 +891,42 @@
                     </div>
 
 
+                    <!-- =====================================
+                         STATUS
+                    ====================================== -->
+
                     <div class="admin-form-group">
 
-                        <label>
+                        <label for="contentStatus">
+
                             Status
+
                         </label>
+
 
                         <select id="contentStatus">
 
                             <option value="published">
+
                                 Published
+
                             </option>
 
+
                             <option value="draft">
+
                                 Draft
+
                             </option>
 
                         </select>
 
                     </div>
 
+
+                    <!-- =====================================
+                         FEATURED CHECKBOX
+                    ====================================== -->
 
                     <div class="admin-form-group checkbox-group">
 
@@ -566,14 +944,21 @@
                     </div>
 
 
+                    <!-- =====================================
+                         FULL STORY
+                    ====================================== -->
+
                     <div
                         class="admin-form-group full-width type-field"
                         data-types="story"
                     >
 
-                        <label>
+                        <label for="fullContent">
+
                             Full Story
+
                         </label>
+
 
                         <textarea
                             id="fullContent"
@@ -583,10 +968,16 @@
 
                     </div>
 
+
                 </div>
 
 
+                <!-- =========================================
+                     FORM BUTTONS
+                ========================================== -->
+
                 <div class="form-actions">
+
 
                     <button
                         type="submit"
@@ -606,20 +997,30 @@
                         id="cancelEditButton"
                         class="cancel-button"
                     >
+
                         Cancel Edit
+
                     </button>
+
 
                 </div>
 
 
                 <p id="contentMessage"></p>
 
+
             </form>
+
 
         </section>
 
 
+        <!-- =================================================
+             CONTENT LIST
+        ================================================== -->
+
         <section class="content-list-section">
+
 
             <div class="section-title">
 
@@ -630,7 +1031,7 @@
                     </h2>
 
                     <p>
-                        Edit or delete your content.
+                        Manage your uploaded content.
                     </p>
 
                 </div>
@@ -640,17 +1041,33 @@
 
             <div class="admin-table-wrapper">
 
+
                 <table class="admin-table">
+
 
                     <thead>
 
                         <tr>
 
-                            <th>Content</th>
-                            <th>Type</th>
-                            <th>Year</th>
-                            <th>Status</th>
-                            <th>Actions</th>
+                            <th>
+                                Content
+                            </th>
+
+                            <th>
+                                Type
+                            </th>
+
+                            <th>
+                                Year
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                            <th>
+                                Actions
+                            </th>
 
                         </tr>
 
@@ -662,27 +1079,46 @@
                         <tr>
 
                             <td colspan="5">
+
                                 Loading...
+
                             </td>
 
                         </tr>
 
                     </tbody>
 
+
                 </table>
+
 
             </div>
 
+
         </section>
 
+
     </main>
+
 
 </div>
 
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- =====================================================
+     SUPABASE
+===================================================== -->
+
+<script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+></script>
+
+
+<!-- =====================================================
+     ADMIN JS
+===================================================== -->
 
 <script src="admin.js"></script>
+
 
 </body>
 

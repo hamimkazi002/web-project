@@ -64,7 +64,7 @@ header.navbar {
 
     z-index: 9999;
 
-    background: rgba(5, 6, 10, 0.90);
+    background: rgba(5, 6, 10, 0.92);
 
     backdrop-filter: blur(18px);
     -webkit-backdrop-filter: blur(18px);
@@ -92,7 +92,7 @@ header.navbar {
 
 
 /* =========================================================
-   LOGO
+   HEADER LOGO
 ========================================================= */
 
 .logo {
@@ -176,7 +176,7 @@ header.navbar {
 
 
 /* =========================================================
-   NAV ACTIVE UNDERLINE
+   NAV ACTIVE LINE
 ========================================================= */
 
 .nav-link::after {
@@ -205,7 +205,7 @@ header.navbar {
 
 
 /* =========================================================
-   DROPDOWN WRAPPER
+   CATEGORY DROPDOWN WRAPPER
 ========================================================= */
 
 .nav-category-dropdown {
@@ -219,18 +219,13 @@ header.navbar {
     flex-shrink: 0;
 }
 
-
-/* No arrow beside menu */
-
 .nav-category-dropdown > .nav-link::before {
     display: none !important;
 }
 
 
 /* =========================================================
-   DROPDOWN
-   IMPORTANT:
-   HIDDEN UNTIL HOVER
+   CATEGORY DROPDOWN
 ========================================================= */
 
 .genre-dropdown-menu {
@@ -260,15 +255,9 @@ header.navbar {
     z-index: 10000;
 }
 
-
-/* Only currently hovered menu opens */
-
 .nav-category-dropdown:hover > .genre-dropdown-menu {
     display: block !important;
 }
-
-
-/* hover bridge */
 
 .genre-dropdown-menu::before {
     content: "";
@@ -284,7 +273,7 @@ header.navbar {
 
 
 /* =========================================================
-   DROPDOWN HEADING
+   DROPDOWN TITLE
 ========================================================= */
 
 .genre-dropdown-head {
@@ -303,7 +292,7 @@ header.navbar {
 
 
 /* =========================================================
-   DROPDOWN CATEGORY LIST
+   CATEGORY ITEMS
 ========================================================= */
 
 .genre-menu-dynamic {
@@ -312,11 +301,6 @@ header.navbar {
 
     gap: 3px;
 }
-
-
-/* =========================================================
-   CATEGORY ITEM
-========================================================= */
 
 .genre-menu-item {
     display: block;
@@ -363,7 +347,7 @@ header.navbar {
 
 
 /* =========================================================
-   SEARCH WRAPPER
+   SEARCH
 ========================================================= */
 
 .nav-search-wrapper {
@@ -374,11 +358,6 @@ header.navbar {
 
     flex-shrink: 0;
 }
-
-
-/* =========================================================
-   SEARCH BUTTON
-========================================================= */
 
 .search-icon-button {
     width: 42px;
@@ -411,11 +390,6 @@ header.navbar {
     transform: scale(1.05);
 }
 
-
-/* =========================================================
-   SEARCH BOX
-========================================================= */
-
 .search-box {
     position: absolute;
 
@@ -436,9 +410,6 @@ header.navbar {
 
     box-shadow:
         0 20px 60px rgba(0, 0, 0, 0.50);
-
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
 
     opacity: 0;
     visibility: hidden;
@@ -464,11 +435,6 @@ header.navbar {
         scale(1);
 }
 
-
-/* =========================================================
-   SEARCH INPUT
-========================================================= */
-
 .search-input-wrapper {
     display: flex;
     align-items: center;
@@ -490,8 +456,6 @@ header.navbar {
 
 .search-input-wrapper i {
     color: #ff1b2d;
-
-    font-size: 15px;
 }
 
 .search-input-wrapper input {
@@ -507,13 +471,6 @@ header.navbar {
     background: transparent;
 
     color: #ffffff;
-
-    font-size: 14px;
-}
-
-.search-input-wrapper input::placeholder {
-    color:
-        rgba(255, 255, 255, 0.40);
 }
 
 .search-input-wrapper button {
@@ -524,16 +481,9 @@ header.navbar {
 
     background: transparent;
 
-    color:
-        rgba(255, 255, 255, 0.50);
+    color: rgba(255, 255, 255, 0.55);
 
     cursor: pointer;
-
-    font-size: 16px;
-}
-
-.search-input-wrapper button:hover {
-    color: #ffffff;
 }
 
 
@@ -560,34 +510,27 @@ header.navbar {
     border-radius: 10px;
 
     cursor: pointer;
-
-    transition:
-        background 0.2s ease,
-        transform 0.2s ease;
 }
 
 .search-result-item:hover {
     background:
         rgba(255, 255, 255, 0.07);
-
-    transform:
-        translateX(3px);
 }
 
 .search-result-icon {
     width: 38px;
     height: 38px;
 
-    flex-shrink: 0;
-
     display: flex;
     align-items: center;
     justify-content: center;
 
-    background:
-        rgba(255, 20, 40, 0.12);
+    flex-shrink: 0;
 
     border-radius: 9px;
+
+    background:
+        rgba(255, 20, 40, 0.12);
 
     color: #ff1b2d;
 }
@@ -599,15 +542,14 @@ header.navbar {
 }
 
 .search-result-item p {
-    color:
-        rgba(255, 255, 255, 0.45);
-
     font-size: 11px;
+
+    color: rgba(255, 255, 255, 0.45);
 }
 
 
 /* =========================================================
-   MOBILE MENU BUTTON
+   MOBILE MENU
 ========================================================= */
 
 .mobile-menu-button {
@@ -626,20 +568,10 @@ header.navbar {
 
     color: #ffffff;
 
-    cursor: pointer;
-
     font-size: 19px;
+
+    cursor: pointer;
 }
-
-.mobile-menu-button:hover {
-    background:
-        rgba(255, 255, 255, 0.08);
-}
-
-
-/* =========================================================
-   MOBILE NAV
-========================================================= */
 
 .mobile-nav {
     display: none;
@@ -661,9 +593,6 @@ header.navbar {
 
     border-radius: 15px;
 
-    box-shadow:
-        0 25px 60px rgba(0, 0, 0, 0.50);
-
     z-index: 9998;
 }
 
@@ -680,12 +609,6 @@ header.navbar {
 
     color:
         rgba(255, 255, 255, 0.75);
-
-    font-size: 14px;
-
-    transition:
-        background 0.2s ease,
-        color 0.2s ease;
 }
 
 .mobile-nav a:hover {
@@ -714,12 +637,6 @@ header.navbar {
 
     isolation: isolate;
 }
-
-
-/* =========================================================
-   HERO BACKGROUND
-   IMAGE IS BANNER_URL FROM JS
-========================================================= */
 
 .hero-background {
     position: absolute;
@@ -754,11 +671,6 @@ header.navbar {
 .hero-background.zoom {
     transform: scale(1.09);
 }
-
-
-/* =========================================================
-   HERO DARK OVERLAY
-========================================================= */
 
 .hero::before {
     content: "";
@@ -805,11 +717,6 @@ header.navbar {
     display: none;
 }
 
-
-/* =========================================================
-   HERO CONTAINER
-========================================================= */
-
 .hero-container {
     position: relative;
 
@@ -821,11 +728,6 @@ header.navbar {
 .hero-content {
     padding-top: 55px;
 }
-
-
-/* =========================================================
-   HERO BADGE
-========================================================= */
 
 .hero-badge {
     display: inline-flex;
@@ -839,33 +741,18 @@ header.navbar {
 
     background: #ef1024;
 
-    color: #ffffff;
-
     border-radius: 6px;
 
     font-size: 11px;
     font-weight: 800;
 
-    letter-spacing: 0.6px;
-
     text-transform: uppercase;
-
-    box-shadow:
-        0 8px 25px
-        rgba(239, 16, 36, 0.25);
 }
-
-
-/* =========================================================
-   HERO TITLE
-========================================================= */
 
 .hero h1 {
     max-width: 780px;
 
     margin-bottom: 25px;
-
-    color: #ffffff;
 
     font-size:
         clamp(
@@ -881,11 +768,6 @@ header.navbar {
     font-weight: 900;
 }
 
-
-/* =========================================================
-   HERO DESCRIPTION
-========================================================= */
-
 .hero p {
     max-width: 650px;
 
@@ -898,11 +780,6 @@ header.navbar {
 
     line-height: 1.8;
 }
-
-
-/* =========================================================
-   HERO BUTTONS
-========================================================= */
 
 .hero-buttons {
     display: flex;
@@ -929,53 +806,20 @@ header.navbar {
 
     font-size: 14px;
     font-weight: 700;
-
-    cursor: pointer;
-
-    transition:
-        transform 0.25s ease,
-        background 0.25s ease,
-        border-color 0.25s ease;
 }
 
 .hero-primary-button {
     background: #ef1024;
 
-    color: #ffffff;
-
-    border:
-        1px solid #ef1024;
-
-    box-shadow:
-        0 10px 30px
-        rgba(239, 16, 36, 0.20);
-}
-
-.hero-primary-button:hover {
-    background: #ff2437;
-
-    transform: translateY(-2px);
+    border: 1px solid #ef1024;
 }
 
 .hero-secondary-button {
     background:
         rgba(255, 255, 255, 0.04);
 
-    color: #ffffff;
-
     border:
-        1px solid
-        rgba(255, 255, 255, 0.25);
-}
-
-.hero-secondary-button:hover {
-    background:
-        rgba(255, 255, 255, 0.09);
-
-    border-color:
-        rgba(255, 255, 255, 0.45);
-
-    transform: translateY(-2px);
+        1px solid rgba(255, 255, 255, 0.25);
 }
 
 
@@ -1010,10 +854,6 @@ header.navbar {
         rgba(255, 255, 255, 0.32);
 
     cursor: pointer;
-
-    transition:
-        width 0.25s ease,
-        background 0.25s ease;
 }
 
 .hero-dot.active {
@@ -1026,7 +866,7 @@ header.navbar {
 
 
 /* =========================================================
-   GENERAL SECTION
+   SECTIONS
 ========================================================= */
 
 section {
@@ -1035,16 +875,10 @@ section {
     padding: 90px 0;
 }
 
-
-/* =========================================================
-   SECTION HEADING
-========================================================= */
-
 .section-heading {
     width: min(1180px, 92%);
 
-    margin:
-        0 auto 35px;
+    margin: 0 auto 35px;
 
     display: flex;
     align-items: center;
@@ -1061,12 +895,8 @@ section {
 }
 
 .heading-line {
-    display: block;
-
     width: 4px;
     height: 34px;
-
-    flex-shrink: 0;
 
     border-radius: 4px;
 
@@ -1082,8 +912,6 @@ section {
         );
 
     font-weight: 800;
-
-    letter-spacing: -0.5px;
 }
 
 .heading-left p {
@@ -1103,18 +931,10 @@ section {
 .featured-section {
     padding-top: 70px;
     padding-bottom: 55px;
-
-    background: #07080c;
 }
-
-
-/* =========================================================
-   FEATURED CONTROLS
-========================================================= */
 
 .featured-controls {
     display: flex;
-    align-items: center;
 
     gap: 7px;
 }
@@ -1128,36 +948,22 @@ section {
     justify-content: center;
 
     border:
-        1px solid
-        rgba(255, 255, 255, 0.10);
+        1px solid rgba(255, 255, 255, 0.10);
 
     border-radius: 7px;
 
     background: #101116;
 
-    color:
-        rgba(255, 255, 255, 0.70);
+    color: #ffffff;
 
     cursor: pointer;
-
-    transition:
-        color 0.2s ease,
-        background 0.2s ease,
-        border-color 0.2s ease;
 }
 
 .featured-controls button:hover {
     background: #ef1024;
 
     border-color: #ef1024;
-
-    color: #ffffff;
 }
-
-
-/* =========================================================
-   FEATURED VIEWPORT
-========================================================= */
 
 .featured-viewport {
     width: min(1180px, 92%);
@@ -1174,19 +980,8 @@ section {
     gap: 16px;
 
     transition:
-        transform 0.55s
-        cubic-bezier(
-            0.2,
-            0.7,
-            0.3,
-            1
-        );
-
-    will-change: transform;
+        transform 0.55s ease;
 }
-
-
-/* 5 visible desktop */
 
 .featured-card {
     flex:
@@ -1202,34 +997,19 @@ section {
     background: #101116;
 
     border:
-        1px solid
-        rgba(255, 255, 255, 0.07);
+        1px solid rgba(255, 255, 255, 0.07);
 
     border-radius: 11px;
 
     cursor: pointer;
 
     transition:
-        transform 0.25s ease,
-        border-color 0.25s ease,
-        box-shadow 0.25s ease;
+        transform 0.25s ease;
 }
 
 .featured-card:hover {
     transform: translateY(-5px);
-
-    border-color:
-        rgba(239, 16, 36, 0.45);
-
-    box-shadow:
-        0 18px 45px
-        rgba(0, 0, 0, 0.38);
 }
-
-
-/* =========================================================
-   FEATURED POSTER
-========================================================= */
 
 .featured-card-poster {
     position: relative;
@@ -1246,11 +1026,6 @@ section {
     background-position: center;
 }
 
-
-/* =========================================================
-   FEATURED BADGE
-========================================================= */
-
 .featured-badge {
     position: absolute;
 
@@ -1265,18 +1040,9 @@ section {
 
     border-radius: 4px;
 
-    color: #ffffff;
-
     font-size: 9px;
     font-weight: 800;
-
-    letter-spacing: 0.4px;
 }
-
-
-/* =========================================================
-   FEATURED RATING
-========================================================= */
 
 .featured-rating {
     position: absolute;
@@ -1286,7 +1052,7 @@ section {
 
     z-index: 6;
 
-    display: inline-flex;
+    display: flex;
     align-items: center;
 
     gap: 4px;
@@ -1298,8 +1064,6 @@ section {
 
     border-radius: 5px;
 
-    color: #ffffff;
-
     font-size: 10px;
     font-weight: 700;
 }
@@ -1307,11 +1071,6 @@ section {
 .featured-rating i {
     color: #ffc107;
 }
-
-
-/* =========================================================
-   FEATURED INFO
-========================================================= */
 
 .featured-card-info {
     padding: 11px;
@@ -1334,8 +1093,6 @@ section {
     overflow: hidden;
 
     margin-bottom: 6px;
-
-    color: #ffffff;
 
     font-size: 13px;
     font-weight: 700;
@@ -1381,7 +1138,7 @@ section {
 
 
 /* =========================================================
-   CARD SHELL
+   CARDS
 ========================================================= */
 
 .movie-card,
@@ -1395,8 +1152,7 @@ section {
     background: #101116;
 
     border:
-        1px solid
-        rgba(255, 255, 255, 0.07);
+        1px solid rgba(255, 255, 255, 0.07);
 
     border-radius: 14px;
 
@@ -1404,8 +1160,7 @@ section {
 
     transition:
         transform 0.3s ease,
-        border-color 0.3s ease,
-        box-shadow 0.3s ease;
+        border-color 0.3s ease;
 }
 
 .movie-card:hover,
@@ -1416,10 +1171,6 @@ section {
 
     border-color:
         rgba(255, 27, 45, 0.45);
-
-    box-shadow:
-        0 20px 50px
-        rgba(0, 0, 0, 0.35);
 }
 
 
@@ -1442,30 +1193,6 @@ section {
     background-position: center;
 }
 
-.movie-poster::after {
-    content: "";
-
-    position: absolute;
-
-    inset: 0;
-
-    z-index: 1;
-
-    pointer-events: none;
-
-    background:
-        linear-gradient(
-            to top,
-            rgba(0, 0, 0, 0.52),
-            transparent 42%
-        );
-}
-
-
-/* =========================================================
-   BADGE
-========================================================= */
-
 .content-badge {
     position: absolute;
 
@@ -1479,22 +1206,10 @@ section {
     background:
         rgba(0, 0, 0, 0.65);
 
-    border:
-        1px solid
-        rgba(255, 255, 255, 0.20);
-
     border-radius: 6px;
-
-    color: #ffffff;
 
     font-size: 10px;
     font-weight: 800;
-
-    letter-spacing: 0.5px;
-
-    text-transform: uppercase;
-
-    backdrop-filter: blur(6px);
 }
 
 
@@ -1527,8 +1242,7 @@ section {
     opacity: 0;
     visibility: hidden;
 
-    transform:
-        translateY(8px);
+    transform: translateY(8px);
 
     transition:
         opacity 0.28s ease,
@@ -1536,36 +1250,21 @@ section {
         transform 0.28s ease;
 }
 
-.movie-card:hover
-.card-hover-overlay,
-
-.story-card:hover
-.card-hover-overlay,
-
-.book-card:hover
-.card-hover-overlay,
-
-.upcoming-card:hover
-.card-hover-overlay,
-
-.featured-card:hover
-.card-hover-overlay {
+.movie-card:hover .card-hover-overlay,
+.story-card:hover .card-hover-overlay,
+.book-card:hover .card-hover-overlay,
+.upcoming-card:hover .card-hover-overlay,
+.featured-card:hover .card-hover-overlay {
     opacity: 1;
-
     visibility: visible;
 
-    transform:
-        translateY(0);
+    transform: translateY(0);
 }
 
 .card-hover-overlay h4 {
     margin-bottom: 8px;
 
-    color: #ffffff;
-
     font-size: 15px;
-
-    line-height: 1.35;
 }
 
 .card-hover-overlay p {
@@ -1587,11 +1286,6 @@ section {
 }
 
 .card-hover-action {
-    display: inline-flex;
-    align-items: center;
-
-    gap: 7px;
-
     color: #ff2538;
 
     font-size: 11px;
@@ -1619,8 +1313,7 @@ section {
     justify-content: center;
 
     border:
-        1px solid
-        rgba(255, 255, 255, 0.35);
+        1px solid rgba(255, 255, 255, 0.35);
 
     border-radius: 50%;
 
@@ -1639,8 +1332,7 @@ section {
 
     transition:
         opacity 0.25s ease,
-        transform 0.25s ease,
-        background 0.25s ease;
+        transform 0.25s ease;
 }
 
 .movie-card:hover .poster-play {
@@ -1649,10 +1341,6 @@ section {
     transform:
         translate(-50%, -50%)
         scale(1);
-}
-
-.poster-play:hover {
-    background: #ff2639;
 }
 
 
@@ -1673,24 +1361,15 @@ section {
 
     font-size: 11px;
     font-weight: 800;
-
-    letter-spacing: 0.5px;
 }
 
 .card-info h3 {
     margin-bottom: 10px;
 
-    color: #ffffff;
-
     font-size: 16px;
 
     line-height: 1.4;
 }
-
-
-/* =========================================================
-   CARD META
-========================================================= */
 
 .card-meta {
     display: flex;
@@ -1728,8 +1407,7 @@ section {
     gap: 8px;
 
     border:
-        1px solid
-        rgba(255, 255, 255, 0.11);
+        1px solid rgba(255, 255, 255, 0.11);
 
     border-radius: 7px;
 
@@ -1737,18 +1415,12 @@ section {
         rgba(255, 255, 255, 0.04);
 
     color:
-        rgba(255, 255, 255, 0.78);
+        rgba(255, 255, 255, 0.82);
 
     cursor: pointer;
 
     font-size: 11px;
     font-weight: 700;
-
-    transition:
-        background 0.2s ease,
-        color 0.2s ease,
-        border-color 0.2s ease,
-        transform 0.2s ease;
 }
 
 .content-download-button:hover {
@@ -1757,23 +1429,12 @@ section {
     border-color: #ef1024;
 
     color: #ffffff;
-
-    transform: translateY(-1px);
 }
 
 
 /* =========================================================
    UPCOMING
 ========================================================= */
-
-.upcoming-section {
-    background:
-        linear-gradient(
-            180deg,
-            #07080c,
-            #0a0b10
-        );
-}
 
 .upcoming-poster {
     position: relative;
@@ -1804,10 +1465,6 @@ section {
 
     font-size: 10px;
     font-weight: 800;
-
-    letter-spacing: 0.5px;
-
-    text-transform: uppercase;
 }
 
 .upcoming-info {
@@ -1819,8 +1476,6 @@ section {
 
     font-size: 11px;
     font-weight: 700;
-
-    letter-spacing: 0.5px;
 }
 
 .upcoming-info h3 {
@@ -1834,18 +1489,12 @@ section {
         rgba(255, 255, 255, 0.48);
 
     font-size: 12px;
-
-    line-height: 1.6;
 }
 
 
 /* =========================================================
    STORIES
 ========================================================= */
-
-.stories-section {
-    background: #08090d;
-}
 
 .story-image {
     position: relative;
@@ -1873,18 +1522,10 @@ section {
     background:
         rgba(0, 0, 0, 0.65);
 
-    border:
-        1px solid
-        rgba(255, 255, 255, 0.20);
-
     border-radius: 6px;
 
     font-size: 10px;
     font-weight: 800;
-
-    letter-spacing: 0.5px;
-
-    text-transform: uppercase;
 }
 
 .story-info {
@@ -1896,8 +1537,6 @@ section {
 
     font-size: 11px;
     font-weight: 700;
-
-    letter-spacing: 0.5px;
 }
 
 .story-info h3 {
@@ -1919,7 +1558,7 @@ section {
 
 
 /* =========================================================
-   STORY & BOOK BUTTON
+   STORY / BOOK BUTTONS
 ========================================================= */
 
 .story-button,
@@ -1932,8 +1571,7 @@ section {
     gap: 7px;
 
     border:
-        1px solid
-        rgba(255, 255, 255, 0.15);
+        1px solid rgba(255, 255, 255, 0.15);
 
     border-radius: 7px;
 
@@ -1946,10 +1584,6 @@ section {
 
     font-size: 12px;
     font-weight: 600;
-
-    transition:
-        background 0.2s ease,
-        border-color 0.2s ease;
 }
 
 .story-button:hover,
@@ -1963,15 +1597,6 @@ section {
 /* =========================================================
    BOOKS
 ========================================================= */
-
-.books-section {
-    background:
-        linear-gradient(
-            180deg,
-            #0a0b10,
-            #07080c
-        );
-}
 
 .book-cover {
     position: relative;
@@ -1999,18 +1624,10 @@ section {
     background:
         rgba(0, 0, 0, 0.65);
 
-    border:
-        1px solid
-        rgba(255, 255, 255, 0.20);
-
     border-radius: 6px;
 
     font-size: 10px;
     font-weight: 800;
-
-    letter-spacing: 0.5px;
-
-    text-transform: uppercase;
 }
 
 .book-info {
@@ -2022,8 +1639,6 @@ section {
 
     font-size: 11px;
     font-weight: 800;
-
-    letter-spacing: 0.5px;
 }
 
 .book-info h3 {
@@ -2039,13 +1654,11 @@ section {
         rgba(255, 255, 255, 0.48);
 
     font-size: 12px;
-
-    line-height: 1.7;
 }
 
 
 /* =========================================================
-   LOADING MESSAGE
+   LOADING
 ========================================================= */
 
 .database-loading {
@@ -2063,8 +1676,7 @@ section {
     background: #101116;
 
     border:
-        1px solid
-        rgba(255, 255, 255, 0.06);
+        1px solid rgba(255, 255, 255, 0.06);
 
     border-radius: 12px;
 }
@@ -2075,12 +1687,10 @@ section {
 ========================================================= */
 
 .footer {
-    padding:
-        60px 0 30px;
+    padding: 60px 0 30px;
 
     border-top:
-        1px solid
-        rgba(255, 255, 255, 0.07);
+        1px solid rgba(255, 255, 255, 0.07);
 
     background: #050609;
 }
@@ -2103,7 +1713,10 @@ section {
 
 
 /* =========================================================
-   FOOTER STATIC LOGO
+   FOOTER LOGO
+   CINEMA = WHITE
+   MELLA & HUB = RED
+   SAME FONT SIZE
 ========================================================= */
 
 .footer-logo {
@@ -2115,33 +1728,62 @@ section {
     margin-bottom: 4px;
 
     white-space: nowrap;
+
+    font-size: 25px !important;
+
+    font-weight: 900;
+
+    letter-spacing: -1px;
 }
+
+
+/* CINEMA WHITE */
 
 .footer-logo .logo-cinema {
-    color: #ffffff;
+    color: #ffffff !important;
+
+    font-size: inherit !important;
+
+    font-weight: inherit !important;
+
+    line-height: 1;
 }
+
+
+/* MELLA RED */
 
 .footer-logo .footer-mella {
-    color: #ef1024;
+    color: #ef1024 !important;
 
-    margin-left: 0;
+    font-size: inherit !important;
+
+    font-weight: inherit !important;
+
+    line-height: 1;
+
+    margin-left: 0 !important;
 }
 
+
+/* & HUB RED + SAME SIZE */
+
 .footer-logo .footer-hub-text {
+    color: #ef1024 !important;
+
+    font-size: inherit !important;
+
+    font-weight: inherit !important;
+
+    line-height: 1;
+
+    letter-spacing: -1px;
+
     margin-left: 7px;
-
-    color:
-        rgba(255, 255, 255, 0.76);
-
-    font-size: 15px;
-    font-weight: 700;
-
-    letter-spacing: 0;
 }
 
 
 /* =========================================================
-   FOOTER BRAND DESCRIPTION
+   FOOTER TEXT
 ========================================================= */
 
 .footer-brand p {
@@ -2159,7 +1801,7 @@ section {
 
 
 /* =========================================================
-   SOCIAL ICONS
+   SOCIAL
 ========================================================= */
 
 .social-links {
@@ -2183,19 +1825,12 @@ section {
 
     color:
         rgba(255, 255, 255, 0.70);
-
-    transition:
-        background 0.2s ease,
-        color 0.2s ease,
-        transform 0.2s ease;
 }
 
 .social-links a:hover {
     background: #ef1024;
 
     color: #ffffff;
-
-    transform: translateY(-2px);
 }
 
 
@@ -2218,9 +1853,6 @@ section {
         rgba(255, 255, 255, 0.55);
 
     font-size: 13px;
-
-    transition:
-        color 0.2s ease;
 }
 
 .footer-column a:hover {
@@ -2236,22 +1868,15 @@ section {
     line-height: 1.8;
 }
 
-
-/* =========================================================
-   FOOTER BOTTOM
-========================================================= */
-
 .footer-bottom {
     width: min(1180px, 92%);
 
-    margin:
-        35px auto 0;
+    margin: 35px auto 0;
 
     padding-top: 20px;
 
     border-top:
-        1px solid
-        rgba(255, 255, 255, 0.06);
+        1px solid rgba(255, 255, 255, 0.06);
 
     text-align: center;
 
@@ -2283,31 +1908,6 @@ section {
 
 ::-webkit-scrollbar-thumb:hover {
     background: #ff1b2d;
-}
-
-
-/* =========================================================
-   SMALL DESKTOP
-========================================================= */
-
-@media (max-width: 1120px) {
-
-    .nav-container {
-        width: 96%;
-
-        gap: 15px;
-    }
-
-    .nav-menu {
-        gap: 17px;
-
-        margin-right: 8px;
-    }
-
-    .nav-link {
-        font-size: 13px;
-    }
-
 }
 
 
@@ -2355,19 +1955,10 @@ section {
     }
 
 
-    .nav-container {
-        width: 92%;
-    }
-
-
-    /* desktop menu hidden */
-
     .nav-menu {
         display: none;
     }
 
-
-    /* generated dropdown hidden */
 
     .nav-category-dropdown {
         display: none !important;
@@ -2395,8 +1986,6 @@ section {
     }
 
 
-    /* HERO */
-
     .hero {
         min-height: 700px;
 
@@ -2416,62 +2005,13 @@ section {
                 10vw,
                 48px
             );
-
-        line-height: 1.05;
-
-        letter-spacing: -1.5px;
     }
 
-
-    .hero p {
-        font-size: 14px;
-
-        line-height: 1.7;
-    }
-
-
-    .hero-buttons {
-        width: 100%;
-    }
-
-
-    .hero-primary-button,
-    .hero-secondary-button {
-        flex: 1;
-
-        min-width: 145px;
-    }
-
-
-    .hero-dots {
-        right: 50%;
-
-        bottom: 25px;
-
-        transform:
-            translateX(50%);
-    }
-
-
-    /* SECTIONS */
 
     section {
         padding: 65px 0;
     }
 
-
-    .featured-section {
-        padding-top: 55px;
-        padding-bottom: 40px;
-    }
-
-
-    .section-heading {
-        margin-bottom: 25px;
-    }
-
-
-    /* FEATURED */
 
     .featured-track {
         gap: 12px;
@@ -2487,8 +2027,6 @@ section {
     }
 
 
-    /* GRIDS */
-
     .content-grid,
     .stories-grid,
     .books-grid,
@@ -2500,48 +2038,13 @@ section {
     }
 
 
-    .card-info,
-    .story-info,
-    .book-info,
-    .upcoming-info {
-        padding: 12px;
-    }
-
-
-    .card-info h3,
-    .story-info h3,
-    .book-info h3 {
-        font-size: 14px;
-    }
-
-
-    .card-hover-overlay {
-        padding: 12px;
-    }
-
-
-    .card-hover-overlay h4 {
-        font-size: 13px;
-    }
-
-
-    .card-hover-overlay p {
-        font-size: 10px;
-
-        -webkit-line-clamp: 3;
-    }
-
-
-    .poster-play {
-        width: 44px;
-        height: 44px;
-    }
-
-
     .footer-container {
         grid-template-columns: 1fr;
+    }
 
-        gap: 30px;
+
+    .footer-logo {
+        font-size: 23px !important;
     }
 
 }
@@ -2558,47 +2061,8 @@ section {
     }
 
 
-    .search-icon-button,
-    .mobile-menu-button {
-        width: 38px;
-        height: 38px;
-    }
-
-
-    .hero {
-        min-height: 670px;
-    }
-
-
     .hero h1 {
         font-size: 43px;
-
-        letter-spacing: -1.5px;
-    }
-
-
-    .hero p {
-        font-size: 13px;
-    }
-
-
-    .hero-buttons {
-        flex-direction: column;
-
-        align-items: stretch;
-    }
-
-
-    .content-grid,
-    .stories-grid,
-    .books-grid,
-    .upcoming-grid {
-        gap: 10px;
-    }
-
-
-    .featured-track {
-        gap: 10px;
     }
 
 
@@ -2611,57 +2075,8 @@ section {
     }
 
 
-    .featured-card-info h3 {
-        font-size: 12px;
-    }
-
-
-    .card-info h3 {
-        font-size: 13px;
-    }
-
-
-    .content-download-button {
-        padding: 9px 8px;
-
-        font-size: 10px;
-    }
-
-
-    .footer-logo .footer-hub-text {
-        font-size: 13px;
-    }
-
-}
-
-
-/* =========================================================
-   REDUCED MOTION
-========================================================= */
-
-@media (prefers-reduced-motion: reduce) {
-
-    html {
-        scroll-behavior: auto;
-    }
-
-
-    *,
-    *::before,
-    *::after {
-        animation-duration:
-            0.01ms !important;
-
-        animation-iteration-count:
-            1 !important;
-
-        transition-duration:
-            0.01ms !important;
-    }
-
-
-    .hero-background.zoom {
-        transform: scale(1);
+    .footer-logo {
+        font-size: 21px !important;
     }
 
 }
