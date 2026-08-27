@@ -1,21 +1,7 @@
 /* =====================================================
    CINEMA MELLA
-   PUBLIC WEBSITE - FINAL VERSION
-
+   PUBLIC WEBSITE - FINAL SCRIPT
    NO DATABASE CHANGE
-
-   FEATURES:
-   - Existing contents table only
-   - Auto category dropdown from genre
-   - Description on hover
-   - Rating 8+ Featured slider
-   - Hero uses BANNER IMAGE ONLY
-   - Hero order:
-     Movie -> Natok -> Series -> Upcoming
-     -> Story -> Book -> Tutorial -> repeat
-   - Movie/Natok/Series/Tutorial download button
-   - Story reader
-   - Book PDF
 ===================================================== */
 
 
@@ -26,10 +12,8 @@
 const SUPABASE_URL =
     "https://vuvstnlalyikvlanxxwy.supabase.co";
 
-
 const SUPABASE_PUBLISHABLE_KEY =
     "sb_publishable_ed-PGIvnw8yN2OwI2264IA_f1FOdWrp";
-
 
 const publicSupabase =
     window.supabase.createClient(
@@ -39,14 +23,14 @@ const publicSupabase =
 
 
 /* =====================================================
-   GLOBAL DATA
+   DATA
 ===================================================== */
 
 let databaseContents = [];
 
 
 /* =====================================================
-   TYPE MAP
+   TYPE SETTINGS
 ===================================================== */
 
 const TYPE_LABELS = {
@@ -111,7 +95,7 @@ const HERO_SEQUENCE = [
 
 
 /* =====================================================
-   CATEGORY FILTER
+   CATEGORY FILTERS
 ===================================================== */
 
 const activeGenreFilters = {
@@ -134,7 +118,7 @@ const activeGenreFilters = {
 
 
 /* =====================================================
-   HERO VARIABLES
+   HERO STATE
 ===================================================== */
 
 let heroSlides = [];
@@ -145,7 +129,7 @@ let heroTimer = null;
 
 
 /* =====================================================
-   FEATURED VARIABLES
+   FEATURED STATE
 ===================================================== */
 
 let featuredItems = [];
@@ -156,7 +140,7 @@ let featuredTimer = null;
 
 
 /* =====================================================
-   DOM
+   DOM ELEMENTS
 ===================================================== */
 
 const heroBackground =
@@ -164,48 +148,40 @@ const heroBackground =
         "heroBackground"
     );
 
-
 const heroDotsContainer =
     document.getElementById(
         "heroDots"
     );
-
 
 const searchToggle =
     document.getElementById(
         "searchToggle"
     );
 
-
 const searchBox =
     document.getElementById(
         "searchBox"
     );
-
 
 const searchInput =
     document.getElementById(
         "searchInput"
     );
 
-
 const searchClose =
     document.getElementById(
         "searchClose"
     );
-
 
 const searchResults =
     document.getElementById(
         "searchResults"
     );
 
-
 const mobileMenuButton =
     document.getElementById(
         "mobileMenuButton"
     );
-
 
 const mobileNav =
     document.getElementById(
@@ -214,77 +190,74 @@ const mobileNav =
 
 
 /* =====================================================
-   LOGO ANIMATION
+   HEADER LOGO ANIMATION ONLY
+
+   Footer logo will NOT animate.
 ===================================================== */
 
 const logoWords = [
-
     "MELLA",
-
     "HUB"
-
 ];
-
 
 let logoIndex = 0;
 
-
-setInterval(
-    () => {
-
-        logoIndex =
-            (
-                logoIndex + 1
-            )
-            %
-            logoWords.length;
+const headerChangingLogo =
+    document.getElementById(
+        "logoChangingText"
+    );
 
 
-        document
-            .querySelectorAll(
-                ".logo-changing"
-            )
-            .forEach(
-                logo => {
+if (headerChangingLogo) {
 
-                    logo.style.opacity =
-                        "0";
+    setInterval(
+        () => {
 
-
-                    logo.style.transform =
-                        "translateY(5px)";
+            logoIndex =
+                (
+                    logoIndex + 1
+                )
+                %
+                logoWords.length;
 
 
-                    setTimeout(
-                        () => {
-
-                            logo.textContent =
-                                logoWords[
-                                    logoIndex
-                                ];
+            headerChangingLogo.style.opacity =
+                "0";
 
 
-                            logo.style.opacity =
-                                "1";
+            headerChangingLogo.style.transform =
+                "translateY(5px)";
 
 
-                            logo.style.transform =
-                                "translateY(0)";
+            setTimeout(
+                () => {
 
-                        },
-                        300
-                    );
+                    headerChangingLogo.textContent =
+                        logoWords[
+                            logoIndex
+                        ];
 
-                }
+
+                    headerChangingLogo.style.opacity =
+                        "1";
+
+
+                    headerChangingLogo.style.transform =
+                        "translateY(0)";
+
+                },
+                300
             );
 
-    },
-    2500
-);
+        },
+        2500
+    );
+
+}
 
 
 /* =====================================================
-   LOAD DATABASE CONTENT
+   LOAD CONTENT
 ===================================================== */
 
 async function loadWebsiteContents() {
@@ -323,24 +296,19 @@ async function loadWebsiteContents() {
 
         createNavbarDropdowns();
 
-
         renderNavbarCategories();
-
 
         createFeaturedSection();
 
-
         renderAllSections();
 
-
         setupFeaturedSlider();
-
 
         setupDynamicHero();
 
 
         console.log(
-            "Cinema Mella content loaded:",
+            "Cinema Mella loaded:",
             databaseContents
         );
 
@@ -372,8 +340,8 @@ function splitGenres(value) {
     )
         .split(",")
         .map(
-            genre =>
-                genre.trim()
+            item =>
+                item.trim()
         )
         .filter(Boolean);
 
@@ -381,7 +349,7 @@ function splitGenres(value) {
 
 
 /* =====================================================
-   GET CATEGORY FROM EXISTING CONTENT
+   UNIQUE GENRES BY TYPE
 ===================================================== */
 
 function getGenresForType(type) {
@@ -405,8 +373,8 @@ function getGenresForType(type) {
 
                             const exists =
                                 genres.some(
-                                    oldGenre =>
-                                        oldGenre
+                                    existing =>
+                                        existing
                                             .toLowerCase()
                                         ===
                                         genre
@@ -441,18 +409,9 @@ function getGenresForType(type) {
 
 
 /* =====================================================
-   CREATE NAVBAR DROPDOWNS
+   CREATE NAV DROPDOWNS
 
-   Existing index.html menu:
-   Movies
-   Natok
-   Web Series
-   Upcoming
-   Stories
-   Books
-   Tutorial
-
-   JS automatically wraps them.
+   Uses existing normal nav links.
 ===================================================== */
 
 function createNavbarDropdowns() {
@@ -470,7 +429,7 @@ function createNavbarDropdowns() {
     }
 
 
-    const map = {
+    const dropdownMap = {
 
         "#movies":
             "movie",
@@ -497,7 +456,9 @@ function createNavbarDropdowns() {
 
 
     Object
-        .entries(map)
+        .entries(
+            dropdownMap
+        )
         .forEach(
             (
                 [
@@ -520,8 +481,7 @@ function createNavbarDropdowns() {
 
 
                 if (
-                    link.parentElement
-                    &&
+                    link.parentElement &&
                     link.parentElement
                         .classList
                         .contains(
@@ -560,24 +520,31 @@ function createNavbarDropdowns() {
 
                 dropdown.innerHTML = `
 
-                    <div class="genre-dropdown-head">
+                    <div
+                        class="genre-dropdown-head"
+                    >
 
                         ${escapeHTML(
-                            TYPE_LABELS[type]
+                            TYPE_LABELS[
+                                type
+                            ]
                         )}
 
                     </div>
 
 
-                    <div class="genre-menu-dynamic"></div>
+                    <div
+                        class="genre-menu-dynamic"
+                    ></div>
 
                 `;
 
 
-                link.parentNode.insertBefore(
-                    wrapper,
-                    link
-                );
+                link.parentNode
+                    .insertBefore(
+                        wrapper,
+                        link
+                    );
 
 
                 wrapper.appendChild(
@@ -596,7 +563,7 @@ function createNavbarDropdowns() {
 
 
 /* =====================================================
-   RENDER NAVBAR CATEGORY
+   RENDER NAV CATEGORIES
 ===================================================== */
 
 function renderNavbarCategories() {
@@ -743,7 +710,9 @@ document.addEventListener(
         }
 
 
-        activeGenreFilters[type] =
+        activeGenreFilters[
+            type
+        ] =
             genre;
 
 
@@ -782,13 +751,11 @@ document.addEventListener(
         );
 
 
-        const sectionId =
-            TYPE_SECTIONS[type];
-
-
         const section =
             document.getElementById(
-                sectionId
+                TYPE_SECTIONS[
+                    type
+                ]
             );
 
 
@@ -811,7 +778,7 @@ document.addEventListener(
 
 
 /* =====================================================
-   CATEGORY MATCH
+   GENRE MATCH
 ===================================================== */
 
 function itemMatchesGenre(
@@ -833,8 +800,8 @@ function itemMatchesGenre(
         item.genre
     )
         .some(
-            itemGenre =>
-                itemGenre
+            current =>
+                current
                     .toLowerCase()
                 ===
                 genre
@@ -850,12 +817,6 @@ function itemMatchesGenre(
 
 function getFilteredContents(type) {
 
-    const selectedGenre =
-        activeGenreFilters[type]
-        ||
-        "all";
-
-
     return databaseContents
         .filter(
             item =>
@@ -865,7 +826,9 @@ function getFilteredContents(type) {
             item =>
                 itemMatchesGenre(
                     item,
-                    selectedGenre
+                    activeGenreFilters[
+                        type
+                    ]
                 )
         );
 
@@ -873,7 +836,7 @@ function getFilteredContents(type) {
 
 
 /* =====================================================
-   EMPTY FILTER TEXT
+   EMPTY FILTER MESSAGE
 ===================================================== */
 
 function getEmptyText(
@@ -882,7 +845,9 @@ function getEmptyText(
 ) {
 
     const genre =
-        activeGenreFilters[type];
+        activeGenreFilters[
+            type
+        ];
 
 
     if (
@@ -955,9 +920,15 @@ function renderSectionByType(type) {
     };
 
 
-    if (renderers[type]) {
+    if (
+        renderers[
+            type
+        ]
+    ) {
 
-        renderers[type]();
+        renderers[
+            type
+        ]();
 
     }
 
@@ -997,7 +968,7 @@ function renderNatok() {
 
 
 /* =====================================================
-   WEB SERIES
+   SERIES
 ===================================================== */
 
 function renderSeries() {
@@ -1073,7 +1044,7 @@ function renderVideoGrid(
 
 
 /* =====================================================
-   MOVIE / NATOK / SERIES CARD
+   VIDEO CARD
 ===================================================== */
 
 function createVideoCard(
@@ -1081,9 +1052,8 @@ function createVideoCard(
     label
 ) {
 
-    const image =
-        item.poster_url
-        ||
+    const poster =
+        item.poster_url ||
         "";
 
 
@@ -1120,23 +1090,24 @@ function createVideoCard(
             <div
                 class="movie-poster"
                 style='${
-                    image
+                    poster
                         ?
                         `background-image:url("${escapeCssUrl(
-                            image
+                            poster
                         )}")`
                         :
                         ""
                 }'
             >
 
-
                 ${
                     item.badge
                         ?
                         `
 
-                            <span class="content-badge">
+                            <span
+                                class="content-badge"
+                            >
 
                                 ${escapeHTML(
                                     item.badge
@@ -1164,10 +1135,12 @@ function createVideoCard(
                                 type="button"
                                 class="poster-play content-video-button"
                                 data-content-id="${item.id}"
-                                title="Watch"
+                                aria-label="Watch"
                             >
 
-                                <i class="fa-solid fa-play"></i>
+                                <i
+                                    class="fa-solid fa-play"
+                                ></i>
 
                             </button>
 
@@ -1216,7 +1189,9 @@ function createVideoCard(
                                 ?
                                 `
 
-                                    <i class="fa-solid fa-star"></i>
+                                    <i
+                                        class="fa-solid fa-star"
+                                    ></i>
 
                                     ${escapeHTML(
                                         item.rating
@@ -1243,7 +1218,9 @@ function createVideoCard(
                                 data-content-id="${item.id}"
                             >
 
-                                <i class="fa-solid fa-download"></i>
+                                <i
+                                    class="fa-solid fa-download"
+                                ></i>
 
                                 Download
 
@@ -1309,7 +1286,7 @@ function renderUpcoming() {
             .map(
                 item => {
 
-                    const image =
+                    const poster =
                         item.poster_url ||
                         "";
 
@@ -1324,17 +1301,19 @@ function renderUpcoming() {
                             <div
                                 class="upcoming-poster"
                                 style='${
-                                    image
+                                    poster
                                         ?
                                         `background-image:url("${escapeCssUrl(
-                                            image
+                                            poster
                                         )}")`
                                         :
                                         ""
                                 }'
                             >
 
-                                <span class="coming-badge">
+                                <span
+                                    class="coming-badge"
+                                >
 
                                     ${escapeHTML(
                                         item.badge ||
@@ -1443,7 +1422,7 @@ function renderStories() {
             .map(
                 item => {
 
-                    const image =
+                    const poster =
                         item.poster_url ||
                         "";
 
@@ -1458,17 +1437,19 @@ function renderStories() {
                             <div
                                 class="story-image"
                                 style='${
-                                    image
+                                    poster
                                         ?
                                         `background-image:url("${escapeCssUrl(
-                                            image
+                                            poster
                                         )}")`
                                         :
                                         ""
                                 }'
                             >
 
-                                <span class="story-badge">
+                                <span
+                                    class="story-badge"
+                                >
 
                                     ${
                                         item.featured
@@ -1490,7 +1471,9 @@ function renderStories() {
 
                             <div class="story-info">
 
-                                <span class="story-date">
+                                <span
+                                    class="story-date"
+                                >
 
                                     ${
                                         item.release_date
@@ -1544,7 +1527,9 @@ function renderStories() {
 
                                     Read Story
 
-                                    <i class="fa-solid fa-arrow-right"></i>
+                                    <i
+                                        class="fa-solid fa-arrow-right"
+                                    ></i>
 
                                 </button>
 
@@ -1607,7 +1592,7 @@ function renderBooks() {
             .map(
                 item => {
 
-                    const image =
+                    const poster =
                         item.poster_url ||
                         "";
 
@@ -1622,17 +1607,19 @@ function renderBooks() {
                             <div
                                 class="book-cover"
                                 style='${
-                                    image
+                                    poster
                                         ?
                                         `background-image:url("${escapeCssUrl(
-                                            image
+                                            poster
                                         )}")`
                                         :
                                         ""
                                 }'
                             >
 
-                                <span class="book-badge">
+                                <span
+                                    class="book-badge"
+                                >
 
                                     ${
                                         item.featured
@@ -1654,7 +1641,9 @@ function renderBooks() {
 
                             <div class="book-info">
 
-                                <span class="book-category">
+                                <span
+                                    class="book-category"
+                                >
 
                                     ${escapeHTML(
                                         item.genre ||
@@ -1706,7 +1695,9 @@ function renderBooks() {
 
                                                 Read Book
 
-                                                <i class="fa-solid fa-arrow-right"></i>
+                                                <i
+                                                    class="fa-solid fa-arrow-right"
+                                                ></i>
 
                                             </button>
 
@@ -1774,7 +1765,7 @@ function renderTutorial() {
             .map(
                 item => {
 
-                    const image =
+                    const poster =
                         item.poster_url ||
                         "";
 
@@ -1789,23 +1780,24 @@ function renderTutorial() {
                             <div
                                 class="movie-poster"
                                 style='${
-                                    image
+                                    poster
                                         ?
                                         `background-image:url("${escapeCssUrl(
-                                            image
+                                            poster
                                         )}")`
                                         :
                                         ""
                                 }'
                             >
 
-
                                 ${
                                     item.genre
                                         ?
                                         `
 
-                                            <span class="content-badge">
+                                            <span
+                                                class="content-badge"
+                                            >
 
                                                 ${escapeHTML(
                                                     item.genre
@@ -1835,7 +1827,9 @@ function renderTutorial() {
                                                 data-content-id="${item.id}"
                                             >
 
-                                                <i class="fa-solid fa-play"></i>
+                                                <i
+                                                    class="fa-solid fa-play"
+                                                ></i>
 
                                             </button>
 
@@ -1849,7 +1843,9 @@ function renderTutorial() {
 
                             <div class="card-info">
 
-                                <span class="card-category">
+                                <span
+                                    class="card-category"
+                                >
 
                                     TUTORIAL
 
@@ -1885,7 +1881,9 @@ function renderTutorial() {
                                                 ?
                                                 `
 
-                                                    <i class="fa-solid fa-star"></i>
+                                                    <i
+                                                        class="fa-solid fa-star"
+                                                    ></i>
 
                                                     ${escapeHTML(
                                                         item.rating
@@ -1912,7 +1910,9 @@ function renderTutorial() {
                                                 data-content-id="${item.id}"
                                             >
 
-                                                <i class="fa-solid fa-download"></i>
+                                                <i
+                                                    class="fa-solid fa-download"
+                                                ></i>
 
                                                 Download
 
@@ -1944,7 +1944,9 @@ function createHoverOverlay(item) {
 
     return `
 
-        <div class="card-hover-overlay">
+        <div
+            class="card-hover-overlay"
+        >
 
             <h4>
 
@@ -1966,7 +1968,9 @@ function createHoverOverlay(item) {
             </p>
 
 
-            <span class="card-hover-action">
+            <span
+                class="card-hover-action"
+            >
 
                 ${escapeHTML(
                     getActionText(
@@ -1974,7 +1978,9 @@ function createHoverOverlay(item) {
                     )
                 )}
 
-                <i class="fa-solid fa-arrow-right"></i>
+                <i
+                    class="fa-solid fa-arrow-right"
+                ></i>
 
             </span>
 
@@ -2065,16 +2071,20 @@ function findContentById(id) {
 
     return databaseContents.find(
         item =>
-            String(item.id)
+            String(
+                item.id
+            )
             ===
-            String(id)
+            String(
+                id
+            )
     );
 
 }
 
 
 /* =====================================================
-   VIDEO BUTTON CLICK
+   VIDEO CLICK
 ===================================================== */
 
 document.addEventListener(
@@ -2124,7 +2134,7 @@ document.addEventListener(
 
 
 /* =====================================================
-   DOWNLOAD BUTTON CLICK
+   DOWNLOAD CLICK
 ===================================================== */
 
 document.addEventListener(
@@ -2174,7 +2184,7 @@ document.addEventListener(
 
 
 /* =====================================================
-   STORY BUTTON
+   STORY CLICK
 ===================================================== */
 
 document.addEventListener(
@@ -2219,7 +2229,7 @@ document.addEventListener(
 
 
 /* =====================================================
-   BOOK BUTTON
+   BOOK CLICK
 ===================================================== */
 
 document.addEventListener(
@@ -2289,13 +2299,7 @@ document.addEventListener(
 
         const card =
             event.target.closest(
-                `
-                .movie-card,
-                .story-card,
-                .book-card,
-                .upcoming-card,
-                .featured-card
-                `
+                ".movie-card, .story-card, .book-card, .upcoming-card, .featured-card"
             );
 
 
@@ -2313,16 +2317,13 @@ document.addEventListener(
             );
 
 
-        if (!item) {
+        if (item) {
 
-            return;
+            openContent(
+                item
+            );
 
         }
-
-
-        openContent(
-            item
-        );
 
     }
 );
@@ -2377,9 +2378,7 @@ function openContent(item) {
     }
 
 
-    if (
-        item.video_url
-    ) {
+    if (item.video_url) {
 
         window.open(
             item.video_url,
@@ -2393,9 +2392,7 @@ function openContent(item) {
     }
 
 
-    if (
-        item.download_url
-    ) {
+    if (item.download_url) {
 
         window.open(
             item.download_url,
@@ -2409,7 +2406,7 @@ function openContent(item) {
 
 
 /* =====================================================
-   STORY READER
+   STORY MODAL
 ===================================================== */
 
 function openStoryReader(story) {
@@ -2449,7 +2446,7 @@ function openStoryReader(story) {
                 align-items:center;
                 justify-content:center;
                 padding:20px;
-                background:rgba(0,0,0,.9);
+                background:rgba(0,0,0,.90);
             "
         >
 
@@ -2460,15 +2457,15 @@ function openStoryReader(story) {
                     max-height:86vh;
                     overflow-y:auto;
                     padding:32px;
-                    border:1px solid rgba(255,255,255,.1);
-                    border-radius:16px;
                     background:#101116;
+                    border:1px solid rgba(255,255,255,.10);
+                    border-radius:16px;
                 "
             >
 
                 <button
-                    type="button"
                     id="closeStoryReader"
+                    type="button"
                     style="
                         position:absolute;
                         top:18px;
@@ -2478,12 +2475,14 @@ function openStoryReader(story) {
                         border:none;
                         border-radius:50%;
                         background:#ef1024;
-                        color:#fff;
+                        color:#ffffff;
                         cursor:pointer;
                     "
                 >
 
-                    <i class="fa-solid fa-xmark"></i>
+                    <i
+                        class="fa-solid fa-xmark"
+                    ></i>
 
                 </button>
 
@@ -2530,7 +2529,7 @@ function openStoryReader(story) {
                 <div
                     style="
                         white-space:pre-wrap;
-                        color:rgba(255,255,255,.8);
+                        color:rgba(255,255,255,.80);
                         line-height:1.9;
                         font-size:15px;
                     "
@@ -2640,11 +2639,17 @@ function createFeaturedSection() {
 
     section.innerHTML = `
 
-        <div class="section-heading">
+        <div
+            class="section-heading"
+        >
 
-            <div class="heading-left">
+            <div
+                class="heading-left"
+            >
 
-                <span class="heading-line"></span>
+                <span
+                    class="heading-line"
+                ></span>
 
 
                 <div>
@@ -2663,7 +2668,9 @@ function createFeaturedSection() {
             </div>
 
 
-            <div class="featured-controls">
+            <div
+                class="featured-controls"
+            >
 
                 <button
                     type="button"
@@ -2671,7 +2678,9 @@ function createFeaturedSection() {
                     aria-label="Previous"
                 >
 
-                    <i class="fa-solid fa-chevron-left"></i>
+                    <i
+                        class="fa-solid fa-chevron-left"
+                    ></i>
 
                 </button>
 
@@ -2682,7 +2691,9 @@ function createFeaturedSection() {
                     aria-label="Next"
                 >
 
-                    <i class="fa-solid fa-chevron-right"></i>
+                    <i
+                        class="fa-solid fa-chevron-right"
+                    ></i>
 
                 </button>
 
@@ -2717,8 +2728,7 @@ function createFeaturedSection() {
 
 
 /* =====================================================
-   FEATURED SLIDER
-   RATING 8+
+   FEATURED - RATING 8+
 ===================================================== */
 
 function setupFeaturedSlider() {
@@ -2748,7 +2758,9 @@ function setupFeaturedSlider() {
 
 
                     return (
-                        Number.isFinite(rating)
+                        Number.isFinite(
+                            rating
+                        )
                         &&
                         rating >= 8
                         &&
@@ -2764,9 +2776,13 @@ function setupFeaturedSlider() {
                     a,
                     b
                 ) =>
-                    Number(b.rating)
+                    Number(
+                        b.rating
+                    )
                     -
-                    Number(a.rating)
+                    Number(
+                        a.rating
+                    )
             );
 
 
@@ -2774,7 +2790,9 @@ function setupFeaturedSlider() {
 
         track.innerHTML = `
 
-            <div class="database-loading">
+            <div
+                class="database-loading"
+            >
 
                 No content with rating 8.0 or higher yet.
 
@@ -2805,16 +2823,20 @@ function setupFeaturedSlider() {
                             )}")'
                         >
 
-                            <span class="featured-badge">
-
+                            <span
+                                class="featured-badge"
+                            >
                                 FEATURED
-
                             </span>
 
 
-                            <span class="featured-rating">
+                            <span
+                                class="featured-rating"
+                            >
 
-                                <i class="fa-solid fa-star"></i>
+                                <i
+                                    class="fa-solid fa-star"
+                                ></i>
 
                                 ${escapeHTML(
                                     item.rating
@@ -2830,9 +2852,13 @@ function setupFeaturedSlider() {
                         </div>
 
 
-                        <div class="featured-card-info">
+                        <div
+                            class="featured-card-info"
+                        >
 
-                            <span class="featured-type">
+                            <span
+                                class="featured-type"
+                            >
 
                                 ${escapeHTML(
                                     formatType(
@@ -2872,8 +2898,7 @@ function setupFeaturedSlider() {
             .join("");
 
 
-    featuredIndex =
-        0;
+    featuredIndex = 0;
 
 
     updateFeaturedPosition();
@@ -2941,8 +2966,7 @@ function setupFeaturedSlider() {
 function getFeaturedMeta(item) {
 
     if (
-        item.type ===
-        "series"
+        item.type === "series"
         &&
         item.season
     ) {
@@ -2969,10 +2993,8 @@ function getFeaturedMeta(item) {
 
 
     return (
-        item.year
-        ||
-        item.genre
-        ||
+        item.year ||
+        item.genre ||
         ""
     );
 
@@ -2980,7 +3002,7 @@ function getFeaturedMeta(item) {
 
 
 /* =====================================================
-   FEATURED VISIBLE
+   FEATURED RESPONSIVE COUNT
 ===================================================== */
 
 function getFeaturedVisibleCount() {
@@ -3009,7 +3031,7 @@ function getFeaturedVisibleCount() {
 
 
 /* =====================================================
-   FEATURED MAX
+   FEATURED MAX INDEX
 ===================================================== */
 
 function getFeaturedMaxIndex() {
@@ -3109,7 +3131,9 @@ function featuredGoNext() {
         getFeaturedMaxIndex();
 
 
-    if (max <= 0) {
+    if (
+        max <= 0
+    ) {
 
         return;
 
@@ -3139,7 +3163,9 @@ function featuredGoPrev() {
         getFeaturedMaxIndex();
 
 
-    if (max <= 0) {
+    if (
+        max <= 0
+    ) {
 
         return;
 
@@ -3160,7 +3186,7 @@ function featuredGoPrev() {
 
 
 /* =====================================================
-   FEATURED AUTO PLAY
+   FEATURED AUTO
 ===================================================== */
 
 function startFeaturedAutoPlay() {
@@ -3179,7 +3205,9 @@ function startFeaturedAutoPlay() {
 
 function stopFeaturedAutoPlay() {
 
-    if (featuredTimer) {
+    if (
+        featuredTimer
+    ) {
 
         clearInterval(
             featuredTimer
@@ -3194,10 +3222,6 @@ function stopFeaturedAutoPlay() {
 }
 
 
-/* =====================================================
-   FEATURED RESIZE
-===================================================== */
-
 window.addEventListener(
     "resize",
     updateFeaturedPosition
@@ -3205,9 +3229,10 @@ window.addEventListener(
 
 
 /* =====================================================
-   HERO
-   IMPORTANT:
-   HERO USES BANNER IMAGE ONLY
+   HERO SETUP
+
+   HERO USES BANNER IMAGE ONLY.
+   POSTER IS NEVER USED HERE.
 ===================================================== */
 
 function setupDynamicHero() {
@@ -3218,12 +3243,6 @@ function setupDynamicHero() {
 
     }
 
-
-    /*
-       One latest banner from each type.
-
-       Poster image is NEVER used here.
-    */
 
     heroSlides =
         HERO_SEQUENCE
@@ -3256,20 +3275,21 @@ function setupDynamicHero() {
     }
 
 
-    heroIndex =
-        0;
+    heroIndex = 0;
 
 
     renderHeroDots();
 
 
     showHeroSlide(
-        heroIndex,
+        0,
         false
     );
 
 
-    if (heroTimer) {
+    if (
+        heroTimer
+    ) {
 
         clearInterval(
             heroTimer
@@ -3303,7 +3323,9 @@ function setupDynamicHero() {
 
 
 /* =====================================================
-   SHOW HERO SLIDE
+   SHOW HERO
+
+   banner_url ONLY
 ===================================================== */
 
 function showHeroSlide(
@@ -3311,29 +3333,17 @@ function showHeroSlide(
     animate = true
 ) {
 
+    const item =
+        heroSlides[
+            index
+        ];
+
+
     if (
         !heroBackground ||
-        !heroSlides[index]
+        !item ||
+        !item.banner_url
     ) {
-
-        return;
-
-    }
-
-
-    const item =
-        heroSlides[index];
-
-
-    /*
-       HERO = BANNER ONLY
-    */
-
-    const image =
-        item.banner_url;
-
-
-    if (!image) {
 
         return;
 
@@ -3342,6 +3352,10 @@ function showHeroSlide(
 
     heroIndex =
         index;
+
+
+    const image =
+        item.banner_url;
 
 
     const applyImage =
@@ -3371,8 +3385,7 @@ function showHeroSlide(
                 "center";
 
 
-            heroBackground.style
-                .opacity =
+            heroBackground.style.opacity =
                 "1";
 
 
@@ -3457,7 +3470,7 @@ function renderHeroDots() {
                                 ""
                         }"
                         data-hero-index="${index}"
-                        title="${escapeAttribute(
+                        aria-label="${escapeAttribute(
                             formatType(
                                 item.type
                             )
@@ -3504,35 +3517,7 @@ function renderHeroDots() {
                         );
 
 
-                        if (heroTimer) {
-
-                            clearInterval(
-                                heroTimer
-                            );
-
-                        }
-
-
-                        heroTimer =
-                            setInterval(
-                                () => {
-
-                                    heroIndex =
-                                        (
-                                            heroIndex + 1
-                                        )
-                                        %
-                                        heroSlides.length;
-
-
-                                    showHeroSlide(
-                                        heroIndex,
-                                        true
-                                    );
-
-                                },
-                                3800
-                            );
+                        restartHeroTimer();
 
                     }
                 );
@@ -3544,7 +3529,48 @@ function renderHeroDots() {
 
 
 /* =====================================================
-   HERO ACTIVE DOT
+   HERO TIMER RESTART
+===================================================== */
+
+function restartHeroTimer() {
+
+    if (
+        heroTimer
+    ) {
+
+        clearInterval(
+            heroTimer
+        );
+
+    }
+
+
+    heroTimer =
+        setInterval(
+            () => {
+
+                heroIndex =
+                    (
+                        heroIndex + 1
+                    )
+                    %
+                    heroSlides.length;
+
+
+                showHeroSlide(
+                    heroIndex,
+                    true
+                );
+
+            },
+            3800
+        );
+
+}
+
+
+/* =====================================================
+   ACTIVE HERO DOT
 ===================================================== */
 
 function updateHeroDots() {
@@ -3629,7 +3655,9 @@ function closeSearch() {
     );
 
 
-    if (searchInput) {
+    if (
+        searchInput
+    ) {
 
         searchInput.value =
             "";
@@ -3637,7 +3665,9 @@ function closeSearch() {
     }
 
 
-    if (searchResults) {
+    if (
+        searchResults
+    ) {
 
         searchResults.innerHTML =
             "";
@@ -3651,7 +3681,9 @@ function closeSearch() {
    SEARCH BUTTON
 ===================================================== */
 
-if (searchToggle) {
+if (
+    searchToggle
+) {
 
     searchToggle.addEventListener(
         "click",
@@ -3688,7 +3720,9 @@ if (searchToggle) {
    SEARCH CLOSE BUTTON
 ===================================================== */
 
-if (searchClose) {
+if (
+    searchClose
+) {
 
     searchClose.addEventListener(
         "click",
@@ -3709,7 +3743,9 @@ if (searchClose) {
    SEARCH INPUT
 ===================================================== */
 
-if (searchInput) {
+if (
+    searchInput
+) {
 
     searchInput.addEventListener(
         "input",
@@ -3726,12 +3762,14 @@ if (searchInput) {
 
 
 /* =====================================================
-   SEARCH FUNCTION
+   PERFORM SEARCH
 ===================================================== */
 
 function performSearch(keyword) {
 
-    if (!searchResults) {
+    if (
+        !searchResults
+    ) {
 
         return;
 
@@ -3760,7 +3798,7 @@ function performSearch(keyword) {
             .filter(
                 item => {
 
-                    const searchableText = [
+                    const searchable = [
 
                         item.title,
 
@@ -3778,10 +3816,9 @@ function performSearch(keyword) {
                         .toLowerCase();
 
 
-                    return searchableText
-                        .includes(
-                            text
-                        );
+                    return searchable.includes(
+                        text
+                    );
 
                 }
             );
@@ -3791,11 +3828,17 @@ function performSearch(keyword) {
 
         searchResults.innerHTML = `
 
-            <div class="search-result-item">
+            <div
+                class="search-result-item"
+            >
 
-                <div class="search-result-icon">
+                <div
+                    class="search-result-icon"
+                >
 
-                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <i
+                        class="fa-solid fa-magnifying-glass"
+                    ></i>
 
                 </div>
 
@@ -3839,11 +3882,15 @@ function performSearch(keyword) {
                         )}"
                     >
 
-                        <div class="search-result-icon">
+                        <div
+                            class="search-result-icon"
+                        >
 
-                            <i class="${getTypeIcon(
-                                item.type
-                            )}"></i>
+                            <i
+                                class="${getTypeIcon(
+                                    item.type
+                                )}"
+                            ></i>
 
                         </div>
 
@@ -3885,7 +3932,9 @@ function performSearch(keyword) {
    SEARCH RESULT CLICK
 ===================================================== */
 
-if (searchResults) {
+if (
+    searchResults
+) {
 
     searchResults.addEventListener(
         "click",
@@ -3911,17 +3960,17 @@ if (searchResults) {
             closeSearch();
 
 
-            const sectionId =
-                TYPE_SECTIONS[type];
-
-
             const section =
                 document.getElementById(
-                    sectionId
+                    TYPE_SECTIONS[
+                        type
+                    ]
                 );
 
 
-            if (section) {
+            if (
+                section
+            ) {
 
                 section.scrollIntoView(
                     {
@@ -3942,27 +3991,29 @@ if (searchResults) {
 
 
 /* =====================================================
-   SEARCH CLICK OUTSIDE
+   CLICK OUTSIDE SEARCH
 ===================================================== */
 
 document.addEventListener(
     "click",
     event => {
 
-        if (!searchBox) {
+        if (
+            !searchBox
+        ) {
 
             return;
 
         }
 
 
-        const insideSearch =
+        const inside =
             searchBox.contains(
                 event.target
             );
 
 
-        const searchButton =
+        const button =
             searchToggle &&
             searchToggle.contains(
                 event.target
@@ -3970,8 +4021,8 @@ document.addEventListener(
 
 
         if (
-            !insideSearch &&
-            !searchButton
+            !inside &&
+            !button
         ) {
 
             closeSearch();
@@ -3988,7 +4039,9 @@ document.addEventListener(
 
 function closeMobileMenu() {
 
-    if (!mobileNav) {
+    if (
+        !mobileNav
+    ) {
 
         return;
 
@@ -4007,7 +4060,9 @@ function closeMobileMenu() {
             );
 
 
-    if (icon) {
+    if (
+        icon
+    ) {
 
         icon.classList.remove(
             "fa-xmark"
@@ -4023,7 +4078,9 @@ function closeMobileMenu() {
 }
 
 
-if (mobileMenuButton) {
+if (
+    mobileMenuButton
+) {
 
     mobileMenuButton.addEventListener(
         "click",
@@ -4032,7 +4089,9 @@ if (mobileMenuButton) {
             event.stopPropagation();
 
 
-            if (!mobileNav) {
+            if (
+                !mobileNav
+            ) {
 
                 return;
 
@@ -4086,7 +4145,9 @@ if (mobileMenuButton) {
    MOBILE LINKS
 ===================================================== */
 
-if (mobileNav) {
+if (
+    mobileNav
+) {
 
     mobileNav
         .querySelectorAll(
@@ -4143,7 +4204,9 @@ document
                         );
 
 
-                    if (!target) {
+                    if (
+                        !target
+                    ) {
 
                         return;
 
@@ -4204,17 +4267,14 @@ function updateActiveNav() {
 
 
                 const bottom =
-                    top
-                    +
+                    top +
                     section.offsetHeight;
 
 
                 if (
-                    window.scrollY >=
-                    top
+                    window.scrollY >= top
                     &&
-                    window.scrollY <
-                    bottom
+                    window.scrollY < bottom
                 ) {
 
                     current =
@@ -4258,7 +4318,7 @@ window.addEventListener(
 
 
 /* =====================================================
-   ESCAPE KEY
+   ESC KEY
 ===================================================== */
 
 document.addEventListener(
@@ -4277,7 +4337,6 @@ document.addEventListener(
 
         closeSearch();
 
-
         closeMobileMenu();
 
 
@@ -4287,7 +4346,9 @@ document.addEventListener(
             );
 
 
-        if (modal) {
+        if (
+            modal
+        ) {
 
             modal.remove();
 
@@ -4329,7 +4390,9 @@ function showDatabaseError() {
                     );
 
 
-                if (grid) {
+                if (
+                    grid
+                ) {
 
                     grid.innerHTML =
                         emptyMessage(
@@ -4363,7 +4426,9 @@ function hasRating(item) {
 function formatType(type) {
 
     return (
-        TYPE_LABELS[type]
+        TYPE_LABELS[
+            type
+        ]
         ||
         type
         ||
@@ -4402,7 +4467,9 @@ function getTypeIcon(type) {
 
 
     return (
-        icons[type]
+        icons[
+            type
+        ]
         ||
         "fa-solid fa-film"
     );
@@ -4412,7 +4479,9 @@ function getTypeIcon(type) {
 
 function formatDate(date) {
 
-    if (!date) {
+    if (
+        !date
+    ) {
 
         return "";
 
@@ -4427,6 +4496,7 @@ function formatDate(date) {
             .toLocaleDateString(
                 "en-US",
                 {
+
                     year:
                         "numeric",
 
@@ -4435,6 +4505,7 @@ function formatDate(date) {
 
                     day:
                         "numeric"
+
                 }
             );
 
@@ -4488,28 +4559,25 @@ function escapeHTML(value) {
     }
 
 
-    return String(value)
-
+    return String(
+        value
+    )
         .replaceAll(
             "&",
             "&amp;"
         )
-
         .replaceAll(
             "<",
             "&lt;"
         )
-
         .replaceAll(
             ">",
             "&gt;"
         )
-
         .replaceAll(
             '"',
             "&quot;"
         )
-
         .replaceAll(
             "'",
             "&#039;"
@@ -4532,22 +4600,18 @@ function escapeCssUrl(value) {
     return String(
         value || ""
     )
-
         .replaceAll(
             "\\",
             "\\\\"
         )
-
         .replaceAll(
             '"',
             '\\"'
         )
-
         .replaceAll(
             "\n",
             ""
         )
-
         .replaceAll(
             "\r",
             ""
@@ -4557,14 +4621,16 @@ function escapeCssUrl(value) {
 
 
 /* =====================================================
-   START WEBSITE
+   START
 ===================================================== */
 
 document.addEventListener(
     "DOMContentLoaded",
     async () => {
 
-        if (heroBackground) {
+        if (
+            heroBackground
+        ) {
 
             heroBackground.style
                 .backgroundImage =
@@ -4572,8 +4638,7 @@ document.addEventListener(
                 "linear-gradient(120deg,#11001f 0%,#2a075c 48%,#4d0c79 100%)";
 
 
-            heroBackground.style
-                .opacity =
+            heroBackground.style.opacity =
                 "1";
 
         }

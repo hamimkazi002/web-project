@@ -1,15 +1,6 @@
 /* =========================================================
    CINEMA MELLA / CINEMA HUB
-   PUBLIC WEBSITE - FINAL CSS
-
-   FEATURES:
-   - Responsive navbar
-   - Hover category dropdown
-   - Banner hero zoom
-   - Featured slider
-   - Hover description overlay
-   - Download buttons
-   - Movies / Natok / Series / Stories / Books / Tutorial
+   FINAL PUBLIC WEBSITE CSS
 ========================================================= */
 
 
@@ -23,47 +14,35 @@
     box-sizing: border-box;
 }
 
-
 html {
     scroll-behavior: smooth;
 }
 
-
 body {
     font-family: 'Inter', Arial, Helvetica, sans-serif;
-
     background: #07080c;
-
     color: #ffffff;
-
     overflow-x: hidden;
 }
 
-
 a {
     color: inherit;
-
     text-decoration: none;
 }
-
 
 button,
 input {
     font-family: inherit;
 }
 
-
 button {
     outline: none;
 }
 
-
 img {
     max-width: 100%;
-
     display: block;
 }
-
 
 ul,
 li {
@@ -72,41 +51,43 @@ li {
 
 
 /* =========================================================
-   NAVBAR
+   HEADER
 ========================================================= */
 
 header.navbar {
     position: fixed;
-
     top: 0;
     left: 0;
 
     width: 100%;
+    height: 78px;
 
     z-index: 9999;
 
-    background: rgba(5, 6, 10, 0.88);
+    background: rgba(5, 6, 10, 0.90);
 
     backdrop-filter: blur(18px);
-
     -webkit-backdrop-filter: blur(18px);
 
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom:
+        1px solid rgba(255, 255, 255, 0.08);
 }
 
 
+/* =========================================================
+   NAV CONTAINER
+========================================================= */
+
 .nav-container {
     width: min(1180px, 92%);
-
     height: 78px;
 
     margin: auto;
 
     display: flex;
-
     align-items: center;
 
-    gap: 24px;
+    gap: 25px;
 }
 
 
@@ -116,13 +97,11 @@ header.navbar {
 
 .logo {
     display: flex;
-
     align-items: center;
 
     flex-shrink: 0;
 
     font-size: 25px;
-
     font-weight: 900;
 
     letter-spacing: -1px;
@@ -130,11 +109,9 @@ header.navbar {
     white-space: nowrap;
 }
 
-
 .logo-cinema {
     color: #ffffff;
 }
-
 
 .logo-changing {
     display: inline-block;
@@ -157,32 +134,33 @@ header.navbar {
 
 .nav-menu {
     display: flex;
-
     align-items: center;
+    justify-content: center;
 
-    justify-content: flex-end;
-
-    gap: 24px;
+    gap: 30px;
 
     margin-left: auto;
-
-    min-width: 0;
+    margin-right: 20px;
 }
 
+
+/* =========================================================
+   NORMAL NAV LINK
+========================================================= */
 
 .nav-link {
     position: relative;
 
     display: flex;
-
     align-items: center;
 
-    min-height: 78px;
+    height: 78px;
 
-    color: rgba(255, 255, 255, 0.76);
+    padding: 0;
 
-    font-size: 14px;
+    color: rgba(255, 255, 255, 0.78);
 
+    font-size: 15px;
     font-weight: 500;
 
     white-space: nowrap;
@@ -191,12 +169,15 @@ header.navbar {
         color 0.25s ease;
 }
 
-
 .nav-link:hover,
 .nav-link.active {
     color: #ffffff;
 }
 
+
+/* =========================================================
+   NAV ACTIVE UNDERLINE
+========================================================= */
 
 .nav-link::after {
     content: "";
@@ -204,21 +185,18 @@ header.navbar {
     position: absolute;
 
     left: 0;
-
     bottom: 20px;
 
     width: 0;
-
     height: 2px;
 
-    border-radius: 10px;
-
     background: #ff1529;
+
+    border-radius: 10px;
 
     transition:
         width 0.25s ease;
 }
-
 
 .nav-link:hover::after,
 .nav-link.active::after {
@@ -227,116 +205,70 @@ header.navbar {
 
 
 /* =========================================================
-   CATEGORY DROPDOWN WRAPPER
+   DROPDOWN WRAPPER
 ========================================================= */
 
 .nav-category-dropdown {
     position: relative;
 
     display: flex;
-
     align-items: center;
+
+    height: 78px;
+
+    flex-shrink: 0;
 }
 
 
-/* small arrow */
+/* No arrow beside menu */
 
 .nav-category-dropdown > .nav-link::before {
-    content: "";
-
-    width: 5px;
-
-    height: 5px;
-
-    margin-left: 7px;
-
-    border-right: 1px solid rgba(255, 255, 255, 0.55);
-
-    border-bottom: 1px solid rgba(255, 255, 255, 0.55);
-
-    transform:
-        translateY(-2px)
-        rotate(45deg);
-
-    order: 2;
-
-    transition:
-        transform 0.2s ease;
-}
-
-
-.nav-category-dropdown:hover > .nav-link::before {
-    transform:
-        translateY(1px)
-        rotate(225deg);
+    display: none !important;
 }
 
 
 /* =========================================================
-   CATEGORY DROPDOWN MENU
+   DROPDOWN
+   IMPORTANT:
+   HIDDEN UNTIL HOVER
 ========================================================= */
 
 .genre-dropdown-menu {
+    display: none !important;
+
     position: absolute;
 
-    top: calc(100% - 8px);
-
+    top: 68px;
     left: 50%;
-
-    transform:
-        translateX(-50%)
-        translateY(-8px);
 
     width: 220px;
 
-    max-height: 390px;
+    transform: translateX(-50%);
 
     padding: 10px;
 
-    overflow-y: auto;
+    background: #0d0e13;
 
-    background: rgba(12, 13, 18, 0.98);
+    border:
+        1px solid rgba(255, 255, 255, 0.09);
 
-    border: 1px solid rgba(255, 255, 255, 0.09);
-
-    border-radius: 12px;
+    border-radius: 11px;
 
     box-shadow:
-        0 25px 65px rgba(0, 0, 0, 0.65);
+        0 22px 60px rgba(0, 0, 0, 0.70);
 
-    backdrop-filter: blur(18px);
-
-    -webkit-backdrop-filter: blur(18px);
-
-    opacity: 0;
-
-    visibility: hidden;
-
-    pointer-events: none;
-
-    transition:
-        opacity 0.2s ease,
-        visibility 0.2s ease,
-        transform 0.2s ease;
-
-    z-index: 10050;
+    z-index: 10000;
 }
 
+
+/* Only currently hovered menu opens */
 
 .nav-category-dropdown:hover > .genre-dropdown-menu {
-    opacity: 1;
-
-    visibility: visible;
-
-    pointer-events: auto;
-
-    transform:
-        translateX(-50%)
-        translateY(0);
+    display: block !important;
 }
 
 
-/* invisible hover bridge */
+/* hover bridge */
 
 .genre-dropdown-menu::before {
     content: "";
@@ -344,17 +276,15 @@ header.navbar {
     position: absolute;
 
     left: 0;
-
     top: -12px;
 
     width: 100%;
-
-    height: 14px;
+    height: 15px;
 }
 
 
 /* =========================================================
-   DROPDOWN TITLE
+   DROPDOWN HEADING
 ========================================================= */
 
 .genre-dropdown-head {
@@ -365,101 +295,105 @@ header.navbar {
     color: #ffffff;
 
     font-size: 13px;
-
     font-weight: 700;
 
-    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    border-bottom:
+        1px solid rgba(255, 255, 255, 0.07);
 }
 
 
 /* =========================================================
-   CATEGORY ITEMS
+   DROPDOWN CATEGORY LIST
 ========================================================= */
 
 .genre-menu-dynamic {
     display: flex;
-
     flex-direction: column;
 
     gap: 3px;
 }
 
 
+/* =========================================================
+   CATEGORY ITEM
+========================================================= */
+
 .genre-menu-item {
+    display: block;
+
     width: 100%;
 
     padding: 10px 11px;
 
     border: none;
-
-    border-radius: 8px;
+    border-radius: 7px;
 
     background: transparent;
 
-    color: rgba(255, 255, 255, 0.62);
+    color: rgba(255, 255, 255, 0.63);
 
     text-align: left;
 
     font-size: 12px;
+    font-weight: 500;
 
     cursor: pointer;
 
     transition:
-        color 0.2s ease,
         background 0.2s ease,
+        color 0.2s ease,
         transform 0.2s ease;
 }
 
-
 .genre-menu-item:hover {
-    color: #ffffff;
+    background:
+        rgba(255, 255, 255, 0.06);
 
-    background: rgba(255, 255, 255, 0.06);
+    color: #ffffff;
 
     transform: translateX(2px);
 }
 
-
 .genre-menu-item.active {
-    color: #ff3345;
+    background:
+        rgba(239, 16, 36, 0.12);
 
-    background: rgba(239, 16, 36, 0.13);
+    color: #ff2638;
 }
 
 
 /* =========================================================
-   SEARCH
+   SEARCH WRAPPER
 ========================================================= */
 
 .nav-search-wrapper {
     position: relative;
 
     display: flex;
-
     align-items: center;
 
     flex-shrink: 0;
 }
 
 
+/* =========================================================
+   SEARCH BUTTON
+========================================================= */
+
 .search-icon-button {
     width: 42px;
-
     height: 42px;
 
-    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
+    border: none;
     border-radius: 50%;
 
     background: transparent;
 
     color: #ffffff;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
 
     cursor: pointer;
 
@@ -470,40 +404,43 @@ header.navbar {
         transform 0.25s ease;
 }
 
-
 .search-icon-button:hover {
-    background: rgba(255, 255, 255, 0.08);
+    background:
+        rgba(255, 255, 255, 0.08);
 
     transform: scale(1.05);
 }
 
 
+/* =========================================================
+   SEARCH BOX
+========================================================= */
+
 .search-box {
     position: absolute;
 
     top: 58px;
-
     right: 0;
 
     width: 330px;
 
     padding: 10px;
 
-    background: rgba(15, 16, 22, 0.98);
+    background:
+        rgba(15, 16, 22, 0.98);
 
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border:
+        1px solid rgba(255, 255, 255, 0.10);
 
     border-radius: 16px;
 
     box-shadow:
-        0 20px 60px rgba(0, 0, 0, 0.5);
+        0 20px 60px rgba(0, 0, 0, 0.50);
 
     backdrop-filter: blur(20px);
-
     -webkit-backdrop-filter: blur(20px);
 
     opacity: 0;
-
     visibility: hidden;
 
     transform:
@@ -515,13 +452,11 @@ header.navbar {
         visibility 0.25s ease,
         transform 0.25s ease;
 
-    z-index: 10060;
+    z-index: 10050;
 }
-
 
 .search-box.active {
     opacity: 1;
-
     visibility: visible;
 
     transform:
@@ -530,9 +465,12 @@ header.navbar {
 }
 
 
+/* =========================================================
+   SEARCH INPUT
+========================================================= */
+
 .search-input-wrapper {
     display: flex;
-
     align-items: center;
 
     width: 100%;
@@ -541,20 +479,20 @@ header.navbar {
 
     overflow: hidden;
 
-    background: rgba(255, 255, 255, 0.06);
+    background:
+        rgba(255, 255, 255, 0.06);
 
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border:
+        1px solid rgba(255, 255, 255, 0.10);
 
     border-radius: 11px;
 }
-
 
 .search-input-wrapper i {
     color: #ff1b2d;
 
     font-size: 15px;
 }
-
 
 .search-input-wrapper input {
     flex: 1;
@@ -564,7 +502,6 @@ header.navbar {
     padding: 13px 10px;
 
     border: none;
-
     outline: none;
 
     background: transparent;
@@ -574,28 +511,26 @@ header.navbar {
     font-size: 14px;
 }
 
-
 .search-input-wrapper input::placeholder {
-    color: rgba(255, 255, 255, 0.4);
+    color:
+        rgba(255, 255, 255, 0.40);
 }
-
 
 .search-input-wrapper button {
     width: 38px;
-
     height: 38px;
 
     border: none;
 
     background: transparent;
 
-    color: rgba(255, 255, 255, 0.5);
+    color:
+        rgba(255, 255, 255, 0.50);
 
     cursor: pointer;
 
     font-size: 16px;
 }
-
 
 .search-input-wrapper button:hover {
     color: #ffffff;
@@ -614,10 +549,8 @@ header.navbar {
     margin-top: 8px;
 }
 
-
 .search-result-item {
     display: flex;
-
     align-items: center;
 
     gap: 12px;
@@ -633,34 +566,31 @@ header.navbar {
         transform 0.2s ease;
 }
 
-
 .search-result-item:hover {
-    background: rgba(255, 255, 255, 0.07);
+    background:
+        rgba(255, 255, 255, 0.07);
 
-    transform: translateX(3px);
+    transform:
+        translateX(3px);
 }
-
 
 .search-result-icon {
     width: 38px;
-
     height: 38px;
 
     flex-shrink: 0;
 
     display: flex;
-
     align-items: center;
-
     justify-content: center;
 
-    background: rgba(255, 20, 40, 0.12);
+    background:
+        rgba(255, 20, 40, 0.12);
 
     border-radius: 9px;
 
     color: #ff1b2d;
 }
-
 
 .search-result-item h4 {
     margin-bottom: 4px;
@@ -668,9 +598,9 @@ header.navbar {
     font-size: 13px;
 }
 
-
 .search-result-item p {
-    color: rgba(255, 255, 255, 0.45);
+    color:
+        rgba(255, 255, 255, 0.45);
 
     font-size: 11px;
 }
@@ -684,11 +614,12 @@ header.navbar {
     display: none;
 
     width: 42px;
-
     height: 42px;
 
-    border: none;
+    align-items: center;
+    justify-content: center;
 
+    border: none;
     border-radius: 50%;
 
     background: transparent;
@@ -700,9 +631,9 @@ header.navbar {
     font-size: 19px;
 }
 
-
 .mobile-menu-button:hover {
-    background: rgba(255, 255, 255, 0.08);
+    background:
+        rgba(255, 255, 255, 0.08);
 }
 
 
@@ -716,30 +647,29 @@ header.navbar {
     position: fixed;
 
     top: 78px;
-
     right: 4%;
 
     width: 230px;
 
     padding: 12px;
 
-    background: rgba(12, 13, 18, 0.98);
+    background:
+        rgba(12, 13, 18, 0.98);
 
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border:
+        1px solid rgba(255, 255, 255, 0.10);
 
     border-radius: 15px;
 
     box-shadow:
-        0 25px 60px rgba(0, 0, 0, 0.5);
+        0 25px 60px rgba(0, 0, 0, 0.50);
 
     z-index: 9998;
 }
 
-
 .mobile-nav.active {
     display: block;
 }
-
 
 .mobile-nav a {
     display: block;
@@ -748,7 +678,8 @@ header.navbar {
 
     border-radius: 9px;
 
-    color: rgba(255, 255, 255, 0.75);
+    color:
+        rgba(255, 255, 255, 0.75);
 
     font-size: 14px;
 
@@ -757,9 +688,9 @@ header.navbar {
         color 0.2s ease;
 }
 
-
 .mobile-nav a:hover {
-    background: rgba(255, 20, 40, 0.12);
+    background:
+        rgba(255, 20, 40, 0.12);
 
     color: #ffffff;
 }
@@ -777,7 +708,6 @@ header.navbar {
     padding-top: 78px;
 
     display: flex;
-
     align-items: center;
 
     overflow: hidden;
@@ -788,7 +718,7 @@ header.navbar {
 
 /* =========================================================
    HERO BACKGROUND
-   BANNER IMAGE IS SET FROM JS
+   IMAGE IS BANNER_URL FROM JS
 ========================================================= */
 
 .hero-background {
@@ -799,9 +729,7 @@ header.navbar {
     z-index: -3;
 
     background-size: cover;
-
     background-position: center;
-
     background-repeat: no-repeat;
 
     opacity: 1;
@@ -810,7 +738,8 @@ header.navbar {
 
     transition:
         opacity 0.65s ease,
-        transform 3.2s cubic-bezier(
+        transform 3.2s
+        cubic-bezier(
             0.2,
             0.5,
             0.3,
@@ -822,14 +751,13 @@ header.navbar {
         opacity;
 }
 
-
 .hero-background.zoom {
     transform: scale(1.09);
 }
 
 
 /* =========================================================
-   HERO OVERLAYS
+   HERO DARK OVERLAY
 ========================================================= */
 
 .hero::before {
@@ -845,13 +773,12 @@ header.navbar {
         linear-gradient(
             90deg,
             rgba(3, 4, 8, 0.97) 0%,
-            rgba(3, 4, 8, 0.9) 30%,
-            rgba(3, 4, 8, 0.68) 53%,
-            rgba(3, 4, 8, 0.35) 75%,
-            rgba(3, 4, 8, 0.52) 100%
+            rgba(3, 4, 8, 0.90) 30%,
+            rgba(3, 4, 8, 0.67) 53%,
+            rgba(3, 4, 8, 0.34) 75%,
+            rgba(3, 4, 8, 0.50) 100%
         );
 }
-
 
 .hero::after {
     content: "";
@@ -859,9 +786,7 @@ header.navbar {
     position: absolute;
 
     left: 0;
-
     right: 0;
-
     bottom: 0;
 
     height: 170px;
@@ -876,14 +801,13 @@ header.navbar {
         );
 }
 
-
 .hero-overlay {
     display: none;
 }
 
 
 /* =========================================================
-   HERO CONTENT
+   HERO CONTAINER
 ========================================================= */
 
 .hero-container {
@@ -894,15 +818,17 @@ header.navbar {
     margin: auto;
 }
 
-
 .hero-content {
     padding-top: 55px;
 }
 
 
+/* =========================================================
+   HERO BADGE
+========================================================= */
+
 .hero-badge {
     display: inline-flex;
-
     align-items: center;
 
     gap: 8px;
@@ -918,7 +844,6 @@ header.navbar {
     border-radius: 6px;
 
     font-size: 11px;
-
     font-weight: 800;
 
     letter-spacing: 0.6px;
@@ -926,9 +851,14 @@ header.navbar {
     text-transform: uppercase;
 
     box-shadow:
-        0 8px 25px rgba(239, 16, 36, 0.25);
+        0 8px 25px
+        rgba(239, 16, 36, 0.25);
 }
 
+
+/* =========================================================
+   HERO TITLE
+========================================================= */
 
 .hero h1 {
     max-width: 780px;
@@ -937,11 +867,12 @@ header.navbar {
 
     color: #ffffff;
 
-    font-size: clamp(
-        38px,
-        5vw,
-        68px
-    );
+    font-size:
+        clamp(
+            38px,
+            5vw,
+            68px
+        );
 
     line-height: 1.05;
 
@@ -951,12 +882,17 @@ header.navbar {
 }
 
 
+/* =========================================================
+   HERO DESCRIPTION
+========================================================= */
+
 .hero p {
     max-width: 650px;
 
     margin-bottom: 30px;
 
-    color: rgba(255, 255, 255, 0.68);
+    color:
+        rgba(255, 255, 255, 0.68);
 
     font-size: 16px;
 
@@ -970,14 +906,12 @@ header.navbar {
 
 .hero-buttons {
     display: flex;
-
     align-items: center;
 
     gap: 13px;
 
     flex-wrap: wrap;
 }
-
 
 .hero-primary-button,
 .hero-secondary-button {
@@ -986,9 +920,7 @@ header.navbar {
     padding: 0 24px;
 
     display: inline-flex;
-
     align-items: center;
-
     justify-content: center;
 
     gap: 9px;
@@ -996,7 +928,6 @@ header.navbar {
     border-radius: 8px;
 
     font-size: 14px;
-
     font-weight: 700;
 
     cursor: pointer;
@@ -1007,18 +938,18 @@ header.navbar {
         border-color 0.25s ease;
 }
 
-
 .hero-primary-button {
     background: #ef1024;
 
     color: #ffffff;
 
-    border: 1px solid #ef1024;
+    border:
+        1px solid #ef1024;
 
     box-shadow:
-        0 10px 30px rgba(239, 16, 36, 0.2);
+        0 10px 30px
+        rgba(239, 16, 36, 0.20);
 }
-
 
 .hero-primary-button:hover {
     background: #ff2437;
@@ -1026,20 +957,23 @@ header.navbar {
     transform: translateY(-2px);
 }
 
-
 .hero-secondary-button {
-    background: rgba(255, 255, 255, 0.04);
+    background:
+        rgba(255, 255, 255, 0.04);
 
     color: #ffffff;
 
-    border: 1px solid rgba(255, 255, 255, 0.25);
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.25);
 }
 
-
 .hero-secondary-button:hover {
-    background: rgba(255, 255, 255, 0.09);
+    background:
+        rgba(255, 255, 255, 0.09);
 
-    border-color: rgba(255, 255, 255, 0.45);
+    border-color:
+        rgba(255, 255, 255, 0.45);
 
     transform: translateY(-2px);
 }
@@ -1053,11 +987,9 @@ header.navbar {
     position: absolute;
 
     right: 5%;
-
     bottom: 35px;
 
     display: flex;
-
     align-items: center;
 
     gap: 7px;
@@ -1065,19 +997,17 @@ header.navbar {
     z-index: 5;
 }
 
-
 .hero-dot {
     width: 7px;
-
     height: 7px;
 
     padding: 0;
 
     border: none;
-
     border-radius: 50%;
 
-    background: rgba(255, 255, 255, 0.32);
+    background:
+        rgba(255, 255, 255, 0.32);
 
     cursor: pointer;
 
@@ -1085,7 +1015,6 @@ header.navbar {
         width 0.25s ease,
         background 0.25s ease;
 }
-
 
 .hero-dot.active {
     width: 25px;
@@ -1097,7 +1026,7 @@ header.navbar {
 
 
 /* =========================================================
-   GENERIC SECTION
+   GENERAL SECTION
 ========================================================= */
 
 section {
@@ -1107,35 +1036,34 @@ section {
 }
 
 
+/* =========================================================
+   SECTION HEADING
+========================================================= */
+
 .section-heading {
     width: min(1180px, 92%);
 
-    margin: 0 auto 35px;
+    margin:
+        0 auto 35px;
 
     display: flex;
-
     align-items: center;
-
     justify-content: space-between;
 
     gap: 20px;
 }
 
-
 .heading-left {
     display: flex;
-
     align-items: center;
 
     gap: 14px;
 }
 
-
 .heading-line {
     display: block;
 
     width: 4px;
-
     height: 34px;
 
     flex-shrink: 0;
@@ -1145,36 +1073,35 @@ section {
     background: #ff1b2d;
 }
 
-
 .heading-left h2 {
-    font-size: clamp(
-        24px,
-        3.4vw,
-        34px
-    );
+    font-size:
+        clamp(
+            24px,
+            3.4vw,
+            34px
+        );
 
     font-weight: 800;
 
     letter-spacing: -0.5px;
 }
 
-
 .heading-left p {
     margin-top: 4px;
 
-    color: rgba(255, 255, 255, 0.5);
+    color:
+        rgba(255, 255, 255, 0.50);
 
     font-size: 14px;
 }
 
 
 /* =========================================================
-   FEATURED SECTION
+   FEATURED
 ========================================================= */
 
 .featured-section {
     padding-top: 70px;
-
     padding-bottom: 55px;
 
     background: #07080c;
@@ -1187,31 +1114,29 @@ section {
 
 .featured-controls {
     display: flex;
-
     align-items: center;
 
     gap: 7px;
 }
 
-
 .featured-controls button {
     width: 34px;
-
     height: 34px;
 
     display: flex;
-
     align-items: center;
-
     justify-content: center;
 
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.10);
 
     border-radius: 7px;
 
     background: #101116;
 
-    color: rgba(255, 255, 255, 0.7);
+    color:
+        rgba(255, 255, 255, 0.70);
 
     cursor: pointer;
 
@@ -1220,7 +1145,6 @@ section {
         background 0.2s ease,
         border-color 0.2s ease;
 }
-
 
 .featured-controls button:hover {
     background: #ef1024;
@@ -1232,7 +1156,7 @@ section {
 
 
 /* =========================================================
-   FEATURED SLIDER
+   FEATURED VIEWPORT
 ========================================================= */
 
 .featured-viewport {
@@ -1243,16 +1167,15 @@ section {
     overflow: hidden;
 }
 
-
 .featured-track {
     display: flex;
-
     align-items: stretch;
 
     gap: 16px;
 
     transition:
-        transform 0.55s cubic-bezier(
+        transform 0.55s
+        cubic-bezier(
             0.2,
             0.7,
             0.3,
@@ -1263,7 +1186,7 @@ section {
 }
 
 
-/* 5 cards desktop */
+/* 5 visible desktop */
 
 .featured-card {
     flex:
@@ -1278,7 +1201,9 @@ section {
 
     background: #101116;
 
-    border: 1px solid rgba(255, 255, 255, 0.07);
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.07);
 
     border-radius: 11px;
 
@@ -1290,14 +1215,15 @@ section {
         box-shadow 0.25s ease;
 }
 
-
 .featured-card:hover {
     transform: translateY(-5px);
 
-    border-color: rgba(239, 16, 36, 0.45);
+    border-color:
+        rgba(239, 16, 36, 0.45);
 
     box-shadow:
-        0 18px 45px rgba(0, 0, 0, 0.38);
+        0 18px 45px
+        rgba(0, 0, 0, 0.38);
 }
 
 
@@ -1317,19 +1243,21 @@ section {
     background: #15161c;
 
     background-size: cover;
-
     background-position: center;
 }
 
+
+/* =========================================================
+   FEATURED BADGE
+========================================================= */
 
 .featured-badge {
     position: absolute;
 
     top: 9px;
-
     left: 9px;
 
-    z-index: 5;
+    z-index: 6;
 
     padding: 5px 8px;
 
@@ -1340,41 +1268,41 @@ section {
     color: #ffffff;
 
     font-size: 9px;
-
     font-weight: 800;
 
     letter-spacing: 0.4px;
 }
 
 
+/* =========================================================
+   FEATURED RATING
+========================================================= */
+
 .featured-rating {
     position: absolute;
 
     right: 9px;
-
     bottom: 9px;
 
-    z-index: 5;
+    z-index: 6;
 
     display: inline-flex;
-
     align-items: center;
 
     gap: 4px;
 
     padding: 5px 7px;
 
-    background: rgba(0, 0, 0, 0.76);
+    background:
+        rgba(0, 0, 0, 0.76);
 
     border-radius: 5px;
 
     color: #ffffff;
 
     font-size: 10px;
-
     font-weight: 700;
 }
-
 
 .featured-rating i {
     color: #ffc107;
@@ -1389,7 +1317,6 @@ section {
     padding: 11px;
 }
 
-
 .featured-type {
     display: block;
 
@@ -1398,12 +1325,10 @@ section {
     color: #ff1b2d;
 
     font-size: 9px;
-
     font-weight: 800;
 
     text-transform: uppercase;
 }
-
 
 .featured-card-info h3 {
     overflow: hidden;
@@ -1413,7 +1338,6 @@ section {
     color: #ffffff;
 
     font-size: 13px;
-
     font-weight: 700;
 
     text-overflow: ellipsis;
@@ -1421,11 +1345,11 @@ section {
     white-space: nowrap;
 }
 
-
 .featured-card-info p {
     overflow: hidden;
 
-    color: rgba(255, 255, 255, 0.43);
+    color:
+        rgba(255, 255, 255, 0.43);
 
     font-size: 10px;
 
@@ -1457,7 +1381,7 @@ section {
 
 
 /* =========================================================
-   COMMON CARDS
+   CARD SHELL
 ========================================================= */
 
 .movie-card,
@@ -1470,7 +1394,9 @@ section {
 
     background: #101116;
 
-    border: 1px solid rgba(255, 255, 255, 0.07);
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.07);
 
     border-radius: 14px;
 
@@ -1482,17 +1408,18 @@ section {
         box-shadow 0.3s ease;
 }
 
-
 .movie-card:hover,
 .story-card:hover,
 .book-card:hover,
 .upcoming-card:hover {
     transform: translateY(-7px);
 
-    border-color: rgba(255, 27, 45, 0.45);
+    border-color:
+        rgba(255, 27, 45, 0.45);
 
     box-shadow:
-        0 20px 50px rgba(0, 0, 0, 0.35);
+        0 20px 50px
+        rgba(0, 0, 0, 0.35);
 }
 
 
@@ -1512,10 +1439,8 @@ section {
     background: #15161c;
 
     background-size: cover;
-
     background-position: center;
 }
-
 
 .movie-poster::after {
     content: "";
@@ -1531,37 +1456,38 @@ section {
     background:
         linear-gradient(
             to top,
-            rgba(0, 0, 0, 0.54),
+            rgba(0, 0, 0, 0.52),
             transparent 42%
         );
 }
 
 
 /* =========================================================
-   CONTENT BADGE
+   BADGE
 ========================================================= */
 
 .content-badge {
     position: absolute;
 
     top: 12px;
-
     left: 12px;
 
-    z-index: 5;
+    z-index: 6;
 
     padding: 4px 10px;
 
-    background: rgba(0, 0, 0, 0.65);
+    background:
+        rgba(0, 0, 0, 0.65);
 
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.20);
 
     border-radius: 6px;
 
     color: #ffffff;
 
     font-size: 10px;
-
     font-weight: 800;
 
     letter-spacing: 0.5px;
@@ -1573,7 +1499,7 @@ section {
 
 
 /* =========================================================
-   HOVER DESCRIPTION OVERLAY
+   HOVER DESCRIPTION
 ========================================================= */
 
 .card-hover-overlay {
@@ -1586,9 +1512,7 @@ section {
     padding: 18px;
 
     display: flex;
-
     flex-direction: column;
-
     justify-content: flex-end;
 
     background:
@@ -1601,10 +1525,10 @@ section {
         );
 
     opacity: 0;
-
     visibility: hidden;
 
-    transform: translateY(8px);
+    transform:
+        translateY(8px);
 
     transition:
         opacity 0.28s ease,
@@ -1612,19 +1536,27 @@ section {
         transform 0.28s ease;
 }
 
+.movie-card:hover
+.card-hover-overlay,
 
-.movie-card:hover .card-hover-overlay,
-.story-card:hover .card-hover-overlay,
-.book-card:hover .card-hover-overlay,
-.upcoming-card:hover .card-hover-overlay,
-.featured-card:hover .card-hover-overlay {
+.story-card:hover
+.card-hover-overlay,
+
+.book-card:hover
+.card-hover-overlay,
+
+.upcoming-card:hover
+.card-hover-overlay,
+
+.featured-card:hover
+.card-hover-overlay {
     opacity: 1;
 
     visibility: visible;
 
-    transform: translateY(0);
+    transform:
+        translateY(0);
 }
-
 
 .card-hover-overlay h4 {
     margin-bottom: 8px;
@@ -1636,7 +1568,6 @@ section {
     line-height: 1.35;
 }
 
-
 .card-hover-overlay p {
     display: -webkit-box;
 
@@ -1644,21 +1575,19 @@ section {
 
     margin-bottom: 13px;
 
-    color: rgba(255, 255, 255, 0.72);
+    color:
+        rgba(255, 255, 255, 0.72);
 
     font-size: 11px;
 
     line-height: 1.6;
 
     -webkit-line-clamp: 4;
-
     -webkit-box-orient: vertical;
 }
 
-
 .card-hover-action {
     display: inline-flex;
-
     align-items: center;
 
     gap: 7px;
@@ -1666,7 +1595,6 @@ section {
     color: #ff2538;
 
     font-size: 11px;
-
     font-weight: 700;
 }
 
@@ -1679,26 +1607,25 @@ section {
     position: absolute;
 
     left: 50%;
-
     top: 43%;
 
     z-index: 7;
 
     width: 52px;
-
     height: 52px;
 
     display: flex;
-
     align-items: center;
-
     justify-content: center;
 
-    border: 1px solid rgba(255, 255, 255, 0.35);
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.35);
 
     border-radius: 50%;
 
-    background: rgba(239, 16, 36, 0.92);
+    background:
+        rgba(239, 16, 36, 0.92);
 
     color: #ffffff;
 
@@ -1716,7 +1643,6 @@ section {
         background 0.25s ease;
 }
 
-
 .movie-card:hover .poster-play {
     opacity: 1;
 
@@ -1724,7 +1650,6 @@ section {
         translate(-50%, -50%)
         scale(1);
 }
-
 
 .poster-play:hover {
     background: #ff2639;
@@ -1739,7 +1664,6 @@ section {
     padding: 16px;
 }
 
-
 .card-category {
     display: inline-block;
 
@@ -1748,12 +1672,10 @@ section {
     color: #ff1b2d;
 
     font-size: 11px;
-
     font-weight: 800;
 
     letter-spacing: 0.5px;
 }
-
 
 .card-info h3 {
     margin-bottom: 10px;
@@ -1766,25 +1688,20 @@ section {
 }
 
 
-/*
-   IMPORTANT:
-   Description is not normally shown here.
-   It appears in hover overlay.
-*/
-
+/* =========================================================
+   CARD META
+========================================================= */
 
 .card-meta {
     display: flex;
-
     align-items: center;
-
     justify-content: space-between;
 
-    color: rgba(255, 255, 255, 0.55);
+    color:
+        rgba(255, 255, 255, 0.55);
 
     font-size: 12px;
 }
-
 
 .card-meta i {
     margin-right: 4px;
@@ -1805,25 +1722,26 @@ section {
     padding: 10px 12px;
 
     display: flex;
-
     align-items: center;
-
     justify-content: center;
 
     gap: 8px;
 
-    border: 1px solid rgba(255, 255, 255, 0.11);
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.11);
 
     border-radius: 7px;
 
-    background: rgba(255, 255, 255, 0.04);
+    background:
+        rgba(255, 255, 255, 0.04);
 
-    color: rgba(255, 255, 255, 0.78);
+    color:
+        rgba(255, 255, 255, 0.78);
 
     cursor: pointer;
 
     font-size: 11px;
-
     font-weight: 700;
 
     transition:
@@ -1832,7 +1750,6 @@ section {
         border-color 0.2s ease,
         transform 0.2s ease;
 }
-
 
 .content-download-button:hover {
     background: #ef1024;
@@ -1858,7 +1775,6 @@ section {
         );
 }
 
-
 .upcoming-poster {
     position: relative;
 
@@ -1869,19 +1785,16 @@ section {
     background: #15161c;
 
     background-size: cover;
-
     background-position: center;
 }
-
 
 .coming-badge {
     position: absolute;
 
     top: 12px;
-
     left: 12px;
 
-    z-index: 5;
+    z-index: 6;
 
     padding: 5px 11px;
 
@@ -1890,7 +1803,6 @@ section {
     border-radius: 6px;
 
     font-size: 10px;
-
     font-weight: 800;
 
     letter-spacing: 0.5px;
@@ -1898,22 +1810,18 @@ section {
     text-transform: uppercase;
 }
 
-
 .upcoming-info {
     padding: 16px;
 }
-
 
 .upcoming-info > span {
     color: #ff1b2d;
 
     font-size: 11px;
-
     font-weight: 700;
 
     letter-spacing: 0.5px;
 }
-
 
 .upcoming-info h3 {
     margin: 7px 0;
@@ -1921,9 +1829,9 @@ section {
     font-size: 18px;
 }
 
-
 .upcoming-info p {
-    color: rgba(255, 255, 255, 0.48);
+    color:
+        rgba(255, 255, 255, 0.48);
 
     font-size: 12px;
 
@@ -1939,7 +1847,6 @@ section {
     background: #08090d;
 }
 
-
 .story-image {
     position: relative;
 
@@ -1950,30 +1857,29 @@ section {
     background: #15161c;
 
     background-size: cover;
-
     background-position: center;
 }
-
 
 .story-badge {
     position: absolute;
 
     top: 12px;
-
     left: 12px;
 
-    z-index: 5;
+    z-index: 6;
 
     padding: 4px 10px;
 
-    background: rgba(0, 0, 0, 0.65);
+    background:
+        rgba(0, 0, 0, 0.65);
 
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.20);
 
     border-radius: 6px;
 
     font-size: 10px;
-
     font-weight: 800;
 
     letter-spacing: 0.5px;
@@ -1981,22 +1887,18 @@ section {
     text-transform: uppercase;
 }
 
-
 .story-info {
     padding: 16px;
 }
-
 
 .story-date {
     color: #ff1b2d;
 
     font-size: 11px;
-
     font-weight: 700;
 
     letter-spacing: 0.5px;
 }
-
 
 .story-info h3 {
     margin: 8px 0;
@@ -2004,11 +1906,11 @@ section {
     font-size: 17px;
 }
 
-
 .story-info p {
     margin-bottom: 14px;
 
-    color: rgba(255, 255, 255, 0.5);
+    color:
+        rgba(255, 255, 255, 0.50);
 
     font-size: 13px;
 
@@ -2017,7 +1919,7 @@ section {
 
 
 /* =========================================================
-   STORY / BOOK BUTTON
+   STORY & BOOK BUTTON
 ========================================================= */
 
 .story-button,
@@ -2025,30 +1927,30 @@ section {
     padding: 9px 14px;
 
     display: inline-flex;
-
     align-items: center;
 
     gap: 7px;
 
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.15);
 
     border-radius: 7px;
 
-    background: rgba(255, 255, 255, 0.04);
+    background:
+        rgba(255, 255, 255, 0.04);
 
     color: #ffffff;
 
     cursor: pointer;
 
     font-size: 12px;
-
     font-weight: 600;
 
     transition:
         background 0.2s ease,
         border-color 0.2s ease;
 }
-
 
 .story-button:hover,
 .book-button:hover {
@@ -2071,7 +1973,6 @@ section {
         );
 }
 
-
 .book-cover {
     position: relative;
 
@@ -2082,30 +1983,29 @@ section {
     background: #15161c;
 
     background-size: cover;
-
     background-position: center;
 }
-
 
 .book-badge {
     position: absolute;
 
     top: 12px;
-
     left: 12px;
 
-    z-index: 5;
+    z-index: 6;
 
     padding: 4px 10px;
 
-    background: rgba(0, 0, 0, 0.65);
+    background:
+        rgba(0, 0, 0, 0.65);
 
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.20);
 
     border-radius: 6px;
 
     font-size: 10px;
-
     font-weight: 800;
 
     letter-spacing: 0.5px;
@@ -2113,22 +2013,18 @@ section {
     text-transform: uppercase;
 }
 
-
 .book-info {
     padding: 16px;
 }
-
 
 .book-category {
     color: #ff1b2d;
 
     font-size: 11px;
-
     font-weight: 800;
 
     letter-spacing: 0.5px;
 }
-
 
 .book-info h3 {
     margin: 6px 0 8px;
@@ -2136,11 +2032,11 @@ section {
     font-size: 16px;
 }
 
-
 .book-info p {
     margin-bottom: 14px;
 
-    color: rgba(255, 255, 255, 0.48);
+    color:
+        rgba(255, 255, 255, 0.48);
 
     font-size: 12px;
 
@@ -2149,7 +2045,7 @@ section {
 
 
 /* =========================================================
-   DATABASE LOADING
+   LOADING MESSAGE
 ========================================================= */
 
 .database-loading {
@@ -2161,11 +2057,14 @@ section {
 
     text-align: center;
 
-    color: rgba(255, 255, 255, 0.42);
+    color:
+        rgba(255, 255, 255, 0.42);
 
     background: #101116;
 
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.06);
 
     border-radius: 12px;
 }
@@ -2176,13 +2075,15 @@ section {
 ========================================================= */
 
 .footer {
-    padding: 60px 0 30px;
+    padding:
+        60px 0 30px;
 
-    border-top: 1px solid rgba(255, 255, 255, 0.07);
+    border-top:
+        1px solid
+        rgba(255, 255, 255, 0.07);
 
     background: #050609;
 }
-
 
 .footer-container {
     width: min(1180px, 92%);
@@ -2193,18 +2094,63 @@ section {
 
     grid-template-columns:
         1.5fr
-        repeat(3, 1fr);
+        1fr
+        1fr
+        1fr;
 
     gap: 40px;
 }
 
+
+/* =========================================================
+   FOOTER STATIC LOGO
+========================================================= */
+
+.footer-logo {
+    display: flex;
+    align-items: center;
+
+    gap: 0;
+
+    margin-bottom: 4px;
+
+    white-space: nowrap;
+}
+
+.footer-logo .logo-cinema {
+    color: #ffffff;
+}
+
+.footer-logo .footer-mella {
+    color: #ef1024;
+
+    margin-left: 0;
+}
+
+.footer-logo .footer-hub-text {
+    margin-left: 7px;
+
+    color:
+        rgba(255, 255, 255, 0.76);
+
+    font-size: 15px;
+    font-weight: 700;
+
+    letter-spacing: 0;
+}
+
+
+/* =========================================================
+   FOOTER BRAND DESCRIPTION
+========================================================= */
 
 .footer-brand p {
     max-width: 340px;
 
     margin: 14px 0 18px;
 
-    color: rgba(255, 255, 255, 0.45);
+    color:
+        rgba(255, 255, 255, 0.45);
 
     font-size: 13px;
 
@@ -2212,13 +2158,8 @@ section {
 }
 
 
-.footer-logo {
-    margin-bottom: 4px;
-}
-
-
 /* =========================================================
-   SOCIAL
+   SOCIAL ICONS
 ========================================================= */
 
 .social-links {
@@ -2227,30 +2168,27 @@ section {
     gap: 9px;
 }
 
-
 .social-links a {
     width: 38px;
-
     height: 38px;
 
     display: flex;
-
     align-items: center;
-
     justify-content: center;
 
     border-radius: 50%;
 
-    background: rgba(255, 255, 255, 0.06);
+    background:
+        rgba(255, 255, 255, 0.06);
 
-    color: rgba(255, 255, 255, 0.7);
+    color:
+        rgba(255, 255, 255, 0.70);
 
     transition:
         background 0.2s ease,
         color 0.2s ease,
         transform 0.2s ease;
 }
-
 
 .social-links a:hover {
     background: #ef1024;
@@ -2271,13 +2209,13 @@ section {
     font-size: 16px;
 }
 
-
 .footer-column a {
     display: block;
 
     margin-bottom: 10px;
 
-    color: rgba(255, 255, 255, 0.55);
+    color:
+        rgba(255, 255, 255, 0.55);
 
     font-size: 13px;
 
@@ -2285,14 +2223,13 @@ section {
         color 0.2s ease;
 }
 
-
 .footer-column a:hover {
     color: #ff1b2d;
 }
 
-
 .footer-column p {
-    color: rgba(255, 255, 255, 0.45);
+    color:
+        rgba(255, 255, 255, 0.45);
 
     font-size: 13px;
 
@@ -2300,18 +2237,26 @@ section {
 }
 
 
+/* =========================================================
+   FOOTER BOTTOM
+========================================================= */
+
 .footer-bottom {
     width: min(1180px, 92%);
 
-    margin: 35px auto 0;
+    margin:
+        35px auto 0;
 
     padding-top: 20px;
 
-    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    border-top:
+        1px solid
+        rgba(255, 255, 255, 0.06);
 
     text-align: center;
 
-    color: rgba(255, 255, 255, 0.35);
+    color:
+        rgba(255, 255, 255, 0.35);
 
     font-size: 12px;
 }
@@ -2323,22 +2268,18 @@ section {
 
 ::-webkit-scrollbar {
     width: 7px;
-
     height: 7px;
 }
-
 
 ::-webkit-scrollbar-track {
     background: #07080c;
 }
-
 
 ::-webkit-scrollbar-thumb {
     background: #252630;
 
     border-radius: 10px;
 }
-
 
 ::-webkit-scrollbar-thumb:hover {
     background: #ff1b2d;
@@ -2349,7 +2290,7 @@ section {
    SMALL DESKTOP
 ========================================================= */
 
-@media (max-width: 1100px) {
+@media (max-width: 1120px) {
 
     .nav-container {
         width: 96%;
@@ -2357,11 +2298,11 @@ section {
         gap: 15px;
     }
 
-
     .nav-menu {
-        gap: 15px;
-    }
+        gap: 17px;
 
+        margin-right: 8px;
+    }
 
     .nav-link {
         font-size: 13px;
@@ -2419,17 +2360,22 @@ section {
     }
 
 
+    /* desktop menu hidden */
+
     .nav-menu {
         display: none;
     }
 
 
+    /* generated dropdown hidden */
+
+    .nav-category-dropdown {
+        display: none !important;
+    }
+
+
     .mobile-menu-button {
         display: flex;
-
-        align-items: center;
-
-        justify-content: center;
     }
 
 
@@ -2442,9 +2388,7 @@ section {
         position: fixed;
 
         top: 75px;
-
         left: 4%;
-
         right: 4%;
 
         width: auto;
@@ -2457,8 +2401,6 @@ section {
         min-height: 700px;
 
         padding-top: 68px;
-
-        align-items: center;
     }
 
 
@@ -2468,11 +2410,12 @@ section {
 
 
     .hero h1 {
-        font-size: clamp(
-            34px,
-            10vw,
-            48px
-        );
+        font-size:
+            clamp(
+                34px,
+                10vw,
+                48px
+            );
 
         line-height: 1.05;
 
@@ -2505,7 +2448,8 @@ section {
 
         bottom: 25px;
 
-        transform: translateX(50%);
+        transform:
+            translateX(50%);
     }
 
 
@@ -2518,19 +2462,16 @@ section {
 
     .featured-section {
         padding-top: 55px;
-
         padding-bottom: 40px;
     }
 
 
     .section-heading {
-        align-items: flex-start;
-
         margin-bottom: 25px;
     }
 
 
-    /* FEATURED 2 CARDS */
+    /* FEATURED */
 
     .featured-track {
         gap: 12px;
@@ -2574,9 +2515,6 @@ section {
     }
 
 
-    /* mobile touch device:
-       overlay stays hidden until card interaction */
-
     .card-hover-overlay {
         padding: 12px;
     }
@@ -2595,9 +2533,8 @@ section {
 
 
     .poster-play {
-        width: 43px;
-
-        height: 43px;
+        width: 44px;
+        height: 44px;
     }
 
 
@@ -2624,7 +2561,6 @@ section {
     .search-icon-button,
     .mobile-menu-button {
         width: 38px;
-
         height: 38px;
     }
 
@@ -2689,6 +2625,11 @@ section {
         padding: 9px 8px;
 
         font-size: 10px;
+    }
+
+
+    .footer-logo .footer-hub-text {
+        font-size: 13px;
     }
 
 }
