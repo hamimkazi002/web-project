@@ -3386,7 +3386,7 @@ function showHeroSlide(
                     ],
                     {
                         duration:
-                            3000,
+                            4500,
 
                         easing:
                             "ease-out",
@@ -3426,7 +3426,7 @@ function showHeroSlide(
 
     setTimeout(
         applySlide,
-        280
+        650
     );
 
 }
@@ -3482,7 +3482,7 @@ function restartHeroTimer() {
                 );
 
             },
-            3600
+            5200
         );
 
 }
