@@ -2954,3 +2954,282 @@ p {
     }
 
 }
+/* =========================================================
+   COMPACT CARD SIZE FIX
+   DESKTOP = 4 CARDS
+========================================================= */
+
+
+/* MAIN GRID */
+
+.content-grid,
+.stories-grid,
+.books-grid,
+.upcoming-grid,
+.uniform-content-grid {
+
+    width: min(1120px, 92%) !important;
+
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr)) !important;
+
+    gap: 14px !important;
+}
+
+
+/* CARD */
+
+.movie-card,
+.uniform-content-card {
+
+    border-radius: 10px;
+
+    min-height: 0 !important;
+
+    height: auto !important;
+}
+
+
+/* POSTER - SMALLER */
+
+.movie-poster,
+.uniform-card-poster {
+
+    aspect-ratio: auto !important;
+
+    height: 300px !important;
+
+    min-height: 300px !important;
+
+    background-size: cover;
+
+    background-position: center;
+}
+
+
+/* INFO AREA - REMOVE EXTRA SPACE */
+
+.card-info,
+.uniform-card-info {
+
+    min-height: 0 !important;
+
+    height: auto !important;
+
+    padding: 11px 12px 12px !important;
+}
+
+
+/* TYPE */
+
+.card-category {
+
+    margin-bottom: 4px;
+
+    font-size: 9px;
+}
+
+
+/* TITLE */
+
+.card-info h3,
+.uniform-card-info h3 {
+
+    min-height: 0 !important;
+
+    margin-bottom: 6px;
+
+    font-size: 13px;
+
+    line-height: 1.35;
+}
+
+
+/* META */
+
+.card-meta {
+
+    min-height: 0 !important;
+
+    margin-bottom: 8px;
+
+    font-size: 9px;
+}
+
+
+/* BUTTON AREA */
+
+.card-actions {
+
+    min-height: 0 !important;
+
+    margin-top: 6px !important;
+
+    gap: 5px;
+}
+
+
+/* BUTTON */
+
+.content-download-button,
+.story-button,
+.book-button {
+
+    min-height: 28px !important;
+
+    padding: 6px 7px !important;
+
+    font-size: 8.5px !important;
+
+    border-radius: 5px;
+}
+
+
+/* =========================================================
+   FEATURED ALSO 4 COMPACT CARDS
+========================================================= */
+
+.featured-viewport {
+
+    width: min(1120px, 92%);
+}
+
+
+.featured-card {
+
+    flex:
+        0 0
+        calc((100% - 42px) / 4) !important;
+}
+
+
+.featured-card-poster {
+
+    aspect-ratio: auto !important;
+
+    height: 300px !important;
+}
+
+
+/* =========================================================
+   TABLET
+   3 CARDS
+========================================================= */
+
+@media (max-width: 850px) {
+
+    .content-grid,
+    .stories-grid,
+    .books-grid,
+    .upcoming-grid,
+    .uniform-content-grid {
+
+        grid-template-columns:
+            repeat(3, minmax(0, 1fr)) !important;
+
+        gap: 12px !important;
+    }
+
+
+    .movie-poster,
+    .uniform-card-poster,
+    .featured-card-poster {
+
+        height: 270px !important;
+
+        min-height: 270px !important;
+    }
+
+
+    .featured-card {
+
+        flex:
+            0 0
+            calc((100% - 24px) / 3) !important;
+    }
+
+}
+
+
+/* =========================================================
+   PHONE
+   2 CARDS
+========================================================= */
+
+@media (max-width: 760px) {
+
+    .content-grid,
+    .stories-grid,
+    .books-grid,
+    .upcoming-grid,
+    .uniform-content-grid {
+
+        width: 94% !important;
+
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr)) !important;
+
+        gap: 10px !important;
+    }
+
+
+    .movie-poster,
+    .uniform-card-poster,
+    .featured-card-poster {
+
+        height: 235px !important;
+
+        min-height: 235px !important;
+    }
+
+
+    .card-info,
+    .uniform-card-info {
+
+        padding: 9px !important;
+    }
+
+
+    .featured-card {
+
+        flex:
+            0 0
+            calc((100% - 10px) / 2) !important;
+    }
+
+}
+
+
+/* =========================================================
+   SMALL PHONE
+========================================================= */
+
+@media (max-width: 430px) {
+
+    .movie-poster,
+    .uniform-card-poster,
+    .featured-card-poster {
+
+        height: 215px !important;
+
+        min-height: 215px !important;
+    }
+
+
+    .card-info h3,
+    .uniform-card-info h3 {
+
+        font-size: 11px;
+    }
+
+
+    .content-download-button,
+    .story-button,
+    .book-button {
+
+        min-height: 26px !important;
+
+        font-size: 8px !important;
+    }
+
+}
