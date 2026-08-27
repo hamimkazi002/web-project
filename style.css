@@ -100,9 +100,9 @@ header.navbar {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 30px;
+    gap: 19px;
     margin-left: auto;
-    margin-right: 20px;
+    margin-right: 10px;
 }
 
 .nav-link {
@@ -1268,5 +1268,399 @@ section {
 
     .hero-background.zoom {
         transform: scale(1);
+    }
+}
+/* =========================================================
+   UPDATE: ALL CONTENT CATEGORY DROPDOWNS
+========================================================= */
+
+.nav-dropdown-item {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.nav-link-with-arrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.nav-link-with-arrow i {
+    font-size: 9px;
+    color: rgba(255, 255, 255, 0.48);
+    transition: transform 0.22s ease, color 0.22s ease;
+}
+
+.nav-dropdown-item:hover .nav-link-with-arrow i {
+    transform: rotate(180deg);
+    color: #ff1b2d;
+}
+
+.nav-genre-dropdown {
+    position: absolute;
+    top: calc(100% + 12px);
+    left: 50%;
+    width: 260px;
+    max-height: 390px;
+    overflow-y: auto;
+    padding: 10px;
+
+    background: rgba(12, 13, 18, 0.98);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 13px;
+    box-shadow: 0 22px 60px rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+
+    opacity: 0;
+    visibility: hidden;
+    transform: translate(-50%, -8px);
+    transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
+    z-index: 10001;
+}
+
+.nav-dropdown-item:hover .nav-genre-dropdown,
+.nav-dropdown-item:focus-within .nav-genre-dropdown {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, 0);
+}
+
+.genre-menu-dynamic {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+    margin-top: 5px;
+}
+
+.category-empty-message {
+    grid-column: 1 / -1;
+    padding: 10px 11px;
+    color: rgba(255, 255, 255, 0.38);
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+.genre-menu-item {
+    width: 100%;
+    border: none;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.62);
+    border-radius: 8px;
+    padding: 10px 11px;
+    text-align: left;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.genre-menu-item:hover,
+.genre-menu-item.active {
+    background: rgba(239, 16, 36, 0.12);
+    color: #ff3244;
+}
+
+.nav-genre-dropdown > .genre-menu-item {
+    font-weight: 700;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 8px 8px 6px 6px;
+}
+
+/* =========================================================
+   UPDATE: DATABASE HERO SLIDER
+========================================================= */
+
+.hero-background {
+    transition: opacity 0.45s ease, transform 3s cubic-bezier(0.2, 0.5, 0.3, 1);
+}
+
+.hero-background.zoom {
+    transform: scale(1.085);
+}
+
+.hero-dot {
+    border: 0;
+}
+
+/* =========================================================
+   UPDATE: FEATURED CAROUSEL
+========================================================= */
+
+.featured-section {
+    padding: 58px 0 68px;
+    background: #08090d;
+    border-top: 1px solid rgba(255, 255, 255, 0.04);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.featured-heading {
+    margin-bottom: 25px;
+}
+
+.featured-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.featured-controls button {
+    width: 34px;
+    height: 34px;
+    border: 1px solid rgba(255, 255, 255, 0.11);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.04);
+    color: rgba(255, 255, 255, 0.72);
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.featured-controls button:hover {
+    background: #ef1024;
+    color: #ffffff;
+    border-color: #ef1024;
+}
+
+.featured-slider-shell {
+    width: min(1180px, 92%);
+    margin: auto;
+}
+
+.featured-viewport {
+    width: 100%;
+    overflow: hidden;
+}
+
+.featured-track {
+    display: flex;
+    gap: 15px;
+    transition: transform 0.55s cubic-bezier(0.22, 0.61, 0.36, 1);
+    will-change: transform;
+}
+
+.featured-track > .database-loading {
+    width: 100%;
+    flex: 0 0 100%;
+    padding: 34px 20px;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.42);
+    background: #101116;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+}
+
+.featured-card {
+    flex: 0 0 calc((100% - 60px) / 5);
+    min-width: 0;
+    cursor: pointer;
+}
+
+.featured-card-poster {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    overflow: hidden;
+    border-radius: 11px;
+    background: #15161c;
+    background-size: cover;
+    background-position: center;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    transition: transform 0.28s ease, border-color 0.28s ease, box-shadow 0.28s ease;
+}
+
+.featured-card-poster::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.72), transparent 48%);
+    pointer-events: none;
+}
+
+.featured-card:hover .featured-card-poster {
+    transform: translateY(-5px);
+    border-color: rgba(239, 16, 36, 0.55);
+    box-shadow: 0 16px 34px rgba(0, 0, 0, 0.35);
+}
+
+.featured-badge {
+    position: absolute;
+    top: 9px;
+    left: 9px;
+    z-index: 3;
+    padding: 5px 8px;
+    border-radius: 5px;
+    background: #ef1024;
+    color: #ffffff;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.4px;
+}
+
+.featured-rating {
+    position: absolute;
+    right: 8px;
+    bottom: 8px;
+    z-index: 3;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 7px;
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.72);
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.featured-rating i {
+    color: #ffc928;
+}
+
+.featured-card-info {
+    padding-top: 10px;
+}
+
+.featured-type {
+    display: block;
+    color: #ff1b2d;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.45px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+}
+
+.featured-card-info h3 {
+    min-height: 34px;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 13px;
+    line-height: 1.35;
+}
+
+.featured-card-info p {
+    margin-top: 4px;
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 10px;
+}
+
+/* =========================================================
+   UPDATE: DESCRIPTION ON HOVER ONLY
+========================================================= */
+
+.card-hover-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 16px;
+    background: linear-gradient(
+        to top,
+        rgba(4, 5, 9, 0.98) 0%,
+        rgba(4, 5, 9, 0.88) 42%,
+        rgba(4, 5, 9, 0.12) 100%
+    );
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    pointer-events: none;
+}
+
+.movie-card:hover .card-hover-overlay,
+.story-card:hover .card-hover-overlay,
+.book-card:hover .card-hover-overlay,
+.upcoming-card:hover .card-hover-overlay {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.card-hover-overlay h4 {
+    color: #ffffff;
+    font-size: 15px;
+    line-height: 1.35;
+    margin-bottom: 7px;
+}
+
+.card-hover-overlay p {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 4;
+    overflow: hidden;
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 11px;
+    line-height: 1.55;
+    margin: 0;
+}
+
+.card-hover-action {
+    margin-top: 10px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #ff3244;
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+/* keep the real play button above hover layer */
+.poster-play {
+    z-index: 6;
+}
+
+/* =========================================================
+   UPDATE: RESPONSIVE FEATURED
+========================================================= */
+
+@media (max-width: 1000px) {
+    .featured-card {
+        flex-basis: calc((100% - 45px) / 4);
+    }
+}
+
+@media (max-width: 760px) {
+    .featured-section {
+        padding: 48px 0 55px;
+    }
+
+    .featured-heading {
+        flex-direction: row;
+        align-items: center;
+    }
+
+    .featured-card {
+        flex-basis: calc((100% - 15px) / 2);
+    }
+
+    .featured-controls {
+        margin-left: auto;
+    }
+
+    .nav-genre-dropdown {
+        display: none;
+    }
+
+    .card-hover-overlay {
+        padding: 12px;
+    }
+
+    .card-hover-overlay p {
+        -webkit-line-clamp: 3;
+        font-size: 10px;
+    }
+}
+
+@media (max-width: 430px) {
+    .featured-card {
+        flex-basis: calc((100% - 10px) / 2);
+    }
+
+    .featured-track {
+        gap: 10px;
     }
 }

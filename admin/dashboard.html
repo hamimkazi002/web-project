@@ -30,48 +30,53 @@
 
     <aside class="admin-sidebar">
 
-        <div class="admin-brand">CINEMA <span class="logo-changing">MELLA</span></div>
+        <div class="admin-brand"><span class="admin-logo-cinema">CINEMA</span><span class="logo-changing">MELLA</span></div>
 
         <nav class="admin-menu">
 
-            <button class="admin-menu-item active">
+            <button class="admin-menu-item active" data-filter="all" data-view="content">
                 <i class="fa-solid fa-house"></i>
                 Dashboard
             </button>
 
-            <button class="admin-menu-item">
+            <button class="admin-menu-item" data-filter="movie" data-view="content">
                 <i class="fa-solid fa-film"></i>
                 Movies
             </button>
 
-            <button class="admin-menu-item">
+            <button class="admin-menu-item" data-filter="natok" data-view="content">
                 <i class="fa-solid fa-clapperboard"></i>
                 Natok
             </button>
 
-            <button class="admin-menu-item">
+            <button class="admin-menu-item" data-filter="series" data-view="content">
                 <i class="fa-solid fa-tv"></i>
                 Web Series
             </button>
 
-            <button class="admin-menu-item">
+            <button class="admin-menu-item" data-filter="upcoming" data-view="content">
                 <i class="fa-solid fa-clock"></i>
                 Upcoming
             </button>
 
-            <button class="admin-menu-item">
+            <button class="admin-menu-item" data-filter="story" data-view="content">
                 <i class="fa-solid fa-book-open"></i>
                 Stories
             </button>
 
-            <button class="admin-menu-item">
+            <button class="admin-menu-item" data-filter="book" data-view="content">
                 <i class="fa-solid fa-book"></i>
                 Books
             </button>
 
-            <button class="admin-menu-item">
+            <button class="admin-menu-item" data-filter="tutorial" data-view="content">
                 <i class="fa-solid fa-graduation-cap"></i>
                 Tutorial
+            </button>
+
+            <button class="admin-menu-item" data-view="categories">
+                <i class="fa-solid fa-tags"></i>
+                Categories
             </button>
 
         </nav>
@@ -95,7 +100,7 @@
 
             <div>
 
-                <h1>Dashboard</h1>
+                <h1 id="adminPageTitle">Dashboard</h1>
 
                 <p>
                     Welcome,
@@ -119,7 +124,7 @@
 
         <!-- STATS -->
 
-        <section class="dashboard-stats">
+        <section class="dashboard-stats" id="dashboardStatsSection">
 
             <div class="stat-card">
                 <span>Total Content</span>
@@ -166,7 +171,7 @@
 
         <!-- FORM -->
 
-        <section class="content-form-section">
+        <section class="content-form-section" id="contentFormSection">
 
             <div class="section-title">
 
@@ -389,7 +394,7 @@
 
                     <div
                         class="admin-form-group type-field"
-                        data-types="movie,natok,series"
+                        data-types="movie,natok,series,upcoming,story,book,tutorial"
                     >
 
                         <label>
@@ -412,18 +417,20 @@
 
                     <div
                         class="admin-form-group type-field"
-                        data-types="movie,natok,series,upcoming,book,tutorial"
+                        data-types="movie,natok,series,upcoming,story,book,tutorial"
                     >
 
                         <label id="genreLabel">
-                            Genre
+                            Category / Genre
                         </label>
 
-                        <input
-                            type="text"
-                            id="contentGenre"
-                            placeholder="Drama, Thriller..."
-                        >
+                        <select id="contentGenre">
+                            <option value="">Select Category</option>
+                        </select>
+
+                        <small class="field-help">
+                            Add or manage options from the Categories menu.
+                        </small>
 
                     </div>
 
@@ -652,7 +659,7 @@
 
         <!-- CONTENT LIST -->
 
-        <section class="content-list-section">
+        <section class="content-list-section" id="contentListSection">
 
             <div class="section-title">
 
@@ -703,6 +710,107 @@
 
         </section>
 
+
+
+        <!-- CATEGORY MANAGEMENT -->
+
+        <section
+            class="category-management-section"
+            id="categoryManagementSection"
+            hidden
+        >
+
+            <div class="section-title">
+                <div>
+                    <h2>Manage Categories</h2>
+                    <p>Add, edit or delete categories from the admin panel.</p>
+                </div>
+            </div>
+
+            <form id="categoryForm" class="category-form">
+
+                <input type="hidden" id="categoryId">
+
+                <div class="category-form-grid">
+
+                    <div class="admin-form-group">
+                        <label>Content Type *</label>
+                        <select id="categoryContentType" required>
+                            <option value="">Select Type</option>
+                            <option value="movie">Movie</option>
+                            <option value="natok">Natok</option>
+                            <option value="series">Web Series</option>
+                            <option value="upcoming">Upcoming</option>
+                            <option value="story">Story</option>
+                            <option value="book">Book</option>
+                            <option value="tutorial">Tutorial</option>
+                        </select>
+                    </div>
+
+                    <div class="admin-form-group">
+                        <label>Category Name *</label>
+                        <input
+                            type="text"
+                            id="categoryName"
+                            placeholder="Action / Horror / Romance..."
+                            required
+                        >
+                    </div>
+
+                </div>
+
+                <div class="form-actions">
+                    <button
+                        type="submit"
+                        id="saveCategoryButton"
+                        class="save-content-button"
+                    >
+                        <i class="fa-solid fa-plus"></i>
+                        Add Category
+                    </button>
+
+                    <button
+                        type="button"
+                        id="cancelCategoryEditButton"
+                        class="cancel-button"
+                    >
+                        Cancel Edit
+                    </button>
+                </div>
+
+                <p id="categoryMessage"></p>
+
+            </form>
+
+            <div class="category-table-block">
+
+                <div class="section-title category-list-title">
+                    <div>
+                        <h2>All Categories</h2>
+                        <p>These options will be available in the content form and public menus.</p>
+                    </div>
+                </div>
+
+                <div class="admin-table-wrapper">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Content Type</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="categoryTableBody">
+                            <tr>
+                                <td colspan="3">Loading...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+        </section>
     </main>
 
 </div>

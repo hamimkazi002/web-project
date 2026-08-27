@@ -1,6 +1,14 @@
 /* =====================================================
    CINEMA MELLA ADMIN
-   LOGIN + CRUD + STORAGE
+   NO DATABASE CHANGE VERSION
+
+   - LOGIN
+   - AUTH
+   - CRUD
+   - STORAGE
+   - DYNAMIC CATEGORY / GENRE
+   - RATING FOR ALL CONTENT TYPES
+   - CATEGORY SUGGESTIONS FROM EXISTING CONTENT
 ===================================================== */
 
 
@@ -21,11 +29,18 @@ const supabaseClient =
     );
 
 
+/* =====================================================
+   PAGE CHECK
+===================================================== */
+
+const currentPath =
+    window.location.pathname.toLowerCase();
+
 const isLoginPage =
-    window.location.pathname.includes("login.html");
+    currentPath.includes("login.html");
 
 const isDashboardPage =
-    window.location.pathname.includes("dashboard.html");
+    currentPath.includes("dashboard.html");
 
 
 /* =====================================================
@@ -39,25 +54,36 @@ if (loginForm) {
 
     loginForm.addEventListener(
         "submit",
-        async (event) => {
+        async event => {
 
             event.preventDefault();
 
             const email =
-                document.getElementById("email").value.trim();
+                document
+                    .getElementById("email")
+                    .value
+                    .trim();
 
             const password =
-                document.getElementById("password").value;
+                document
+                    .getElementById("password")
+                    .value;
 
             const loginButton =
-                document.getElementById("loginButton");
+                document.getElementById(
+                    "loginButton"
+                );
 
             const loginMessage =
-                document.getElementById("loginMessage");
+                document.getElementById(
+                    "loginMessage"
+                );
 
 
             loginButton.disabled = true;
-            loginButton.textContent = "Logging in...";
+
+            loginButton.textContent =
+                "Logging in...";
 
             loginMessage.textContent = "";
 
@@ -76,7 +102,9 @@ if (loginForm) {
 
 
                 if (error) {
+
                     throw error;
+
                 }
 
 
@@ -88,6 +116,7 @@ if (loginForm) {
                     loginMessage.className =
                         "success";
 
+
                     window.location.href =
                         "dashboard.html";
 
@@ -97,8 +126,12 @@ if (loginForm) {
 
             catch (error) {
 
+                console.error(error);
+
+
                 loginMessage.textContent =
-                    error.message;
+                    error.message ||
+                    "Unable to login.";
 
                 loginMessage.className =
                     "error";
@@ -107,8 +140,11 @@ if (loginForm) {
 
             finally {
 
-                loginButton.disabled = false;
-                loginButton.textContent = "Login";
+                loginButton.disabled =
+                    false;
+
+                loginButton.textContent =
+                    "Login";
 
             }
 
@@ -119,64 +155,111 @@ if (loginForm) {
 
 
 /* =====================================================
-   SESSION
+   LOGIN PAGE SESSION
 ===================================================== */
 
 async function checkLoginPage() {
 
-    if (!isLoginPage) return;
+    if (!isLoginPage) {
 
-    const { data } =
-        await supabaseClient.auth.getSession();
+        return;
 
-    if (data.session) {
+    }
 
-        window.location.href =
-            "dashboard.html";
+
+    try {
+
+        const {
+            data
+        } =
+            await supabaseClient.auth
+                .getSession();
+
+
+        if (data.session) {
+
+            window.location.href =
+                "dashboard.html";
+
+        }
+
+    }
+
+    catch (error) {
+
+        console.error(error);
 
     }
 
 }
 
 
+/* =====================================================
+   PROTECT DASHBOARD
+===================================================== */
+
 async function protectDashboard() {
 
     if (!isDashboardPage) {
+
         return false;
+
     }
 
-    const {
-        data,
-        error
-    } =
-        await supabaseClient.auth.getSession();
+
+    try {
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient.auth
+                .getSession();
 
 
-    if (
-        error ||
-        !data.session
-    ) {
+        if (
+            error ||
+            !data.session
+        ) {
+
+            window.location.href =
+                "login.html";
+
+            return false;
+
+        }
+
+
+        const adminEmail =
+            document.getElementById(
+                "adminEmail"
+            );
+
+
+        if (adminEmail) {
+
+            adminEmail.textContent =
+                data.session.user.email;
+
+        }
+
+
+        return true;
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
 
         window.location.href =
             "login.html";
 
+
         return false;
 
     }
-
-
-    const adminEmail =
-        document.getElementById("adminEmail");
-
-    if (adminEmail) {
-
-        adminEmail.textContent =
-            data.session.user.email;
-
-    }
-
-
-    return true;
 
 }
 
@@ -186,7 +269,9 @@ async function protectDashboard() {
 ===================================================== */
 
 const logoutButton =
-    document.getElementById("logoutButton");
+    document.getElementById(
+        "logoutButton"
+    );
 
 if (logoutButton) {
 
@@ -194,7 +279,9 @@ if (logoutButton) {
         "click",
         async () => {
 
-            await supabaseClient.auth.signOut();
+            await supabaseClient.auth
+                .signOut();
+
 
             window.location.href =
                 "login.html";
@@ -206,106 +293,473 @@ if (logoutButton) {
 
 
 /* =====================================================
-   ELEMENTS
+   FORM ELEMENTS
 ===================================================== */
 
 const contentForm =
-    document.getElementById("contentForm");
+    document.getElementById(
+        "contentForm"
+    );
 
 const contentType =
-    document.getElementById("contentType");
+    document.getElementById(
+        "contentType"
+    );
 
 const contentId =
-    document.getElementById("contentId");
+    document.getElementById(
+        "contentId"
+    );
 
 const contentTitle =
-    document.getElementById("contentTitle");
+    document.getElementById(
+        "contentTitle"
+    );
 
 const contentDescription =
-    document.getElementById("contentDescription");
+    document.getElementById(
+        "contentDescription"
+    );
 
 const posterFile =
-    document.getElementById("posterFile");
+    document.getElementById(
+        "posterFile"
+    );
 
 const bannerFile =
-    document.getElementById("bannerFile");
+    document.getElementById(
+        "bannerFile"
+    );
 
 const bookFile =
-    document.getElementById("bookFile");
+    document.getElementById(
+        "bookFile"
+    );
 
 const videoUrl =
-    document.getElementById("videoUrl");
+    document.getElementById(
+        "videoUrl"
+    );
 
 const contentYear =
-    document.getElementById("contentYear");
+    document.getElementById(
+        "contentYear"
+    );
 
 const contentRating =
-    document.getElementById("contentRating");
+    document.getElementById(
+        "contentRating"
+    );
 
 const contentGenre =
-    document.getElementById("contentGenre");
+    document.getElementById(
+        "contentGenre"
+    );
 
 const contentSeason =
-    document.getElementById("contentSeason");
+    document.getElementById(
+        "contentSeason"
+    );
 
 const contentBadge =
-    document.getElementById("contentBadge");
+    document.getElementById(
+        "contentBadge"
+    );
 
 const contentAuthor =
-    document.getElementById("contentAuthor");
+    document.getElementById(
+        "contentAuthor"
+    );
 
 const releaseDate =
-    document.getElementById("releaseDate");
+    document.getElementById(
+        "releaseDate"
+    );
 
 const contentStatus =
-    document.getElementById("contentStatus");
+    document.getElementById(
+        "contentStatus"
+    );
 
 const contentFeatured =
-    document.getElementById("contentFeatured");
+    document.getElementById(
+        "contentFeatured"
+    );
 
 const fullContent =
-    document.getElementById("fullContent");
+    document.getElementById(
+        "fullContent"
+    );
 
 const currentPosterUrl =
-    document.getElementById("currentPosterUrl");
+    document.getElementById(
+        "currentPosterUrl"
+    );
 
 const currentBannerUrl =
-    document.getElementById("currentBannerUrl");
+    document.getElementById(
+        "currentBannerUrl"
+    );
 
 const currentFileUrl =
-    document.getElementById("currentFileUrl");
+    document.getElementById(
+        "currentFileUrl"
+    );
 
 const posterPreview =
-    document.getElementById("posterPreview");
+    document.getElementById(
+        "posterPreview"
+    );
 
 const bannerPreview =
-    document.getElementById("bannerPreview");
+    document.getElementById(
+        "bannerPreview"
+    );
 
 const bookFileStatus =
-    document.getElementById("bookFileStatus");
+    document.getElementById(
+        "bookFileStatus"
+    );
 
 const tutorialDownloadUrl =
-    document.getElementById("tutorialDownloadUrl");
+    document.getElementById(
+        "tutorialDownloadUrl"
+    );
 
 const saveContentButton =
-    document.getElementById("saveContentButton");
+    document.getElementById(
+        "saveContentButton"
+    );
 
 const cancelEditButton =
-    document.getElementById("cancelEditButton");
+    document.getElementById(
+        "cancelEditButton"
+    );
 
 const contentMessage =
-    document.getElementById("contentMessage");
+    document.getElementById(
+        "contentMessage"
+    );
 
 const contentTableBody =
-    document.getElementById("contentTableBody");
+    document.getElementById(
+        "contentTableBody"
+    );
 
 const formTitle =
-    document.getElementById("formTitle");
+    document.getElementById(
+        "formTitle"
+    );
 
+
+/* =====================================================
+   GLOBAL DATA
+===================================================== */
 
 let allContents = [];
 
-let currentFilter = "all";
+let currentFilter =
+    "all";
+
+
+/* =====================================================
+   ALLOW CATEGORY + RATING FOR ALL TYPES
+   NO HTML CHANGE NEEDED
+===================================================== */
+
+function expandExistingFields() {
+
+    /*
+       Current dashboard.html e genre/rating
+       limited type er jonno chilo.
+
+       JS diye existing field kei
+       sob content type e enable korchi.
+    */
+
+
+    if (contentGenre) {
+
+        const genreField =
+            contentGenre.closest(
+                ".type-field"
+            );
+
+
+        if (genreField) {
+
+            genreField.dataset.types =
+                "movie,natok,series,upcoming,story,book,tutorial";
+
+        }
+
+    }
+
+
+    if (contentRating) {
+
+        const ratingField =
+            contentRating.closest(
+                ".type-field"
+            );
+
+
+        if (ratingField) {
+
+            ratingField.dataset.types =
+                "movie,natok,series,upcoming,story,book,tutorial";
+
+        }
+
+    }
+
+}
+
+
+/* =====================================================
+   CATEGORY / GENRE DATALIST
+   NO NEW DATABASE TABLE
+
+   Existing contents.genre theke suggestions asbe.
+===================================================== */
+
+function setupGenreSuggestions() {
+
+    if (!contentGenre) {
+
+        return;
+
+    }
+
+
+    let datalist =
+        document.getElementById(
+            "genreSuggestions"
+        );
+
+
+    if (!datalist) {
+
+        datalist =
+            document.createElement(
+                "datalist"
+            );
+
+
+        datalist.id =
+            "genreSuggestions";
+
+
+        document.body.appendChild(
+            datalist
+        );
+
+    }
+
+
+    contentGenre.setAttribute(
+        "list",
+        "genreSuggestions"
+    );
+
+
+    updateGenreSuggestions();
+
+}
+
+
+/* =====================================================
+   SPLIT GENRES
+===================================================== */
+
+function splitGenres(value) {
+
+    return String(
+        value || ""
+    )
+        .split(",")
+        .map(
+            item =>
+                item.trim()
+        )
+        .filter(
+            Boolean
+        );
+
+}
+
+
+/* =====================================================
+   UNIQUE GENRE LIST
+===================================================== */
+
+function getExistingGenres(
+    type
+) {
+
+    const genres = [];
+
+
+    allContents
+        .filter(
+            item => {
+
+                if (!type) {
+
+                    return true;
+
+                }
+
+
+                return item.type === type;
+
+            }
+        )
+        .forEach(
+            item => {
+
+                splitGenres(
+                    item.genre
+                )
+                    .forEach(
+                        genre => {
+
+                            const exists =
+                                genres.some(
+                                    existing =>
+                                        existing
+                                            .toLowerCase()
+                                        ===
+                                        genre
+                                            .toLowerCase()
+                                );
+
+
+                            if (!exists) {
+
+                                genres.push(
+                                    genre
+                                );
+
+                            }
+
+                        }
+                    );
+
+            }
+        );
+
+
+    return genres.sort(
+        (
+            a,
+            b
+        ) =>
+            a.localeCompare(
+                b
+            )
+    );
+
+}
+
+
+/* =====================================================
+   UPDATE CATEGORY SUGGESTIONS
+===================================================== */
+
+function updateGenreSuggestions() {
+
+    const datalist =
+        document.getElementById(
+            "genreSuggestions"
+        );
+
+
+    if (!datalist) {
+
+        return;
+
+    }
+
+
+    const type =
+        contentType
+            ?.value
+        ||
+        "";
+
+
+    const genres =
+        getExistingGenres(
+            type
+        );
+
+
+    datalist.innerHTML =
+        genres
+            .map(
+                genre => `
+
+                    <option
+                        value="${escapeAttribute(
+                            genre
+                        )}"
+                    ></option>
+
+                `
+            )
+            .join("");
+
+}
+
+
+/* =====================================================
+   CATEGORY PLACEHOLDER
+===================================================== */
+
+function updateGenrePlaceholder(
+    type
+) {
+
+    if (!contentGenre) {
+
+        return;
+
+    }
+
+
+    const placeholders = {
+
+        movie:
+            "Action, Horror, Romance...",
+
+        natok:
+            "Bangla, Hindi, Comedy...",
+
+        series:
+            "Bangla, Hindi, English, Thriller...",
+
+        upcoming:
+            "Movie, Natok, Series...",
+
+        story:
+            "Horror, Romance, Mystery...",
+
+        book:
+            "Novel, Story, Programming...",
+
+        tutorial:
+            "SEO, Coding, Web Design..."
+
+    };
+
+
+    contentGenre.placeholder =
+        placeholders[type]
+        ||
+        "Enter category";
+
+}
 
 
 /* =====================================================
@@ -314,152 +768,276 @@ let currentFilter = "all";
 
 function updateDynamicForm() {
 
-    if (!contentType) return;
+    if (!contentType) {
+
+        return;
+
+    }
 
 
     const type =
         contentType.value;
 
 
-    const fields =
-        document.querySelectorAll(".type-field");
+    document
+        .querySelectorAll(
+            ".type-field"
+        )
+        .forEach(
+            field => {
+
+                const dataTypes =
+                    field.dataset.types
+                    ||
+                    "";
 
 
-    fields.forEach(field => {
+                const allowedTypes =
+                    dataTypes
+                        .split(",")
+                        .map(
+                            item =>
+                                item.trim()
+                        )
+                        .filter(
+                            Boolean
+                        );
 
-        const allowedTypes =
-            field.dataset.types
-                .split(",");
 
-        if (
-            type &&
-            allowedTypes.includes(type)
-        ) {
+                if (
+                    type &&
+                    allowedTypes.includes(
+                        type
+                    )
+                ) {
 
-            field.classList.add("show-field");
+                    field.classList.add(
+                        "show-field"
+                    );
 
-        } else {
+                }
 
-            field.classList.remove("show-field");
+                else {
 
-        }
+                    field.classList.remove(
+                        "show-field"
+                    );
 
-    });
+                }
 
+            }
+        );
+
+
+    /* POSTER LABEL */
 
     const posterLabel =
-        document.getElementById("posterLabel");
-
-    const titleLabel =
-        document.getElementById("titleLabel");
-
-    const genreLabel =
-        document.getElementById("genreLabel");
-
-    const yearLabel =
-        document.getElementById("yearLabel");
-
-    const releaseDateLabel =
-        document.getElementById("releaseDateLabel");
+        document.getElementById(
+            "posterLabel"
+        );
 
 
     if (posterLabel) {
 
-        if (type === "story") {
+        const labels = {
 
-            posterLabel.textContent =
-                "Story Cover Image";
+            story:
+                "Story Cover Image",
 
-        }
+            book:
+                "Book Cover Image",
 
-        else if (type === "book") {
+            tutorial:
+                "Tutorial Cover Image"
 
-            posterLabel.textContent =
-                "Book Cover Image";
+        };
 
-        }
 
-        else {
-
-            posterLabel.textContent =
-                "Poster Image";
-
-        }
+        posterLabel.textContent =
+            labels[type]
+            ||
+            "Poster Image";
 
     }
+
+
+    /* TITLE LABEL */
+
+    const titleLabel =
+        document.getElementById(
+            "titleLabel"
+        );
 
 
     if (titleLabel) {
 
-        if (type === "book") {
+        const labels = {
 
-            titleLabel.textContent =
-                "Book Name *";
+            movie:
+                "Movie Title *",
+
+            natok:
+                "Natok Title *",
+
+            series:
+                "Series Name *",
+
+            upcoming:
+                "Upcoming Title *",
+
+            story:
+                "Story Title *",
+
+            book:
+                "Book Name *",
+
+            tutorial:
+                "Course / Tutorial Title *"
+
+        };
+
+
+        titleLabel.textContent =
+            labels[type]
+            ||
+            "Title *";
+
+    }
+
+
+    /* GENRE LABEL */
+
+    const genreLabel =
+        document.getElementById(
+            "genreLabel"
+        );
+
+
+    if (genreLabel) {
+
+        if (
+            type ===
+            "movie"
+        ) {
+
+            genreLabel.textContent =
+                "Movie Category / Genre";
 
         }
 
-        else if (type === "story") {
+        else if (
+            type ===
+            "natok"
+        ) {
 
-            titleLabel.textContent =
-                "Story Title *";
-
-        }
-
-        else if (type === "series") {
-
-            titleLabel.textContent =
-                "Series Name *";
+            genreLabel.textContent =
+                "Natok Category / Language";
 
         }
 
-        else if (type === "tutorial") {
+        else if (
+            type ===
+            "series"
+        ) {
 
-            titleLabel.textContent =
-                "Course Title *";
+            genreLabel.textContent =
+                "Series Category / Genre";
+
+        }
+
+        else if (
+            type ===
+            "tutorial"
+        ) {
+
+            genreLabel.textContent =
+                "Tutorial Category";
+
+        }
+
+        else if (
+            type ===
+            "story"
+        ) {
+
+            genreLabel.textContent =
+                "Story Category";
+
+        }
+
+        else if (
+            type ===
+            "book"
+        ) {
+
+            genreLabel.textContent =
+                "Book Category";
 
         }
 
         else {
 
-            titleLabel.textContent =
-                "Title *";
+            genreLabel.textContent =
+                "Category / Genre";
 
         }
 
     }
 
 
-    if (genreLabel) {
+    /* YEAR LABEL */
 
-        genreLabel.textContent =
-            type === "book"
-                ? "Book Category"
-                : "Genre";
-
-    }
+    const yearLabel =
+        document.getElementById(
+            "yearLabel"
+        );
 
 
     if (yearLabel) {
 
         yearLabel.textContent =
             type === "book"
-                ? "Publication Year"
-                : "Year";
+                ?
+                "Publication Year"
+                :
+                "Year";
 
     }
+
+
+    /* RELEASE DATE LABEL */
+
+    const releaseDateLabel =
+        document.getElementById(
+            "releaseDateLabel"
+        );
 
 
     if (releaseDateLabel) {
 
         releaseDateLabel.textContent =
             type === "story"
-                ? "Publish Date"
-                : "Release Date";
+                ?
+                "Publish Date"
+                :
+                "Release Date";
 
     }
 
+
+    updateGenrePlaceholder(
+        type
+    );
+
+
+    updateGenreSuggestions();
+
 }
 
+
+/* =====================================================
+   CONTENT TYPE CHANGE
+===================================================== */
 
 if (contentType) {
 
@@ -484,7 +1062,11 @@ function showImagePreview(
     if (
         !input ||
         !preview
-    ) return;
+    ) {
+
+        return;
+
+    }
 
 
     input.addEventListener(
@@ -497,7 +1079,8 @@ function showImagePreview(
 
             if (!file) {
 
-                preview.innerHTML = "";
+                preview.innerHTML =
+                    "";
 
                 return;
 
@@ -505,7 +1088,9 @@ function showImagePreview(
 
 
             const imageUrl =
-                URL.createObjectURL(file);
+                URL.createObjectURL(
+                    file
+                );
 
 
             if (banner) {
@@ -518,10 +1103,12 @@ function showImagePreview(
 
 
             preview.innerHTML = `
+
                 <img
                     src="${imageUrl}"
                     alt="Preview"
                 >
+
             `;
 
         }
@@ -535,11 +1122,52 @@ showImagePreview(
     posterPreview
 );
 
+
 showImagePreview(
     bannerFile,
     bannerPreview,
     true
 );
+
+
+/* =====================================================
+   BOOK FILE STATUS
+===================================================== */
+
+if (bookFile) {
+
+    bookFile.addEventListener(
+        "change",
+        () => {
+
+            if (!bookFileStatus) {
+
+                return;
+
+            }
+
+
+            const file =
+                bookFile.files[0];
+
+
+            if (!file) {
+
+                bookFileStatus.textContent =
+                    "";
+
+                return;
+
+            }
+
+
+            bookFileStatus.textContent =
+                `Selected: ${file.name}`;
+
+        }
+    );
+
+}
 
 
 /* =====================================================
@@ -551,7 +1179,11 @@ async function uploadFile(
     folder
 ) {
 
-    if (!file) return null;
+    if (!file) {
+
+        return null;
+
+    }
 
 
     const extension =
@@ -581,8 +1213,11 @@ async function uploadFile(
                 filePath,
                 file,
                 {
-                    cacheControl: "3600",
-                    upsert: false
+                    cacheControl:
+                        "3600",
+
+                    upsert:
+                        false
                 }
             );
 
@@ -616,16 +1251,30 @@ async function uploadFile(
 
 async function loadContents() {
 
-    if (!isDashboardPage) return;
+    if (!isDashboardPage) {
+
+        return;
+
+    }
 
 
-    contentTableBody.innerHTML = `
-        <tr>
-            <td colspan="5">
-                Loading...
-            </td>
-        </tr>
-    `;
+    if (contentTableBody) {
+
+        contentTableBody.innerHTML = `
+
+            <tr>
+
+                <td colspan="5">
+
+                    Loading...
+
+                </td>
+
+            </tr>
+
+        `;
+
+    }
 
 
     try {
@@ -640,19 +1289,24 @@ async function loadContents() {
                 .order(
                     "created_at",
                     {
-                        ascending: false
+                        ascending:
+                            false
                     }
                 );
 
 
         if (error) {
+
             throw error;
+
         }
 
 
         allContents =
             data || [];
 
+
+        updateGenreSuggestions();
 
         updateStats();
 
@@ -665,15 +1319,76 @@ async function loadContents() {
         console.error(error);
 
 
-        contentTableBody.innerHTML = `
-            <tr>
-                <td colspan="5">
-                    ${escapeHTML(error.message)}
-                </td>
-            </tr>
-        `;
+        if (contentTableBody) {
+
+            contentTableBody.innerHTML = `
+
+                <tr>
+
+                    <td colspan="5">
+
+                        ${escapeHTML(
+                            error.message
+                            ||
+                            "Unable to load content."
+                        )}
+
+                    </td>
+
+                </tr>
+
+            `;
+
+        }
 
     }
+
+}
+
+
+/* =====================================================
+   NORMALIZE CATEGORY
+===================================================== */
+
+function normalizeGenreInput(
+    value
+) {
+
+    const genres = [];
+
+
+    splitGenres(
+        value
+    )
+        .forEach(
+            genre => {
+
+                const exists =
+                    genres.some(
+                        current =>
+                            current
+                                .toLowerCase()
+                            ===
+                            genre
+                                .toLowerCase()
+                    );
+
+
+                if (!exists) {
+
+                    genres.push(
+                        genre
+                    );
+
+                }
+
+            }
+        );
+
+
+    return genres.join(
+        ", "
+    );
 
 }
 
@@ -695,9 +1410,15 @@ if (contentForm) {
                 contentType.value;
 
 
+            const title =
+                contentTitle
+                    .value
+                    .trim();
+
+
             if (
                 !type ||
-                !contentTitle.value.trim()
+                !title
             ) {
 
                 showMessage(
@@ -705,44 +1426,72 @@ if (contentForm) {
                     "error"
                 );
 
+
                 return;
 
             }
 
 
-            saveContentButton.disabled = true;
+            saveContentButton.disabled =
+                true;
+
 
             saveContentButton.innerHTML = `
-                <i class="fa-solid fa-spinner fa-spin"></i>
+
+                <i
+                    class="fa-solid fa-spinner fa-spin"
+                ></i>
+
                 Uploading & Saving...
+
             `;
 
 
             try {
 
                 let posterUrl =
-                    currentPosterUrl.value || null;
+                    currentPosterUrl.value
+                    ||
+                    null;
+
 
                 let bannerUrl =
-                    currentBannerUrl.value || null;
+                    currentBannerUrl.value
+                    ||
+                    null;
+
 
                 let pdfUrl =
-                    currentFileUrl.value || null;
+                    currentFileUrl.value
+                    ||
+                    null;
 
 
                 /* POSTER / COVER */
 
                 if (
+                    posterFile &&
                     posterFile.files.length > 0
                 ) {
 
-                    const folder =
-                        (
-                            type === "story" ||
-                            type === "book"
+                    let folder =
+                        "posters";
+
+
+                    if (
+                        [
+                            "story",
+                            "book",
+                            "tutorial"
+                        ].includes(
+                            type
                         )
-                            ? "covers"
-                            : "posters";
+                    ) {
+
+                        folder =
+                            "covers";
+
+                    }
 
 
                     posterUrl =
@@ -757,8 +1506,16 @@ if (contentForm) {
                 /* BANNER */
 
                 if (
-                    ["movie", "natok", "series", "upcoming"]
-                        .includes(type) &&
+                    bannerFile &&
+                    [
+                        "movie",
+                        "natok",
+                        "series",
+                        "upcoming"
+                    ].includes(
+                        type
+                    )
+                    &&
                     bannerFile.files.length > 0
                 ) {
 
@@ -771,10 +1528,13 @@ if (contentForm) {
                 }
 
 
-                /* PDF */
+                /* BOOK PDF */
 
                 if (
-                    type === "book" &&
+                    type === "book"
+                    &&
+                    bookFile
+                    &&
                     bookFile.files.length > 0
                 ) {
 
@@ -787,16 +1547,76 @@ if (contentForm) {
                 }
 
 
+                /* CATEGORY */
+
+                const genreValue =
+                    contentGenre
+                        ?
+                        normalizeGenreInput(
+                            contentGenre.value
+                        )
+                        :
+                        "";
+
+
+                /* RATING */
+
+                let ratingValue =
+                    null;
+
+
+                if (
+                    contentRating &&
+                    contentRating.value !==
+                    ""
+                ) {
+
+                    const number =
+                        Number(
+                            contentRating.value
+                        );
+
+
+                    if (
+                        Number.isFinite(
+                            number
+                        )
+                    ) {
+
+                        if (
+                            number < 0 ||
+                            number > 10
+                        ) {
+
+                            throw new Error(
+                                "Rating must be between 0 and 10."
+                            );
+
+                        }
+
+
+                        ratingValue =
+                            number;
+
+                    }
+
+                }
+
+
+                /* DATA */
+
                 const contentData = {
 
                     type,
 
-                    title:
-                        contentTitle.value.trim(),
+                    title,
 
                     description:
-                        contentDescription.value.trim()
-                        || null,
+                        contentDescription
+                            ?.value
+                            .trim()
+                        ||
+                        null,
 
                     poster_url:
                         posterUrl,
@@ -808,8 +1628,10 @@ if (contentForm) {
                             "series",
                             "upcoming"
                         ].includes(type)
-                            ? bannerUrl
-                            : null,
+                            ?
+                            bannerUrl
+                            :
+                            null,
 
                     video_url:
                         [
@@ -818,54 +1640,61 @@ if (contentForm) {
                             "series",
                             "tutorial"
                         ].includes(type)
-                            ? (
-                                videoUrl.value.trim()
-                                || null
+                            ?
+                            (
+                                videoUrl
+                                    ?.value
+                                    .trim()
+                                ||
+                                null
                             )
-                            : null,
+                            :
+                            null,
 
                     year:
-                        [
-                            "movie",
-                            "natok",
-                            "series",
-                            "book",
-                            "tutorial"
-                        ].includes(type) &&
+                        contentYear &&
                         contentYear.value
-                            ? Number(contentYear.value)
-                            : null,
+                            ?
+                            Number(
+                                contentYear.value
+                            )
+                            :
+                            null,
+
+                    /*
+                       Existing rating column e
+                       sob type er rating save hobe.
+                       New column lagbe na.
+                    */
 
                     rating:
-                        [
-                            "movie",
-                            "natok",
-                            "series"
-                        ].includes(type) &&
-                        contentRating.value
-                            ? Number(contentRating.value)
-                            : null,
+                        ratingValue,
+
+                    /*
+                       Existing genre column e
+                       category save hobe.
+                       New table / column lagbe na.
+                    */
 
                     genre:
-                        [
-                            "movie",
-                            "natok",
-                            "series",
-                            "upcoming",
-                            "book",
-                            "tutorial"
-                        ].includes(type)
-                            ? (
-                                contentGenre.value.trim()
-                                || null
-                            )
-                            : null,
+                        genreValue
+                            ?
+                            genreValue
+                            :
+                            null,
 
                     season:
-                        type === "series" &&
+                        type === "series"
+                        &&
+                        contentSeason
+                        &&
                         contentSeason.value
-                            ? Number(contentSeason.value)
-                            : null,
+                            ?
+                            Number(
+                                contentSeason.value
+                            )
+                            :
+                            null,
 
                     badge:
                         [
@@ -874,30 +1703,45 @@ if (contentForm) {
                             "series",
                             "upcoming"
                         ].includes(type)
-                            ? (
-                                contentBadge.value.trim()
-                                || null
+                            ?
+                            (
+                                contentBadge
+                                    ?.value
+                                    .trim()
+                                ||
+                                null
                             )
-                            : null,
+                            :
+                            null,
 
                     author:
                         [
                             "story",
                             "book"
                         ].includes(type)
-                            ? (
-                                contentAuthor.value.trim()
-                                || null
+                            ?
+                            (
+                                contentAuthor
+                                    ?.value
+                                    .trim()
+                                ||
+                                null
                             )
-                            : null,
+                            :
+                            null,
 
                     full_content:
                         type === "story"
-                            ? (
-                                fullContent.value.trim()
-                                || null
+                            ?
+                            (
+                                fullContent
+                                    ?.value
+                                    .trim()
+                                ||
+                                null
                             )
-                            : null,
+                            :
+                            null,
 
                     release_date:
                         [
@@ -907,30 +1751,48 @@ if (contentForm) {
                             "upcoming",
                             "story"
                         ].includes(type)
-                            ? (
-                                releaseDate.value
-                                || null
+                            ?
+                            (
+                                releaseDate
+                                    ?.value
+                                ||
+                                null
                             )
-                            : null,
+                            :
+                            null,
 
                     file_url:
                         type === "book"
-                            ? pdfUrl
-                            : null,
+                            ?
+                            pdfUrl
+                            :
+                            null,
 
                     download_url:
                         type === "tutorial"
-                            ? (
-                                tutorialDownloadUrl.value.trim()
-                                || null
+                            ?
+                            (
+                                tutorialDownloadUrl
+                                    ?.value
+                                    .trim()
+                                ||
+                                null
                             )
-                            : null,
+                            :
+                            null,
 
                     featured:
-                        contentFeatured.checked,
+                        contentFeatured
+                            ?
+                            contentFeatured.checked
+                            :
+                            false,
 
                     status:
-                        contentStatus.value
+                        contentStatus
+                            ?.value
+                        ||
+                        "published"
 
                 };
 
@@ -946,7 +1808,9 @@ if (contentForm) {
                     } =
                         await supabaseClient
                             .from("contents")
-                            .update(contentData)
+                            .update(
+                                contentData
+                            )
                             .eq(
                                 "id",
                                 editingId
@@ -954,7 +1818,9 @@ if (contentForm) {
 
 
                     if (error) {
+
                         throw error;
+
                     }
 
 
@@ -978,7 +1844,9 @@ if (contentForm) {
 
 
                     if (error) {
+
                         throw error;
+
                     }
 
 
@@ -992,6 +1860,7 @@ if (contentForm) {
 
                 resetForm();
 
+
                 await loadContents();
 
             }
@@ -1002,7 +1871,8 @@ if (contentForm) {
 
 
                 showMessage(
-                    error.message ||
+                    error.message
+                    ||
                     "Unable to save content.",
                     "error"
                 );
@@ -1014,9 +1884,15 @@ if (contentForm) {
                 saveContentButton.disabled =
                     false;
 
+
                 saveContentButton.innerHTML = `
-                    <i class="fa-solid fa-floppy-disk"></i>
+
+                    <i
+                        class="fa-solid fa-floppy-disk"
+                    ></i>
+
                     Save Content
+
                 `;
 
             }
@@ -1028,10 +1904,17 @@ if (contentForm) {
 
 
 /* =====================================================
-   RENDER TABLE
+   RENDER CONTENT TABLE
 ===================================================== */
 
 function renderContents() {
+
+    if (!contentTableBody) {
+
+        return;
+
+    }
+
 
     let data =
         allContents;
@@ -1044,7 +1927,8 @@ function renderContents() {
         data =
             allContents.filter(
                 item =>
-                    item.type === currentFilter
+                    item.type ===
+                    currentFilter
             );
 
     }
@@ -1055,12 +1939,19 @@ function renderContents() {
     ) {
 
         contentTableBody.innerHTML = `
+
             <tr>
+
                 <td colspan="5">
+
                     No content found.
+
                 </td>
+
             </tr>
+
         `;
+
 
         return;
 
@@ -1068,121 +1959,207 @@ function renderContents() {
 
 
     contentTableBody.innerHTML =
-        data.map(item => {
+        data
+            .map(
+                item => {
 
-            const image =
-                item.poster_url
-                    ? `
-                        <img
-                            src="${escapeHTML(item.poster_url)}"
-                            class="content-thumb"
-                        >
-                    `
-                    : `
-                        <div class="content-thumb-placeholder">
-                            <i class="fa-solid fa-image"></i>
-                        </div>
+                    const image =
+                        item.poster_url
+                            ?
+                            `
+
+                                <img
+                                    src="${escapeAttribute(
+                                        item.poster_url
+                                    )}"
+                                    class="content-thumb"
+                                    alt=""
+                                >
+
+                            `
+                            :
+                            `
+
+                                <div
+                                    class="content-thumb-placeholder"
+                                >
+
+                                    <i
+                                        class="fa-solid fa-image"
+                                    ></i>
+
+                                </div>
+
+                            `;
+
+
+                    return `
+
+                        <tr>
+
+                            <td>
+
+                                <div
+                                    class="content-title-wrap"
+                                >
+
+                                    ${image}
+
+                                    <div>
+
+                                        <strong>
+
+                                            ${escapeHTML(
+                                                item.title
+                                            )}
+
+                                        </strong>
+
+
+                                        ${
+                                            item.genre
+                                                ?
+                                                `
+
+                                                    <div
+                                                        style="
+                                                            margin-top:5px;
+                                                            font-size:11px;
+                                                            color:rgba(255,255,255,.4);
+                                                        "
+                                                    >
+
+                                                        ${escapeHTML(
+                                                            item.genre
+                                                        )}
+
+                                                    </div>
+
+                                                `
+                                                :
+                                                ""
+                                        }
+
+                                    </div>
+
+                                </div>
+
+                            </td>
+
+
+                            <td>
+
+                                ${formatType(
+                                    item.type
+                                )}
+
+                            </td>
+
+
+                            <td>
+
+                                ${
+                                    item.type === "series"
+                                    &&
+                                    item.season
+
+                                        ?
+
+                                        `S${item.season}`
+
+                                        :
+
+                                        (
+                                            item.year
+                                            ||
+                                            "-"
+                                        )
+                                }
+
+                            </td>
+
+
+                            <td>
+
+                                <span
+                                    class="
+                                        status-badge
+                                        ${
+                                            item.status ===
+                                            "draft"
+                                                ?
+                                                "status-draft"
+                                                :
+                                                "status-published"
+                                        }
+                                    "
+                                >
+
+                                    ${escapeHTML(
+                                        item.status
+                                        ||
+                                        "published"
+                                    )}
+
+                                </span>
+
+                            </td>
+
+
+                            <td>
+
+                                <div
+                                    class="table-actions"
+                                >
+
+                                    <button
+                                        class="edit-button"
+                                        type="button"
+                                        onclick="editContent(${Number(
+                                            item.id
+                                        )})"
+                                        title="Edit"
+                                    >
+
+                                        <i
+                                            class="fa-solid fa-pen"
+                                        ></i>
+
+                                    </button>
+
+
+                                    <button
+                                        class="delete-button"
+                                        type="button"
+                                        onclick="deleteContent(${Number(
+                                            item.id
+                                        )})"
+                                        title="Delete"
+                                    >
+
+                                        <i
+                                            class="fa-solid fa-trash"
+                                        ></i>
+
+                                    </button>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
                     `;
 
-
-            return `
-
-                <tr>
-
-                    <td>
-
-                        <div class="content-title-wrap">
-
-                            ${image}
-
-                            <div>
-
-                                <strong>
-                                    ${escapeHTML(item.title)}
-                                </strong>
-
-                            </div>
-
-                        </div>
-
-                    </td>
-
-
-                    <td>
-                        ${formatType(item.type)}
-                    </td>
-
-
-                    <td>
-                        ${
-                            item.type === "series" &&
-                            item.season
-                                ? `S${item.season}`
-                                : (
-                                    item.year || "-"
-                                )
-                        }
-                    </td>
-
-
-                    <td>
-
-                        <span
-                            class="
-                                status-badge
-                                ${
-                                    item.status === "draft"
-                                        ? "status-draft"
-                                        : "status-published"
-                                }
-                            "
-                        >
-
-                            ${
-                                escapeHTML(
-                                    item.status ||
-                                    "published"
-                                )
-                            }
-
-                        </span>
-
-                    </td>
-
-
-                    <td>
-
-                        <div class="table-actions">
-
-                            <button
-                                class="edit-button"
-                                onclick="editContent(${item.id})"
-                            >
-                                <i class="fa-solid fa-pen"></i>
-                            </button>
-
-                            <button
-                                class="delete-button"
-                                onclick="deleteContent(${item.id})"
-                            >
-                                <i class="fa-solid fa-trash"></i>
-                            </button>
-
-                        </div>
-
-                    </td>
-
-                </tr>
-
-            `;
-
-        }).join("");
+                }
+            )
+            .join("");
 
 }
 
 
 /* =====================================================
-   EDIT
+   EDIT CONTENT
 ===================================================== */
 
 window.editContent =
@@ -1191,12 +2168,21 @@ window.editContent =
         const item =
             allContents.find(
                 content =>
-                    Number(content.id) ===
-                    Number(id)
+                    Number(
+                        content.id
+                    )
+                    ===
+                    Number(
+                        id
+                    )
             );
 
 
-        if (!item) return;
+        if (!item) {
+
+            return;
+
+        }
 
 
         contentId.value =
@@ -1204,125 +2190,278 @@ window.editContent =
 
 
         contentType.value =
-            item.type || "";
+            item.type
+            ||
+            "";
 
 
         updateDynamicForm();
 
 
         contentTitle.value =
-            item.title || "";
+            item.title
+            ||
+            "";
+
 
         contentDescription.value =
-            item.description || "";
+            item.description
+            ||
+            "";
 
-        videoUrl.value =
-            item.video_url || "";
 
-        contentYear.value =
-            item.year || "";
+        if (videoUrl) {
 
-        contentRating.value =
-            item.rating || "";
+            videoUrl.value =
+                item.video_url
+                ||
+                "";
 
-        contentGenre.value =
-            item.genre || "";
+        }
 
-        contentSeason.value =
-            item.season || "";
 
-        contentBadge.value =
-            item.badge || "";
+        if (contentYear) {
 
-        contentAuthor.value =
-            item.author || "";
+            contentYear.value =
+                item.year
+                ??
+                "";
 
-        releaseDate.value =
-            item.release_date || "";
+        }
 
-        tutorialDownloadUrl.value =
-            item.download_url || "";
 
-        contentStatus.value =
-            item.status || "published";
+        if (contentRating) {
 
-        contentFeatured.checked =
-            Boolean(item.featured);
+            contentRating.value =
+                item.rating
+                ??
+                "";
 
-        fullContent.value =
-            item.full_content || "";
+        }
+
+
+        if (contentGenre) {
+
+            contentGenre.value =
+                item.genre
+                ||
+                "";
+
+        }
+
+
+        if (contentSeason) {
+
+            contentSeason.value =
+                item.season
+                ??
+                "";
+
+        }
+
+
+        if (contentBadge) {
+
+            contentBadge.value =
+                item.badge
+                ||
+                "";
+
+        }
+
+
+        if (contentAuthor) {
+
+            contentAuthor.value =
+                item.author
+                ||
+                "";
+
+        }
+
+
+        if (releaseDate) {
+
+            releaseDate.value =
+                item.release_date
+                ||
+                "";
+
+        }
+
+
+        if (tutorialDownloadUrl) {
+
+            tutorialDownloadUrl.value =
+                item.download_url
+                ||
+                "";
+
+        }
+
+
+        if (contentStatus) {
+
+            contentStatus.value =
+                item.status
+                ||
+                "published";
+
+        }
+
+
+        if (contentFeatured) {
+
+            contentFeatured.checked =
+                Boolean(
+                    item.featured
+                );
+
+        }
+
+
+        if (fullContent) {
+
+            fullContent.value =
+                item.full_content
+                ||
+                "";
+
+        }
 
 
         currentPosterUrl.value =
-            item.poster_url || "";
+            item.poster_url
+            ||
+            "";
+
 
         currentBannerUrl.value =
-            item.banner_url || "";
+            item.banner_url
+            ||
+            "";
+
 
         currentFileUrl.value =
-            item.file_url || "";
+            item.file_url
+            ||
+            "";
 
 
-        if (item.poster_url) {
+        /* POSTER */
 
-            posterPreview.innerHTML = `
-                <img
-                    src="${item.poster_url}"
-                    alt="Poster"
-                >
-            `;
+        if (posterPreview) {
 
-        }
+            if (item.poster_url) {
 
+                posterPreview.innerHTML = `
 
-        if (item.banner_url) {
+                    <img
+                        src="${escapeAttribute(
+                            item.poster_url
+                        )}"
+                        alt="Poster"
+                    >
 
-            bannerPreview.classList.add(
-                "banner-preview"
-            );
+                `;
 
-            bannerPreview.innerHTML = `
-                <img
-                    src="${item.banner_url}"
-                    alt="Banner"
-                >
-            `;
+            }
 
-        }
+            else {
 
+                posterPreview.innerHTML =
+                    "";
 
-        if (
-            item.file_url &&
-            bookFileStatus
-        ) {
-
-            bookFileStatus.innerHTML =
-                "Current PDF already uploaded.";
+            }
 
         }
 
 
-        formTitle.textContent =
-            "Edit Content";
+        /* BANNER */
+
+        if (bannerPreview) {
+
+            if (item.banner_url) {
+
+                bannerPreview.classList.add(
+                    "banner-preview"
+                );
 
 
-        cancelEditButton.style.display =
-            "inline-flex";
+                bannerPreview.innerHTML = `
+
+                    <img
+                        src="${escapeAttribute(
+                            item.banner_url
+                        )}"
+                        alt="Banner"
+                    >
+
+                `;
+
+            }
+
+            else {
+
+                bannerPreview.innerHTML =
+                    "";
+
+            }
+
+        }
+
+
+        /* BOOK PDF */
+
+        if (bookFileStatus) {
+
+            if (item.file_url) {
+
+                bookFileStatus.textContent =
+                    "Current PDF already uploaded.";
+
+            }
+
+            else {
+
+                bookFileStatus.textContent =
+                    "";
+
+            }
+
+        }
+
+
+        if (formTitle) {
+
+            formTitle.textContent =
+                "Edit Content";
+
+        }
+
+
+        if (cancelEditButton) {
+
+            cancelEditButton.style.display =
+                "inline-flex";
+
+        }
 
 
         document
             .querySelector(
                 ".content-form-section"
             )
-            .scrollIntoView({
-                behavior: "smooth"
+            ?.scrollIntoView({
+                behavior:
+                    "smooth"
             });
 
     };
 
 
 /* =====================================================
-   DELETE
+   DELETE CONTENT
 ===================================================== */
 
 window.deleteContent =
@@ -1331,12 +2470,21 @@ window.deleteContent =
         const item =
             allContents.find(
                 content =>
-                    Number(content.id) ===
-                    Number(id)
+                    Number(
+                        content.id
+                    )
+                    ===
+                    Number(
+                        id
+                    )
             );
 
 
-        if (!item) return;
+        if (!item) {
+
+            return;
+
+        }
 
 
         const confirmed =
@@ -1345,7 +2493,11 @@ window.deleteContent =
             );
 
 
-        if (!confirmed) return;
+        if (!confirmed) {
+
+            return;
+
+        }
 
 
         try {
@@ -1363,17 +2515,26 @@ window.deleteContent =
 
 
             if (error) {
+
                 throw error;
+
             }
 
+
+            /*
+               Database row delete successful hole
+               tarpor storage files remove korbo.
+            */
 
             await removeStorageFile(
                 item.poster_url
             );
 
+
             await removeStorageFile(
                 item.banner_url
             );
+
 
             await removeStorageFile(
                 item.file_url
@@ -1392,8 +2553,13 @@ window.deleteContent =
 
         catch (error) {
 
+            console.error(error);
+
+
             showMessage(
-                error.message,
+                error.message
+                ||
+                "Unable to delete content.",
                 "error"
             );
 
@@ -1403,12 +2569,18 @@ window.deleteContent =
 
 
 /* =====================================================
-   DELETE STORAGE FILE
+   REMOVE STORAGE FILE
 ===================================================== */
 
-async function removeStorageFile(url) {
+async function removeStorageFile(
+    url
+) {
 
-    if (!url) return;
+    if (!url) {
+
+        return;
+
+    }
 
 
     const marker =
@@ -1416,25 +2588,63 @@ async function removeStorageFile(url) {
 
 
     if (
-        !url.includes(marker)
-    ) return;
+        !url.includes(
+            marker
+        )
+    ) {
+
+        return;
+
+    }
 
 
-    const filePath =
-        decodeURIComponent(
-            url.split(marker)[1]
+    try {
+
+        const filePath =
+            decodeURIComponent(
+                url.split(
+                    marker
+                )[1]
+            );
+
+
+        if (!filePath) {
+
+            return;
+
+        }
+
+
+        const {
+            error
+        } =
+            await supabaseClient
+                .storage
+                .from("media")
+                .remove([
+                    filePath
+                ]);
+
+
+        if (error) {
+
+            console.warn(
+                "Storage delete warning:",
+                error.message
+            );
+
+        }
+
+    }
+
+    catch (error) {
+
+        console.warn(
+            "Unable to delete storage file:",
+            error
         );
 
-
-    if (!filePath) return;
-
-
-    await supabaseClient
-        .storage
-        .from("media")
-        .remove([
-            filePath
-        ]);
+    }
 
 }
 
@@ -1445,34 +2655,75 @@ async function removeStorageFile(url) {
 
 function resetForm() {
 
-    if (!contentForm) return;
+    if (!contentForm) {
+
+        return;
+
+    }
 
 
     contentForm.reset();
 
 
-    contentId.value = "";
-
-    currentPosterUrl.value = "";
-
-    currentBannerUrl.value = "";
-
-    currentFileUrl.value = "";
+    contentId.value =
+        "";
 
 
-    posterPreview.innerHTML = "";
-
-    bannerPreview.innerHTML = "";
-
-    bookFileStatus.innerHTML = "";
+    currentPosterUrl.value =
+        "";
 
 
-    formTitle.textContent =
-        "Add New Content";
+    currentBannerUrl.value =
+        "";
 
 
-    cancelEditButton.style.display =
-        "none";
+    currentFileUrl.value =
+        "";
+
+
+    if (posterPreview) {
+
+        posterPreview.innerHTML =
+            "";
+
+    }
+
+
+    if (bannerPreview) {
+
+        bannerPreview.innerHTML =
+            "";
+
+
+        bannerPreview.classList.remove(
+            "banner-preview"
+        );
+
+    }
+
+
+    if (bookFileStatus) {
+
+        bookFileStatus.innerHTML =
+            "";
+
+    }
+
+
+    if (formTitle) {
+
+        formTitle.textContent =
+            "Add New Content";
+
+    }
+
+
+    if (cancelEditButton) {
+
+        cancelEditButton.style.display =
+            "none";
+
+    }
 
 
     updateDynamicForm();
@@ -1517,8 +2768,9 @@ if (openAddContent) {
                 .querySelector(
                     ".content-form-section"
                 )
-                .scrollIntoView({
-                    behavior: "smooth"
+                ?.scrollIntoView({
+                    behavior:
+                        "smooth"
                 });
 
         }
@@ -1531,75 +2783,103 @@ if (openAddContent) {
    STATS
 ===================================================== */
 
+function setStat(
+    id,
+    value
+) {
+
+    const element =
+        document.getElementById(
+            id
+        );
+
+
+    if (element) {
+
+        element.textContent =
+            value;
+
+    }
+
+}
+
+
 function updateStats() {
 
-    document.getElementById(
-        "totalContent"
-    ).textContent =
-        allContents.length;
+    setStat(
+        "totalContent",
+        allContents.length
+    );
 
 
-    document.getElementById(
-        "totalMovies"
-    ).textContent =
+    setStat(
+        "totalMovies",
         allContents.filter(
             item =>
-                item.type === "movie"
-        ).length;
+                item.type ===
+                "movie"
+        ).length
+    );
 
 
-    document.getElementById(
-        "totalNatok"
-    ).textContent =
+    setStat(
+        "totalNatok",
         allContents.filter(
             item =>
-                item.type === "natok"
-        ).length;
+                item.type ===
+                "natok"
+        ).length
+    );
 
 
-    document.getElementById(
-        "totalSeries"
-    ).textContent =
+    setStat(
+        "totalSeries",
         allContents.filter(
             item =>
-                item.type === "series"
-        ).length;
+                item.type ===
+                "series"
+        ).length
+    );
 
 
-    document.getElementById(
-        "totalUpcoming"
-    ).textContent =
+    setStat(
+        "totalUpcoming",
         allContents.filter(
             item =>
-                item.type === "upcoming"
-        ).length;
+                item.type ===
+                "upcoming"
+        ).length
+    );
 
 
-    document.getElementById(
-        "totalStories"
-    ).textContent =
+    setStat(
+        "totalStories",
         allContents.filter(
             item =>
-                item.type === "story"
-        ).length;
+                item.type ===
+                "story"
+        ).length
+    );
 
 
-    document.getElementById(
-        "totalBooks"
-    ).textContent =
+    setStat(
+        "totalBooks",
         allContents.filter(
             item =>
-                item.type === "book"
-        ).length;
+                item.type ===
+                "book"
+        ).length
+    );
 
 
-    document.getElementById(
-        "totalTutorial"
-    ).textContent =
+    setStat(
+        "totalTutorial",
         allContents.filter(
             item =>
-                item.type === "tutorial"
-        ).length;
+                item.type ===
+                "tutorial"
+        ).length
+    );
 
 }
 
@@ -1610,28 +2890,28 @@ function updateStats() {
 
 const filterMap = {
 
-    "Dashboard":
+    Dashboard:
         "all",
 
-    "Movies":
+    Movies:
         "movie",
 
-    "Natok":
+    Natok:
         "natok",
 
     "Web Series":
         "series",
 
-    "Upcoming":
+    Upcoming:
         "upcoming",
 
-    "Stories":
+    Stories:
         "story",
 
-    "Books":
+    Books:
         "book",
 
-    "Tutorial":
+    Tutorial:
         "tutorial"
 
 };
@@ -1641,99 +2921,138 @@ document
     .querySelectorAll(
         ".admin-menu-item"
     )
-    .forEach(button => {
+    .forEach(
+        button => {
 
-        button.addEventListener(
-            "click",
-            () => {
+            button.addEventListener(
+                "click",
+                () => {
 
-                document
-                    .querySelectorAll(
-                        ".admin-menu-item"
-                    )
-                    .forEach(item => {
+                    document
+                        .querySelectorAll(
+                            ".admin-menu-item"
+                        )
+                        .forEach(
+                            item => {
 
-                        item.classList.remove(
-                            "active"
+                                item.classList.remove(
+                                    "active"
+                                );
+
+                            }
                         );
 
-                    });
+
+                    button.classList.add(
+                        "active"
+                    );
 
 
-                button.classList.add(
-                    "active"
-                );
+                    const buttonText =
+                        button.textContent
+                            .trim();
 
 
-                currentFilter =
-                    filterMap[
-                        button.textContent.trim()
-                    ] || "all";
+                    currentFilter =
+                        filterMap[
+                            buttonText
+                        ]
+                        ||
+                        "all";
 
 
-                renderContents();
+                    renderContents();
 
-            }
-        );
+                }
+            );
 
-    });
+        }
+    );
 
 
 /* =====================================================
-   HELPERS
+   FORMAT TYPE
 ===================================================== */
 
 function formatType(type) {
 
     const names = {
 
-        movie: "Movie",
+        movie:
+            "Movie",
 
-        natok: "Natok",
+        natok:
+            "Natok",
 
-        series: "Web Series",
+        series:
+            "Web Series",
 
-        upcoming: "Upcoming",
+        upcoming:
+            "Upcoming",
 
-        story: "Story",
+        story:
+            "Story",
 
-        book: "Book",
+        book:
+            "Book",
 
-        tutorial: "Tutorial"
+        tutorial:
+            "Tutorial"
 
     };
 
 
-    return names[type] ||
-        type ||
+    return names[type]
+        ||
+        type
+        ||
         "-";
 
 }
 
+
+/* =====================================================
+   MESSAGE
+===================================================== */
 
 function showMessage(
     message,
     type
 ) {
 
-    if (!contentMessage) return;
+    if (!contentMessage) {
+
+        return;
+
+    }
 
 
     contentMessage.textContent =
         message;
 
+
     contentMessage.className =
-        type || "";
+        type
+        ||
+        "";
 
 }
 
+
+/* =====================================================
+   ESCAPE HTML
+===================================================== */
 
 function escapeHTML(value) {
 
     if (
         value === null ||
         value === undefined
-    ) return "";
+    ) {
+
+        return "";
+
+    }
 
 
     return String(value)
@@ -1767,22 +3086,57 @@ function escapeHTML(value) {
 
 
 /* =====================================================
-   INITIALIZE
+   ESCAPE ATTRIBUTE
+===================================================== */
+
+function escapeAttribute(
+    value
+) {
+
+    return escapeHTML(
+        value
+    );
+
+}
+
+
+/* =====================================================
+   INITIALIZE DASHBOARD
 ===================================================== */
 
 async function initializeDashboard() {
 
-    if (!isDashboardPage) return;
+    if (!isDashboardPage) {
+
+        return;
+
+    }
 
 
     const authorized =
         await protectDashboard();
 
 
-    if (!authorized) return;
+    if (!authorized) {
+
+        return;
+
+    }
+
+
+    /*
+       Existing HTML field kei expand korchi.
+       Database change kora hocche na.
+    */
+
+    expandExistingFields();
+
+
+    setupGenreSuggestions();
 
 
     updateDynamicForm();
+
 
     await loadContents();
 
@@ -1807,50 +3161,70 @@ document.addEventListener(
 
 /* =====================================================
    LOGO ANIMATION
+   CINEMAMELLA <-> CINEMAHUB
 ===================================================== */
 
 const logoWords = [
+
     "MELLA",
+
     "HUB"
+
 ];
 
 
 let logoIndex = 0;
 
 
-const changingLogo =
-    document.querySelectorAll(".logo-changing");
+setInterval(
+    () => {
+
+        logoIndex =
+            (
+                logoIndex + 1
+            )
+            %
+            logoWords.length;
 
 
-setInterval(() => {
+        document
+            .querySelectorAll(
+                ".logo-changing"
+            )
+            .forEach(
+                logo => {
 
-    logoIndex++;
-
-    if (logoIndex >= logoWords.length) {
-        logoIndex = 0;
-    }
-
-
-    changingLogo.forEach(logo => {
-
-        logo.style.opacity = "0";
-
-        logo.style.transform = "translateY(5px)";
+                    logo.style.opacity =
+                        "0";
 
 
-        setTimeout(() => {
-
-            logo.textContent =
-                logoWords[logoIndex];
+                    logo.style.transform =
+                        "translateY(5px)";
 
 
-            logo.style.opacity = "1";
+                    setTimeout(
+                        () => {
 
-            logo.style.transform = "translateY(0)";
+                            logo.textContent =
+                                logoWords[
+                                    logoIndex
+                                ];
 
-        }, 300);
 
-    });
+                            logo.style.opacity =
+                                "1";
 
 
-}, 2500);
+                            logo.style.transform =
+                                "translateY(0)";
+
+                        },
+                        300
+                    );
+
+                }
+            );
+
+    },
+    2500
+);

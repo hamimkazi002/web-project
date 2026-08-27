@@ -93,54 +93,82 @@
                 Home
             </a>
 
-            <a
-                href="#movies"
-                class="nav-link"
-            >
-                Movies
-            </a>
+            <div class="nav-dropdown-item">
+                <a href="#movies" class="nav-link nav-link-with-arrow">
+                    Movies
+                    <i class="fa-solid fa-chevron-down"></i>
+                </a>
+                <div class="nav-genre-dropdown nav-category-dropdown" data-content-type="movie">
+                    <button type="button" class="genre-menu-item active" data-content-type="movie" data-genre="all">All Movies</button>
+                    <div class="genre-menu-dynamic"></div>
+                </div>
+            </div>
 
-            <a
-                href="#natok"
-                class="nav-link"
-            >
-                Natok
-            </a>
+            <div class="nav-dropdown-item">
+                <a href="#natok" class="nav-link nav-link-with-arrow">
+                    Natok
+                    <i class="fa-solid fa-chevron-down"></i>
+                </a>
+                <div class="nav-genre-dropdown nav-category-dropdown" data-content-type="natok">
+                    <button type="button" class="genre-menu-item active" data-content-type="natok" data-genre="all">All Natok</button>
+                    <div class="genre-menu-dynamic"></div>
+                </div>
+            </div>
 
-            <a
-                href="#webseries"
-                class="nav-link"
-            >
-                Web Series
-            </a>
+            <div class="nav-dropdown-item">
+                <a href="#webseries" class="nav-link nav-link-with-arrow">
+                    Web Series
+                    <i class="fa-solid fa-chevron-down"></i>
+                </a>
+                <div class="nav-genre-dropdown nav-category-dropdown" data-content-type="series">
+                    <button type="button" class="genre-menu-item active" data-content-type="series" data-genre="all">All Web Series</button>
+                    <div class="genre-menu-dynamic"></div>
+                </div>
+            </div>
 
-            <a
-                href="#upcoming"
-                class="nav-link"
-            >
-                Upcoming
-            </a>
+            <div class="nav-dropdown-item">
+                <a href="#upcoming" class="nav-link nav-link-with-arrow">
+                    Upcoming
+                    <i class="fa-solid fa-chevron-down"></i>
+                </a>
+                <div class="nav-genre-dropdown nav-category-dropdown" data-content-type="upcoming">
+                    <button type="button" class="genre-menu-item active" data-content-type="upcoming" data-genre="all">All Upcoming</button>
+                    <div class="genre-menu-dynamic"></div>
+                </div>
+            </div>
 
-            <a
-                href="#stories"
-                class="nav-link"
-            >
-                Stories
-            </a>
+            <div class="nav-dropdown-item">
+                <a href="#stories" class="nav-link nav-link-with-arrow">
+                    Stories
+                    <i class="fa-solid fa-chevron-down"></i>
+                </a>
+                <div class="nav-genre-dropdown nav-category-dropdown" data-content-type="story">
+                    <button type="button" class="genre-menu-item active" data-content-type="story" data-genre="all">All Stories</button>
+                    <div class="genre-menu-dynamic"></div>
+                </div>
+            </div>
 
-            <a
-                href="#books"
-                class="nav-link"
-            >
-                Books
-            </a>
+            <div class="nav-dropdown-item">
+                <a href="#books" class="nav-link nav-link-with-arrow">
+                    Books
+                    <i class="fa-solid fa-chevron-down"></i>
+                </a>
+                <div class="nav-genre-dropdown nav-category-dropdown" data-content-type="book">
+                    <button type="button" class="genre-menu-item active" data-content-type="book" data-genre="all">All Books</button>
+                    <div class="genre-menu-dynamic"></div>
+                </div>
+            </div>
 
-            <a
-                href="#tutorial"
-                class="nav-link"
-            >
-                Tutorial
-            </a>
+            <div class="nav-dropdown-item">
+                <a href="#tutorial" class="nav-link nav-link-with-arrow">
+                    Tutorial
+                    <i class="fa-solid fa-chevron-down"></i>
+                </a>
+                <div class="nav-genre-dropdown nav-category-dropdown" data-content-type="tutorial">
+                    <button type="button" class="genre-menu-item active" data-content-type="tutorial" data-genre="all">All Tutorial</button>
+                    <div class="genre-menu-dynamic"></div>
+                </div>
+            </div>
 
         </nav>
 
@@ -359,12 +387,69 @@
     <div
         class="hero-dots"
         id="heroDots"
-    >
+        aria-label="Hero slides"
+    ></div>
 
-        <span class="hero-dot active"></span>
-        <span class="hero-dot"></span>
-        <span class="hero-dot"></span>
-        <span class="hero-dot"></span>
+</section>
+
+
+<!-- =====================================================
+     FEATURED - RATING 8+
+===================================================== -->
+
+<section
+    class="featured-section"
+    id="featured"
+>
+
+    <div class="section-heading featured-heading">
+
+        <div class="heading-left">
+
+            <span class="heading-line"></span>
+
+            <div>
+                <h2>Featured</h2>
+                <p>Top rated content with rating 8.0 or higher</p>
+            </div>
+
+        </div>
+
+        <div class="featured-controls">
+            <button
+                type="button"
+                id="featuredPrev"
+                aria-label="Previous featured content"
+            >
+                <i class="fa-solid fa-chevron-left"></i>
+            </button>
+
+            <button
+                type="button"
+                id="featuredNext"
+                aria-label="Next featured content"
+            >
+                <i class="fa-solid fa-chevron-right"></i>
+            </button>
+        </div>
+
+    </div>
+
+    <div class="featured-slider-shell">
+
+        <div
+            class="featured-viewport"
+            id="featuredViewport"
+        >
+            <div
+                class="featured-track"
+                id="featuredTrack"
+            >
+                <div class="database-loading">
+                    Loading featured content...
+                </div>
+            </div>
+        </div>
 
     </div>
 

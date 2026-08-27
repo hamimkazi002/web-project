@@ -1,21 +1,14 @@
 /* =====================================================
-   CINEMA MELLA
-   MAIN WEBSITE
-   DATABASE VERSION
-===================================================== */
-
-
-/* =====================================================
-   SUPABASE CONFIG
+   CINEMA MELLA - PUBLIC WEBSITE
+   NO DATABASE CHANGE VERSION
+   Uses only existing "contents" table
 ===================================================== */
 
 const SUPABASE_URL =
     "https://vuvstnlalyikvlanxxwy.supabase.co";
 
-
 const SUPABASE_PUBLISHABLE_KEY =
     "sb_publishable_ed-PGIvnw8yN2OwI2264IA_f1FOdWrp";
-
 
 const publicSupabase =
     window.supabase.createClient(
@@ -25,21 +18,99 @@ const publicSupabase =
 
 
 /* =====================================================
-   DATABASE CONTENT
+   GLOBAL DATA
 ===================================================== */
 
 let databaseContents = [];
+
+let featuredItems = [];
+let featuredIndex = 0;
+let featuredTimer = null;
+
+let heroSlides = [];
+let heroIndex = 0;
+let heroTimer = null;
+
+
+const TYPE_LABELS = {
+
+    movie: "Movie",
+
+    natok: "Natok",
+
+    series: "Web Series",
+
+    upcoming: "Upcoming",
+
+    story: "Story",
+
+    book: "Book",
+
+    tutorial: "Tutorial"
+
+};
+
+
+const TYPE_SECTIONS = {
+
+    movie: "movies",
+
+    natok: "natok",
+
+    series: "webseries",
+
+    upcoming: "upcoming",
+
+    story: "stories",
+
+    book: "books",
+
+    tutorial: "tutorial"
+
+};
+
+
+const HERO_SEQUENCE = [
+
+    "movie",
+
+    "natok",
+
+    "series",
+
+    "upcoming",
+
+    "story",
+
+    "book",
+
+    "tutorial"
+
+];
+
+
+const activeGenreFilters = {
+
+    movie: "all",
+
+    natok: "all",
+
+    series: "all",
+
+    upcoming: "all",
+
+    story: "all",
+
+    book: "all",
+
+    tutorial: "all"
+
+};
 
 
 /* =====================================================
    DOM ELEMENTS
 ===================================================== */
-
-const changingLogo =
-    document.getElementById(
-        "logoChangingText"
-    );
-
 
 const heroBackground =
     document.getElementById(
@@ -47,13 +118,13 @@ const heroBackground =
     );
 
 
-const heroDots =
-    document.querySelectorAll(
-        ".hero-dot"
+const heroDotsContainer =
+    document.getElementById(
+        "heroDots"
     );
 
 
-const searchIconButton =
+const searchToggle =
     document.getElementById(
         "searchToggle"
     );
@@ -96,271 +167,77 @@ const mobileNav =
 
 
 /* =====================================================
-   LOGO TEXT
+   LOGO ANIMATION
 ===================================================== */
 
 const logoWords = [
+
     "MELLA",
+
     "HUB"
+
 ];
 
 
 let logoIndex = 0;
 
 
-function changeLogoText() {
-
-    if (!changingLogo) {
-        return;
-    }
-
-
-    changingLogo.style.opacity =
-        "0";
-
-
-    changingLogo.style.transform =
-        "translateY(-5px)";
-
-
-    setTimeout(() => {
-
-        changingLogo.textContent =
-            logoWords[logoIndex];
-
-
-        changingLogo.style.opacity =
-            "1";
-
-
-        changingLogo.style.transform =
-            "translateY(0)";
-
-
-        logoIndex++;
-
-
-        if (
-            logoIndex >=
-            logoWords.length
-        ) {
-
-            logoIndex = 0;
-
-        }
-
-    }, 250);
-
-}
-
-
 setInterval(
-    changeLogoText,
+    () => {
+
+        logoIndex =
+            (
+                logoIndex + 1
+            )
+            %
+            logoWords.length;
+
+
+        document
+            .querySelectorAll(
+                ".logo-changing"
+            )
+            .forEach(
+                logo => {
+
+                    logo.style.opacity =
+                        "0";
+
+
+                    logo.style.transform =
+                        "translateY(5px)";
+
+
+                    setTimeout(
+                        () => {
+
+                            logo.textContent =
+                                logoWords[
+                                    logoIndex
+                                ];
+
+
+                            logo.style.opacity =
+                                "1";
+
+
+                            logo.style.transform =
+                                "translateY(0)";
+
+                        },
+                        300
+                    );
+
+                }
+            );
+
+    },
     2500
 );
 
 
 /* =====================================================
-   HERO SLIDER
-===================================================== */
-
-const heroImages = [
-
-    "linear-gradient(120deg, #1a0033 0%, #3a0ca3 45%, #7209b7 100%)",
-
-    "linear-gradient(120deg, #2c0703 0%, #6a040f 45%, #9d0208 100%)",
-
-    "linear-gradient(120deg, #03071e 0%, #10002b 45%, #3c096c 100%)",
-
-    "linear-gradient(120deg, #0f3057 0%, #00587a 45%, #14213d 100%)"
-
-];
-
-
-let currentHeroIndex = 0;
-
-
-function updateHeroDots(index) {
-
-    heroDots.forEach(
-        (
-            dot,
-            dotIndex
-        ) => {
-
-            dot.classList.toggle(
-                "active",
-                dotIndex === index
-            );
-
-        }
-    );
-
-}
-
-
-function showHeroImage(index) {
-
-    if (!heroBackground) {
-        return;
-    }
-
-
-    heroBackground.style.opacity =
-        "0";
-
-
-    setTimeout(() => {
-
-        heroBackground.style.backgroundImage =
-            heroImages[index];
-
-
-        heroBackground.style.transition =
-            "opacity 0.65s ease";
-
-
-        heroBackground.classList.remove(
-            "zoom"
-        );
-
-
-        heroBackground.style.opacity =
-            "1";
-
-
-        void heroBackground.offsetWidth;
-
-
-        heroBackground.style.transition =
-            "opacity 0.65s ease, transform 4s cubic-bezier(0.2, 0.5, 0.3, 1)";
-
-
-        requestAnimationFrame(() => {
-
-            requestAnimationFrame(() => {
-
-                heroBackground.classList.add(
-                    "zoom"
-                );
-
-            });
-
-        });
-
-
-        updateHeroDots(index);
-
-    }, 450);
-
-}
-
-
-/* INITIAL HERO */
-
-if (heroBackground) {
-
-    heroBackground.style.backgroundImage =
-        heroImages[0];
-
-
-    heroBackground.style.opacity =
-        "1";
-
-
-    setTimeout(() => {
-
-        heroBackground.classList.add(
-            "zoom"
-        );
-
-    }, 300);
-
-}
-
-
-/* AUTO HERO */
-
-let heroTimer =
-    setInterval(() => {
-
-        currentHeroIndex++;
-
-
-        if (
-            currentHeroIndex >=
-            heroImages.length
-        ) {
-
-            currentHeroIndex = 0;
-
-        }
-
-
-        showHeroImage(
-            currentHeroIndex
-        );
-
-    }, 4000);
-
-
-/* DOT CLICK */
-
-heroDots.forEach(
-    (
-        dot,
-        index
-    ) => {
-
-        dot.addEventListener(
-            "click",
-            () => {
-
-                currentHeroIndex =
-                    index;
-
-
-                showHeroImage(
-                    currentHeroIndex
-                );
-
-
-                clearInterval(
-                    heroTimer
-                );
-
-
-                heroTimer =
-                    setInterval(() => {
-
-                        currentHeroIndex++;
-
-
-                        if (
-                            currentHeroIndex >=
-                            heroImages.length
-                        ) {
-
-                            currentHeroIndex = 0;
-
-                        }
-
-
-                        showHeroImage(
-                            currentHeroIndex
-                        );
-
-                    }, 4000);
-
-            }
-        );
-
-    }
-);
-
-
-/* =====================================================
-   LOAD SUPABASE CONTENT
+   LOAD CONTENT
 ===================================================== */
 
 async function loadWebsiteContents() {
@@ -372,8 +249,12 @@ async function loadWebsiteContents() {
             error
         } =
             await publicSupabase
-                .from("contents")
-                .select("*")
+                .from(
+                    "contents"
+                )
+                .select(
+                    "*"
+                )
                 .eq(
                     "status",
                     "published"
@@ -397,25 +278,17 @@ async function loadWebsiteContents() {
             data || [];
 
 
-        renderMovies();
+        createCategoryDropdowns();
 
-        renderNatok();
+        renderCategoryDropdowns();
 
-        renderSeries();
+        createFeaturedSection();
 
-        renderUpcoming();
+        renderAllSections();
 
-        renderStories();
+        setupFeaturedSlider();
 
-        renderBooks();
-
-        renderTutorial();
-
-
-        console.log(
-            "Database content loaded:",
-            databaseContents
-        );
+        setupDynamicHero();
 
     }
 
@@ -435,54 +308,667 @@ async function loadWebsiteContents() {
 
 
 /* =====================================================
+   CATEGORY SYSTEM
+
+   DATABASE CHANGE LAGBE NA
+
+   CATEGORY ASBE contents.genre THEKE
+
+   Example:
+
+   Movie:
+   Action
+   Horror
+
+   Natok:
+   Bangla
+   Hindi
+
+   Tutorial:
+   SEO
+   Coding
+   Web Design
+===================================================== */
+
+function splitGenres(
+    value
+) {
+
+    return String(
+        value || ""
+    )
+        .split(",")
+        .map(
+            item =>
+                item.trim()
+        )
+        .filter(
+            Boolean
+        );
+
+}
+
+
+/* =====================================================
+   GET UNIQUE GENRES
+===================================================== */
+
+function getGenresForType(
+    type
+) {
+
+    const genres = [];
+
+
+    databaseContents
+        .filter(
+            item =>
+                item.type === type
+        )
+        .forEach(
+            item => {
+
+                splitGenres(
+                    item.genre
+                )
+                    .forEach(
+                        genre => {
+
+                            const exists =
+                                genres.some(
+                                    current =>
+                                        current
+                                            .toLowerCase()
+                                        ===
+                                        genre
+                                            .toLowerCase()
+                                );
+
+
+                            if (!exists) {
+
+                                genres.push(
+                                    genre
+                                );
+
+                            }
+
+                        }
+                    );
+
+            }
+        );
+
+
+    return genres.sort(
+        (
+            a,
+            b
+        ) =>
+            a.localeCompare(
+                b
+            )
+    );
+
+}
+
+
+/* =====================================================
+   CREATE NAV DROPDOWN
+
+   Existing index.html change na korleo JS
+   menu create korbe
+===================================================== */
+
+function createCategoryDropdowns() {
+
+    const navMenu =
+        document.querySelector(
+            ".nav-menu"
+        );
+
+
+    if (!navMenu) {
+
+        return;
+
+    }
+
+
+    const map = {
+
+        "#movies":
+            "movie",
+
+        "#natok":
+            "natok",
+
+        "#webseries":
+            "series",
+
+        "#upcoming":
+            "upcoming",
+
+        "#stories":
+            "story",
+
+        "#books":
+            "book",
+
+        "#tutorial":
+            "tutorial"
+
+    };
+
+
+    Object
+        .entries(
+            map
+        )
+        .forEach(
+            (
+                [
+                    href,
+                    type
+                ]
+            ) => {
+
+                const link =
+                    navMenu
+                        .querySelector(
+                            `a.nav-link[href="${href}"]`
+                        );
+
+
+                if (!link) {
+
+                    return;
+
+                }
+
+
+                if (
+                    link
+                        .parentElement
+                        ?.classList
+                        .contains(
+                            "nav-category-dropdown"
+                        )
+                ) {
+
+                    return;
+
+                }
+
+
+                const wrapper =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                wrapper.className =
+                    "nav-category-dropdown";
+
+
+                wrapper.dataset
+                    .contentType =
+                    type;
+
+
+                const menu =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                menu.className =
+                    "genre-dropdown-menu";
+
+
+                menu.innerHTML = `
+
+                    <div
+                        class="genre-dropdown-head"
+                    >
+
+                        ${escapeHTML(
+                            TYPE_LABELS[
+                                type
+                            ]
+                        )}
+
+                    </div>
+
+
+                    <div
+                        class="genre-menu-dynamic"
+                    ></div>
+
+                `;
+
+
+                link.parentNode
+                    .insertBefore(
+                        wrapper,
+                        link
+                    );
+
+
+                wrapper
+                    .appendChild(
+                        link
+                    );
+
+
+                wrapper
+                    .appendChild(
+                        menu
+                    );
+
+            }
+        );
+
+}
+
+
+/* =====================================================
+   RENDER NAV CATEGORIES
+===================================================== */
+
+function renderCategoryDropdowns() {
+
+    document
+        .querySelectorAll(
+            ".nav-category-dropdown"
+        )
+        .forEach(
+            wrapper => {
+
+                const type =
+                    wrapper.dataset
+                        .contentType;
+
+
+                const box =
+                    wrapper
+                        .querySelector(
+                            ".genre-menu-dynamic"
+                        );
+
+
+                if (
+                    !type ||
+                    !box
+                ) {
+
+                    return;
+
+                }
+
+
+                const genres =
+                    getGenresForType(
+                        type
+                    );
+
+
+                box.innerHTML = `
+
+                    <button
+                        class="genre-menu-item active"
+                        type="button"
+                        data-content-type="${type}"
+                        data-genre="all"
+                    >
+
+                        All ${escapeHTML(
+                            TYPE_LABELS[
+                                type
+                            ]
+                        )}
+
+                    </button>
+
+
+                    ${
+
+                        genres
+                            .map(
+                                genre => `
+
+                                    <button
+                                        class="genre-menu-item"
+                                        type="button"
+                                        data-content-type="${type}"
+                                        data-genre="${escapeAttribute(
+                                            genre
+                                        )}"
+                                    >
+
+                                        ${escapeHTML(
+                                            genre
+                                        )}
+
+                                    </button>
+
+                                `
+                            )
+                            .join("")
+
+                    }
+
+                `;
+
+            }
+        );
+
+}
+
+
+/* =====================================================
+   CATEGORY CLICK
+===================================================== */
+
+document.addEventListener(
+    "click",
+    event => {
+
+        const button =
+            event.target.closest(
+                ".genre-menu-item"
+            );
+
+
+        if (!button) {
+
+            return;
+
+        }
+
+
+        event.preventDefault();
+
+        event.stopPropagation();
+
+
+        const type =
+            button.dataset
+                .contentType;
+
+
+        const genre =
+            button.dataset
+                .genre
+            ||
+            "all";
+
+
+        if (
+            !type ||
+            !(
+                type
+                in
+                activeGenreFilters
+            )
+        ) {
+
+            return;
+
+        }
+
+
+        activeGenreFilters[
+            type
+        ] =
+            genre;
+
+
+        const wrapper =
+            button.closest(
+                ".nav-category-dropdown"
+            );
+
+
+        if (wrapper) {
+
+            wrapper
+                .querySelectorAll(
+                    ".genre-menu-item"
+                )
+                .forEach(
+                    item => {
+
+                        item.classList
+                            .remove(
+                                "active"
+                            );
+
+                    }
+                );
+
+        }
+
+
+        button.classList
+            .add(
+                "active"
+            );
+
+
+        renderSectionByType(
+            type
+        );
+
+
+        const section =
+            document.getElementById(
+                TYPE_SECTIONS[
+                    type
+                ]
+            );
+
+
+        if (section) {
+
+            section.scrollIntoView(
+                {
+
+                    behavior:
+                        "smooth",
+
+                    block:
+                        "start"
+
+                }
+            );
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   GENRE MATCH
+===================================================== */
+
+function itemMatchesGenre(
+    item,
+    genre
+) {
+
+    if (
+        !genre ||
+        genre === "all"
+    ) {
+
+        return true;
+
+    }
+
+
+    return splitGenres(
+        item.genre
+    )
+        .some(
+            current =>
+                current
+                    .toLowerCase()
+                ===
+                genre
+                    .toLowerCase()
+        );
+
+}
+
+
+/* =====================================================
+   FILTER CONTENT
+===================================================== */
+
+function getFilteredContents(
+    type
+) {
+
+    return databaseContents
+        .filter(
+            item =>
+                item.type ===
+                type
+        )
+        .filter(
+            item =>
+                itemMatchesGenre(
+                    item,
+                    activeGenreFilters[
+                        type
+                    ]
+                )
+        );
+
+}
+
+
+/* =====================================================
+   EMPTY TEXT
+===================================================== */
+
+function getEmptyText(
+    type,
+    normalText
+) {
+
+    const genre =
+        activeGenreFilters[
+            type
+        ];
+
+
+    if (
+        !genre ||
+        genre === "all"
+    ) {
+
+        return normalText;
+
+    }
+
+
+    return `No ${genre} content found.`;
+
+}
+
+
+/* =====================================================
+   RENDER ALL
+===================================================== */
+
+function renderAllSections() {
+
+    renderMovies();
+
+    renderNatok();
+
+    renderSeries();
+
+    renderUpcoming();
+
+    renderStories();
+
+    renderBooks();
+
+    renderTutorial();
+
+}
+
+
+/* =====================================================
+   RENDER BY TYPE
+===================================================== */
+
+function renderSectionByType(
+    type
+) {
+
+    const map = {
+
+        movie:
+            renderMovies,
+
+        natok:
+            renderNatok,
+
+        series:
+            renderSeries,
+
+        upcoming:
+            renderUpcoming,
+
+        story:
+            renderStories,
+
+        book:
+            renderBooks,
+
+        tutorial:
+            renderTutorial
+
+    };
+
+
+    if (
+        map[
+            type
+        ]
+    ) {
+
+        map[
+            type
+        ]();
+
+    }
+
+}
+
+
+/* =====================================================
    MOVIES
 ===================================================== */
 
 function renderMovies() {
 
-    const grid =
-        document.getElementById(
-            "moviesGrid"
-        );
+    renderVideoGrid(
 
+        "moviesGrid",
 
-    if (!grid) {
-        return;
-    }
+        "movie",
 
+        "MOVIE",
 
-    const movies =
-        databaseContents.filter(
-            item =>
-                item.type ===
-                "movie"
-        );
+        "No movies added yet."
 
-
-    if (
-        movies.length === 0
-    ) {
-
-        grid.innerHTML =
-            emptyMessage(
-                "No movies added yet."
-            );
-
-        return;
-
-    }
-
-
-    grid.innerHTML =
-        movies
-            .map(
-                item =>
-                    createVideoCard(
-                        item,
-                        "MOVIE"
-                    )
-            )
-            .join("");
+    );
 
 }
 
@@ -493,86 +979,84 @@ function renderMovies() {
 
 function renderNatok() {
 
-    const grid =
-        document.getElementById(
-            "natokGrid"
-        );
+    renderVideoGrid(
 
+        "natokGrid",
 
-    if (!grid) {
-        return;
-    }
+        "natok",
 
+        "NATOK",
 
-    const natok =
-        databaseContents.filter(
-            item =>
-                item.type ===
-                "natok"
-        );
+        "No natok added yet."
 
-
-    if (
-        natok.length === 0
-    ) {
-
-        grid.innerHTML =
-            emptyMessage(
-                "No natok added yet."
-            );
-
-        return;
-
-    }
-
-
-    grid.innerHTML =
-        natok
-            .map(
-                item =>
-                    createVideoCard(
-                        item,
-                        "NATOK"
-                    )
-            )
-            .join("");
+    );
 
 }
 
 
 /* =====================================================
-   WEB SERIES
+   SERIES
 ===================================================== */
 
 function renderSeries() {
 
+    renderVideoGrid(
+
+        "webseriesGrid",
+
+        "series",
+
+        "WEB SERIES",
+
+        "No web series added yet."
+
+    );
+
+}
+
+
+/* =====================================================
+   VIDEO GRID
+===================================================== */
+
+function renderVideoGrid(
+    gridId,
+    type,
+    label,
+    emptyText
+) {
+
     const grid =
         document.getElementById(
-            "webseriesGrid"
+            gridId
         );
 
 
     if (!grid) {
+
         return;
+
     }
 
 
-    const series =
-        databaseContents.filter(
-            item =>
-                item.type ===
-                "series"
+    const items =
+        getFilteredContents(
+            type
         );
 
 
     if (
-        series.length === 0
+        items.length === 0
     ) {
 
         grid.innerHTML =
             emptyMessage(
-                "No web series added yet."
+                getEmptyText(
+                    type,
+                    emptyText
+                )
             );
+
 
         return;
 
@@ -580,12 +1064,12 @@ function renderSeries() {
 
 
     grid.innerHTML =
-        series
+        items
             .map(
                 item =>
                     createVideoCard(
                         item,
-                        "WEB SERIES"
+                        label
                     )
             )
             .join("");
@@ -595,70 +1079,81 @@ function renderSeries() {
 
 /* =====================================================
    VIDEO CARD
+
+   Description niche thakbe na.
+   Hover korle poster er upor show korbe.
 ===================================================== */
 
 function createVideoCard(
     item,
-    category
+    label
 ) {
 
-    const posterStyle =
+    const image =
         item.poster_url
-            ? `
-                background-image:
-                url("${escapeAttribute(
-                    item.poster_url
-                )}");
-            `
-            : "";
+        ||
+        item.banner_url
+        ||
+        "";
 
 
-    let leftMeta = "";
+    const leftMeta =
+        (
+            item.type ===
+            "series"
+            &&
+            item.season
+        )
 
+            ?
 
-    if (
-        item.type ===
-        "series"
-    ) {
+            `S${String(
+                item.season
+            ).padStart(
+                2,
+                "0"
+            )}`
 
-        if (item.season) {
+            :
 
-            leftMeta =
-                `S${String(
-                    item.season
-                ).padStart(
-                    2,
-                    "0"
-                )}`;
-
-        }
-
-    }
-
-    else {
-
-        leftMeta =
-            item.year || "";
-
-    }
+            (
+                item.year
+                ||
+                ""
+            );
 
 
     return `
 
         <article
-            class="movie-card"
+            class="movie-card content-open-card"
             data-content-id="${item.id}"
         >
 
             <div
                 class="movie-poster"
-                style='${posterStyle}'
+                style='${
+                    image
+
+                        ?
+
+                        `background-image:url("${escapeCssUrl(
+                            image
+                        )}")`
+
+                        :
+
+                        ""
+                }'
             >
 
 
                 ${
                     item.badge
-                        ? `
+
+                        ?
+
+                        `
 
                             <span
                                 class="content-badge"
@@ -671,20 +1166,69 @@ function createVideoCard(
                             </span>
 
                         `
-                        : ""
+
+                        :
+
+                        ""
                 }
 
 
+                <div
+                    class="card-hover-overlay"
+                >
+
+                    <h4>
+
+                        ${escapeHTML(
+                            item.title
+                            ||
+                            "Untitled"
+                        )}
+
+                    </h4>
+
+
+                    <p>
+
+                        ${escapeHTML(
+                            item.description
+                            ||
+                            "No description available."
+                        )}
+
+                    </p>
+
+
+                    <span
+                        class="card-hover-action"
+                    >
+
+                        ${getActionText(
+                            item
+                        )}
+
+                        <i
+                            class="fa-solid fa-arrow-right"
+                        ></i>
+
+                    </span>
+
+                </div>
+
+
                 ${
-                    item.video_url
-                        ? `
+                    getMainActionUrl(
+                        item
+                    )
+
+                        ?
+
+                        `
 
                             <button
-                                class="poster-play dynamic-play"
+                                class="poster-play content-action-button"
                                 type="button"
-                                data-video="${escapeAttribute(
-                                    item.video_url
-                                )}"
+                                data-content-id="${item.id}"
                             >
 
                                 <i
@@ -694,18 +1238,24 @@ function createVideoCard(
                             </button>
 
                         `
-                        : ""
+
+                        :
+
+                        ""
                 }
 
             </div>
 
 
-            <div class="card-info">
+            <div
+                class="card-info"
+            >
 
+                <span
+                    class="card-category"
+                >
 
-                <span class="card-category">
-
-                    ${category}
+                    ${label}
 
                 </span>
 
@@ -713,25 +1263,17 @@ function createVideoCard(
                 <h3>
 
                     ${escapeHTML(
-                        item.title ||
+                        item.title
+                        ||
                         "Untitled"
                     )}
 
                 </h3>
 
 
-                <p>
-
-                    ${escapeHTML(
-                        item.description ||
-                        ""
-                    )}
-
-                </p>
-
-
-                <div class="card-meta">
-
+                <div
+                    class="card-meta"
+                >
 
                     <span>
 
@@ -745,8 +1287,13 @@ function createVideoCard(
                     <span>
 
                         ${
-                            item.rating
-                                ? `
+                            hasRating(
+                                item
+                            )
+
+                                ?
+
+                                `
 
                                     <i
                                         class="fa-solid fa-star"
@@ -757,11 +1304,13 @@ function createVideoCard(
                                     )}
 
                                 `
-                                : ""
+
+                                :
+
+                                ""
                         }
 
                     </span>
-
 
                 </div>
 
@@ -787,26 +1336,35 @@ function renderUpcoming() {
 
 
     if (!grid) {
+
         return;
+
     }
 
 
-    const upcoming =
-        databaseContents.filter(
-            item =>
-                item.type ===
-                "upcoming"
+    const items =
+        getFilteredContents(
+            "upcoming"
         );
 
 
     if (
-        upcoming.length === 0
+        items.length === 0
     ) {
 
         grid.innerHTML =
             emptyMessage(
-                "No upcoming content."
+
+                getEmptyText(
+
+                    "upcoming",
+
+                    "No upcoming content."
+
+                )
+
             );
+
 
         return;
 
@@ -814,107 +1372,113 @@ function renderUpcoming() {
 
 
     grid.innerHTML =
-        upcoming
-            .map(item => {
+        items
+            .map(
+                item => {
 
-                const image =
-                    item.banner_url ||
-                    item.poster_url;
-
-
-                const backgroundStyle =
-                    image
-                        ? `
-                            background-image:
-                            url("${escapeAttribute(
-                                image
-                            )}");
-                        `
-                        : "";
+                    const image =
+                        item.banner_url
+                        ||
+                        item.poster_url
+                        ||
+                        "";
 
 
-                return `
+                    return `
 
-                    <article
-                        class="upcoming-card"
-                    >
-
-
-                        <div
-                            class="upcoming-poster"
-                            style='${backgroundStyle}'
+                        <article
+                            class="upcoming-card content-open-card"
+                            data-content-id="${item.id}"
                         >
 
+                            <div
+                                class="upcoming-poster"
+                                style='${
+                                    image
 
-                            <span
-                                class="coming-badge"
+                                        ?
+
+                                        `background-image:url("${escapeCssUrl(
+                                            image
+                                        )}")`
+
+                                        :
+
+                                        ""
+                                }'
                             >
 
-                                ${escapeHTML(
-                                    item.badge ||
-                                    "COMING SOON"
+                                <span
+                                    class="coming-badge"
+                                >
+
+                                    ${escapeHTML(
+                                        item.badge
+                                        ||
+                                        "COMING SOON"
+                                    )}
+
+                                </span>
+
+
+                                ${hoverOverlay(
+                                    item,
+                                    "View Content"
                                 )}
 
-                            </span>
-
-                        </div>
+                            </div>
 
 
-                        <div
-                            class="upcoming-info"
-                        >
+                            <div
+                                class="upcoming-info"
+                            >
+
+                                <span>
+
+                                    RELEASE DATE
+
+                                </span>
 
 
-                            <span>
-                                RELEASE DATE
-                            </span>
+                                <h3>
+
+                                    ${escapeHTML(
+                                        item.title
+                                        ||
+                                        ""
+                                    )}
+
+                                </h3>
 
 
-                            <h3>
+                                <p>
 
-                                ${escapeHTML(
-                                    item.title ||
-                                    ""
-                                )}
+                                    ${
+                                        item.release_date
 
-                            </h3>
+                                            ?
 
-
-                            ${
-                                item.release_date
-                                    ? `
-
-                                        <p>
-
-                                            ${escapeHTML(
+                                            escapeHTML(
                                                 formatDate(
                                                     item.release_date
                                                 )
-                                            )}
+                                            )
 
-                                        </p>
+                                            :
 
-                                    `
-                                    : ""
-                            }
+                                            "Coming Soon"
+                                    }
 
+                                </p>
 
-                            <p>
+                            </div>
 
-                                ${escapeHTML(
-                                    item.description ||
-                                    ""
-                                )}
+                        </article>
 
-                            </p>
+                    `;
 
-                        </div>
-
-                    </article>
-
-                `;
-
-            })
+                }
+            )
             .join("");
 
 }
@@ -933,26 +1497,35 @@ function renderStories() {
 
 
     if (!grid) {
+
         return;
+
     }
 
 
-    const stories =
-        databaseContents.filter(
-            item =>
-                item.type ===
-                "story"
+    const items =
+        getFilteredContents(
+            "story"
         );
 
 
     if (
-        stories.length === 0
+        items.length === 0
     ) {
 
         grid.innerHTML =
             emptyMessage(
-                "No stories added yet."
+
+                getEmptyText(
+
+                    "story",
+
+                    "No stories added yet."
+
+                )
+
             );
+
 
         return;
 
@@ -960,128 +1533,150 @@ function renderStories() {
 
 
     grid.innerHTML =
-        stories
-            .map(item => {
+        items
+            .map(
+                item => {
 
-                const backgroundStyle =
-                    item.poster_url
-                        ? `
-                            background-image:
-                            url("${escapeAttribute(
-                                item.poster_url
-                            )}");
-                        `
-                        : "";
+                    const image =
+                        item.poster_url
+                        ||
+                        "";
 
 
-                return `
+                    return `
 
-                    <article
-                        class="story-card"
-                    >
-
-
-                        <div
-                            class="story-image"
-                            style='${backgroundStyle}'
+                        <article
+                            class="story-card content-open-card"
+                            data-content-id="${item.id}"
                         >
 
+                            <div
+                                class="story-image"
+                                style='${
+                                    image
 
-                            <span
-                                class="story-badge"
+                                        ?
+
+                                        `background-image:url("${escapeCssUrl(
+                                            image
+                                        )}")`
+
+                                        :
+
+                                        ""
+                                }'
                             >
 
-                                ${
-                                    item.featured
-                                        ? "FEATURED"
-                                        : "STORY"
-                                }
+                                <span
+                                    class="story-badge"
+                                >
 
-                            </span>
+                                    ${
+                                        item.featured
 
-                        </div>
+                                            ?
+
+                                            "FEATURED"
+
+                                            :
+
+                                            "STORY"
+                                    }
+
+                                </span>
 
 
-                        <div
-                            class="story-info"
-                        >
+                                ${hoverOverlay(
+                                    item,
+                                    "Read Story"
+                                )}
+
+                            </div>
 
 
-                            <span
-                                class="story-date"
+                            <div
+                                class="story-info"
                             >
 
-                                ${
-                                    item.release_date
-                                        ? escapeHTML(
-                                            formatDate(
-                                                item.release_date
+                                <span
+                                    class="story-date"
+                                >
+
+                                    ${
+                                        item.release_date
+
+                                            ?
+
+                                            escapeHTML(
+                                                formatDate(
+                                                    item.release_date
+                                                )
                                             )
-                                        )
-                                        : ""
+
+                                            :
+
+                                            ""
+                                    }
+
+                                </span>
+
+
+                                <h3>
+
+                                    ${escapeHTML(
+                                        item.title
+                                        ||
+                                        ""
+                                    )}
+
+                                </h3>
+
+
+                                ${
+                                    item.author
+
+                                        ?
+
+                                        `
+
+                                            <p>
+
+                                                By ${escapeHTML(
+                                                    item.author
+                                                )}
+
+                                            </p>
+
+                                        `
+
+                                        :
+
+                                        ""
                                 }
 
-                            </span>
 
+                                <button
+                                    class="story-button content-action-button"
+                                    type="button"
+                                    data-content-id="${item.id}"
+                                >
 
-                            <h3>
+                                    Read Story
 
-                                ${escapeHTML(
-                                    item.title ||
-                                    ""
-                                )}
+                                    <i
+                                        class="fa-solid fa-arrow-right"
+                                    ></i>
 
-                            </h3>
+                                </button>
 
+                            </div>
 
-                            ${
-                                item.author
-                                    ? `
+                        </article>
 
-                                        <p>
+                    `;
 
-                                            By ${escapeHTML(
-                                                item.author
-                                            )}
-
-                                        </p>
-
-                                    `
-                                    : ""
-                            }
-
-
-                            <p>
-
-                                ${escapeHTML(
-                                    item.description ||
-                                    ""
-                                )}
-
-                            </p>
-
-
-                            <button
-                                class="story-button dynamic-story"
-                                type="button"
-                                data-id="${item.id}"
-                            >
-
-                                Read Story
-
-                                <i
-                                    class="fa-solid fa-arrow-right"
-                                ></i>
-
-                            </button>
-
-                        </div>
-
-                    </article>
-
-                `;
-
-            })
+                }
+            )
             .join("");
 
 }
@@ -1100,26 +1695,35 @@ function renderBooks() {
 
 
     if (!grid) {
+
         return;
+
     }
 
 
-    const books =
-        databaseContents.filter(
-            item =>
-                item.type ===
-                "book"
+    const items =
+        getFilteredContents(
+            "book"
         );
 
 
     if (
-        books.length === 0
+        items.length === 0
     ) {
 
         grid.innerHTML =
             emptyMessage(
-                "No books added yet."
+
+                getEmptyText(
+
+                    "book",
+
+                    "No books added yet."
+
+                )
+
             );
+
 
         return;
 
@@ -1127,133 +1731,154 @@ function renderBooks() {
 
 
     grid.innerHTML =
-        books
-            .map(item => {
+        items
+            .map(
+                item => {
 
-                const backgroundStyle =
-                    item.poster_url
-                        ? `
-                            background-image:
-                            url("${escapeAttribute(
-                                item.poster_url
-                            )}");
-                        `
-                        : "";
+                    const image =
+                        item.poster_url
+                        ||
+                        "";
 
 
-                return `
+                    return `
 
-                    <article
-                        class="book-card"
-                    >
-
-
-                        <div
-                            class="book-cover"
-                            style='${backgroundStyle}'
+                        <article
+                            class="book-card content-open-card"
+                            data-content-id="${item.id}"
                         >
 
+                            <div
+                                class="book-cover"
+                                style='${
+                                    image
 
-                            <span
-                                class="book-badge"
+                                        ?
+
+                                        `background-image:url("${escapeCssUrl(
+                                            image
+                                        )}")`
+
+                                        :
+
+                                        ""
+                                }'
                             >
+
+                                <span
+                                    class="book-badge"
+                                >
+
+                                    ${
+                                        item.featured
+
+                                            ?
+
+                                            "FEATURED"
+
+                                            :
+
+                                            "BOOK"
+                                    }
+
+                                </span>
+
+
+                                ${hoverOverlay(
+                                    item,
+                                    "Read Book"
+                                )}
+
+                            </div>
+
+
+                            <div
+                                class="book-info"
+                            >
+
+                                <span
+                                    class="book-category"
+                                >
+
+                                    ${escapeHTML(
+                                        item.genre
+                                        ||
+                                        "BOOK"
+                                    )}
+
+                                </span>
+
+
+                                <h3>
+
+                                    ${escapeHTML(
+                                        item.title
+                                        ||
+                                        ""
+                                    )}
+
+                                </h3>
+
 
                                 ${
-                                    item.featured
-                                        ? "FEATURED"
-                                        : "BOOK"
+                                    item.author
+
+                                        ?
+
+                                        `
+
+                                            <p>
+
+                                                By ${escapeHTML(
+                                                    item.author
+                                                )}
+
+                                            </p>
+
+                                        `
+
+                                        :
+
+                                        ""
                                 }
 
-                            </span>
 
-                        </div>
+                                ${
+                                    item.file_url
 
+                                        ?
 
-                        <div
-                            class="book-info"
-                        >
+                                        `
 
+                                            <button
+                                                class="book-button content-action-button"
+                                                type="button"
+                                                data-content-id="${item.id}"
+                                            >
 
-                            <span
-                                class="book-category"
-                            >
+                                                Read Book
 
-                                ${escapeHTML(
-                                    item.genre ||
-                                    "BOOK"
-                                )}
+                                                <i
+                                                    class="fa-solid fa-arrow-right"
+                                                ></i>
 
-                            </span>
+                                            </button>
 
+                                        `
 
-                            <h3>
+                                        :
 
-                                ${escapeHTML(
-                                    item.title ||
-                                    ""
-                                )}
+                                        ""
+                                }
 
-                            </h3>
+                            </div>
 
+                        </article>
 
-                            ${
-                                item.author
-                                    ? `
+                    `;
 
-                                        <p>
-
-                                            By ${escapeHTML(
-                                                item.author
-                                            )}
-
-                                        </p>
-
-                                    `
-                                    : ""
-                            }
-
-
-                            <p>
-
-                                ${escapeHTML(
-                                    item.description ||
-                                    ""
-                                )}
-
-                            </p>
-
-
-                            ${
-                                item.file_url
-                                    ? `
-
-                                        <button
-                                            class="book-button dynamic-book"
-                                            type="button"
-                                            data-file="${escapeAttribute(
-                                                item.file_url
-                                            )}"
-                                        >
-
-                                            Read Book
-
-                                            <i
-                                                class="fa-solid fa-arrow-right"
-                                            ></i>
-
-                                        </button>
-
-                                    `
-                                    : ""
-                            }
-
-                        </div>
-
-                    </article>
-
-                `;
-
-            })
+                }
+            )
             .join("");
 
 }
@@ -1272,26 +1897,35 @@ function renderTutorial() {
 
 
     if (!grid) {
+
         return;
+
     }
 
 
-    const tutorial =
-        databaseContents.filter(
-            item =>
-                item.type ===
-                "tutorial"
+    const items =
+        getFilteredContents(
+            "tutorial"
         );
 
 
     if (
-        tutorial.length === 0
+        items.length === 0
     ) {
 
         grid.innerHTML =
             emptyMessage(
-                "No tutorial content added yet."
+
+                getEmptyText(
+
+                    "tutorial",
+
+                    "No tutorial content added yet."
+
+                )
+
             );
+
 
         return;
 
@@ -1299,156 +1933,271 @@ function renderTutorial() {
 
 
     grid.innerHTML =
-        tutorial
-            .map(item =>
-                createTutorialCard(item)
+        items
+            .map(
+                item => {
+
+                    const image =
+                        item.poster_url
+                        ||
+                        item.banner_url
+                        ||
+                        "";
+
+
+                    return `
+
+                        <article
+                            class="movie-card content-open-card"
+                            data-content-id="${item.id}"
+                        >
+
+                            <div
+                                class="movie-poster"
+                                style='${
+                                    image
+
+                                        ?
+
+                                        `background-image:url("${escapeCssUrl(
+                                            image
+                                        )}")`
+
+                                        :
+
+                                        ""
+                                }'
+                            >
+
+
+                                ${
+                                    item.genre
+
+                                        ?
+
+                                        `
+
+                                            <span
+                                                class="content-badge"
+                                            >
+
+                                                ${escapeHTML(
+                                                    item.genre
+                                                )}
+
+                                            </span>
+
+                                        `
+
+                                        :
+
+                                        ""
+                                }
+
+
+                                ${hoverOverlay(
+                                    item,
+                                    getActionText(
+                                        item
+                                    )
+                                )}
+
+
+                                ${
+                                    getMainActionUrl(
+                                        item
+                                    )
+
+                                        ?
+
+                                        `
+
+                                            <button
+                                                class="poster-play content-action-button"
+                                                type="button"
+                                                data-content-id="${item.id}"
+                                            >
+
+                                                <i
+                                                    class="fa-solid fa-play"
+                                                ></i>
+
+                                            </button>
+
+                                        `
+
+                                        :
+
+                                        ""
+                                }
+
+                            </div>
+
+
+                            <div
+                                class="card-info"
+                            >
+
+                                <span
+                                    class="card-category"
+                                >
+
+                                    TUTORIAL
+
+                                </span>
+
+
+                                <h3>
+
+                                    ${escapeHTML(
+                                        item.title
+                                        ||
+                                        "Untitled"
+                                    )}
+
+                                </h3>
+
+
+                                <div
+                                    class="card-meta"
+                                >
+
+                                    <span>
+
+                                        ${escapeHTML(
+                                            item.year
+                                            ||
+                                            ""
+                                        )}
+
+                                    </span>
+
+
+                                    <span>
+
+                                        ${
+                                            hasRating(
+                                                item
+                                            )
+
+                                                ?
+
+                                                `
+
+                                                    <i
+                                                        class="fa-solid fa-star"
+                                                    ></i>
+
+                                                    ${escapeHTML(
+                                                        item.rating
+                                                    )}
+
+                                                `
+
+                                                :
+
+                                                ""
+                                        }
+
+                                    </span>
+
+                                </div>
+
+
+                                ${
+                                    item.download_url
+
+                                        ?
+
+                                        `
+
+                                            <button
+                                                class="book-button content-action-button"
+                                                type="button"
+                                                data-content-id="${item.id}"
+                                                style="margin-top:12px;"
+                                            >
+
+                                                Download
+
+                                                <i
+                                                    class="fa-solid fa-download"
+                                                ></i>
+
+                                            </button>
+
+                                        `
+
+                                        :
+
+                                        ""
+                                }
+
+                            </div>
+
+                        </article>
+
+                    `;
+
+                }
             )
             .join("");
 
 }
 
 
-function createTutorialCard(item) {
+/* =====================================================
+   HOVER OVERLAY
+===================================================== */
 
-    const posterStyle =
-        item.poster_url
-            ? `
-                background-image:
-                url("${escapeAttribute(
-                    item.poster_url
-                )}");
-            `
-            : "";
-
+function hoverOverlay(
+    item,
+    actionText
+) {
 
     return `
 
-        <article
-            class="movie-card"
-            data-content-id="${item.id}"
+        <div
+            class="card-hover-overlay"
         >
 
-            <div
-                class="movie-poster"
-                style='${posterStyle}'
+            <h4>
+
+                ${escapeHTML(
+                    item.title
+                    ||
+                    "Untitled"
+                )}
+
+            </h4>
+
+
+            <p>
+
+                ${escapeHTML(
+                    item.description
+                    ||
+                    "No description available."
+                )}
+
+            </p>
+
+
+            <span
+                class="card-hover-action"
             >
 
+                ${escapeHTML(
+                    actionText
+                )}
 
-                ${
-                    item.genre
-                        ? `
+                <i
+                    class="fa-solid fa-arrow-right"
+                ></i>
 
-                            <span
-                                class="content-badge"
-                            >
+            </span>
 
-                                ${escapeHTML(
-                                    item.genre
-                                )}
-
-                            </span>
-
-                        `
-                        : ""
-                }
-
-
-                ${
-                    item.video_url
-                        ? `
-
-                            <button
-                                class="poster-play dynamic-play"
-                                type="button"
-                                data-video="${escapeAttribute(
-                                    item.video_url
-                                )}"
-                            >
-
-                                <i
-                                    class="fa-solid fa-play"
-                                ></i>
-
-                            </button>
-
-                        `
-                        : ""
-                }
-
-            </div>
-
-
-            <div class="card-info">
-
-
-                <span class="card-category">
-                    TUTORIAL
-                </span>
-
-
-                <h3>
-
-                    ${escapeHTML(
-                        item.title ||
-                        "Untitled"
-                    )}
-
-                </h3>
-
-
-                <p>
-
-                    ${escapeHTML(
-                        item.description ||
-                        ""
-                    )}
-
-                </p>
-
-
-                <div class="card-meta">
-
-                    <span>
-
-                        ${escapeHTML(
-                            item.year || ""
-                        )}
-
-                    </span>
-
-                    <span></span>
-
-                </div>
-
-
-                ${
-                    item.download_url
-                        ? `
-
-                            <button
-                                class="book-button dynamic-book"
-                                type="button"
-                                data-file="${escapeAttribute(
-                                    item.download_url
-                                )}"
-                                style="margin-top: 12px;"
-                            >
-
-                                Download
-
-                                <i
-                                    class="fa-solid fa-download"
-                                ></i>
-
-                            </button>
-
-                        `
-                        : ""
-                }
-
-            </div>
-
-        </article>
+        </div>
 
     `;
 
@@ -1456,37 +2205,37 @@ function createTutorialCard(item) {
 
 
 /* =====================================================
-   DYNAMIC BUTTON CLICK
+   CONTENT CLICK
 ===================================================== */
 
 document.addEventListener(
     "click",
     event => {
 
-
-        /* VIDEO */
-
-        const playButton =
+        const actionButton =
             event.target.closest(
-                ".dynamic-play"
+                ".content-action-button"
             );
 
 
-        if (playButton) {
+        if (actionButton) {
+
+            event.preventDefault();
 
             event.stopPropagation();
 
 
-            const videoUrl =
-                playButton.dataset.video;
+            const item =
+                findContentById(
+                    actionButton.dataset
+                        .contentId
+                );
 
 
-            if (videoUrl) {
+            if (item) {
 
-                window.open(
-                    videoUrl,
-                    "_blank",
-                    "noopener,noreferrer"
+                openContent(
+                    item
                 );
 
             }
@@ -1497,69 +2246,31 @@ document.addEventListener(
         }
 
 
-        /* STORY */
-
-        const storyButton =
+        const card =
             event.target.closest(
-                ".dynamic-story"
+                ".content-open-card, .featured-card"
             );
 
 
-        if (storyButton) {
-
-            const storyId =
-                Number(
-                    storyButton.dataset.id
-                );
-
-
-            const story =
-                databaseContents.find(
-                    item =>
-                        Number(
-                            item.id
-                        ) ===
-                        storyId
-                );
-
-
-            if (story) {
-
-                openStoryReader(
-                    story
-                );
-
-            }
-
+        if (!card) {
 
             return;
 
         }
 
 
-        /* BOOK / DOWNLOAD */
-
-        const bookButton =
-            event.target.closest(
-                ".dynamic-book"
+        const item =
+            findContentById(
+                card.dataset
+                    .contentId
             );
 
 
-        if (bookButton) {
+        if (item) {
 
-            const fileUrl =
-                bookButton.dataset.file;
-
-
-            if (fileUrl) {
-
-                window.open(
-                    fileUrl,
-                    "_blank",
-                    "noopener,noreferrer"
-                );
-
-            }
+            openContent(
+                item
+            );
 
         }
 
@@ -1568,10 +2279,233 @@ document.addEventListener(
 
 
 /* =====================================================
-   STORY MODAL
+   FIND CONTENT
 ===================================================== */
 
-function openStoryReader(story) {
+function findContentById(
+    id
+) {
+
+    return databaseContents
+        .find(
+            item =>
+                String(
+                    item.id
+                )
+                ===
+                String(
+                    id
+                )
+        );
+
+}
+
+
+/* =====================================================
+   ACTION URL
+===================================================== */
+
+function getMainActionUrl(
+    item
+) {
+
+    if (!item) {
+
+        return "";
+
+    }
+
+
+    if (
+        [
+            "movie",
+            "natok",
+            "series",
+            "upcoming"
+        ].includes(
+            item.type
+        )
+    ) {
+
+        return (
+            item.video_url
+            ||
+            ""
+        );
+
+    }
+
+
+    if (
+        item.type ===
+        "book"
+    ) {
+
+        return (
+            item.file_url
+            ||
+            ""
+        );
+
+    }
+
+
+    if (
+        item.type ===
+        "tutorial"
+    ) {
+
+        return (
+
+            item.video_url
+            ||
+
+            item.download_url
+            ||
+
+            ""
+
+        );
+
+    }
+
+
+    return "";
+
+}
+
+
+/* =====================================================
+   ACTION TEXT
+===================================================== */
+
+function getActionText(
+    item
+) {
+
+    if (!item) {
+
+        return "Open";
+
+    }
+
+
+    if (
+        item.type ===
+        "story"
+    ) {
+
+        return "Read Story";
+
+    }
+
+
+    if (
+        item.type ===
+        "book"
+    ) {
+
+        return "Read Book";
+
+    }
+
+
+    if (
+        item.type ===
+        "tutorial"
+    ) {
+
+        if (
+            item.video_url
+        ) {
+
+            return "Watch Tutorial";
+
+        }
+
+
+        if (
+            item.download_url
+        ) {
+
+            return "Download";
+
+        }
+
+
+        return "View Tutorial";
+
+    }
+
+
+    if (
+        item.type ===
+        "upcoming"
+    ) {
+
+        return "View Content";
+
+    }
+
+
+    return "Watch Now";
+
+}
+
+
+/* =====================================================
+   OPEN CONTENT
+===================================================== */
+
+function openContent(
+    item
+) {
+
+    if (
+        item.type ===
+        "story"
+    ) {
+
+        openStoryReader(
+            item
+        );
+
+
+        return;
+
+    }
+
+
+    const url =
+        getMainActionUrl(
+            item
+        );
+
+
+    if (url) {
+
+        window.open(
+
+            url,
+
+            "_blank",
+
+            "noopener,noreferrer"
+
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   STORY READER
+===================================================== */
+
+function openStoryReader(
+    story
+) {
 
     const oldModal =
         document.getElementById(
@@ -1599,47 +2533,46 @@ function openStoryReader(story) {
     modal.innerHTML = `
 
         <div
+            class="story-reader-overlay"
             style="
-                position: fixed;
-                inset: 0;
-                background: rgba(0,0,0,0.88);
-                z-index: 99999;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                padding: 20px;
+                position:fixed;
+                inset:0;
+                z-index:99999;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                padding:20px;
+                background:rgba(0,0,0,.88);
             "
         >
 
-
             <div
                 style="
-                    position: relative;
-                    width: min(760px, 100%);
-                    max-height: 86vh;
-                    overflow-y: auto;
-                    background: #101116;
-                    border: 1px solid rgba(255,255,255,0.1);
-                    border-radius: 16px;
-                    padding: 32px;
+                    position:relative;
+                    width:min(760px,100%);
+                    max-height:86vh;
+                    overflow-y:auto;
+                    padding:32px;
+                    border:1px solid rgba(255,255,255,.1);
+                    border-radius:16px;
+                    background:#101116;
                 "
             >
-
 
                 <button
                     id="closeStoryReader"
                     type="button"
                     style="
-                        position: absolute;
-                        top: 18px;
-                        right: 18px;
-                        width: 38px;
-                        height: 38px;
-                        border: none;
-                        border-radius: 50%;
-                        background: #ef1024;
-                        color: #ffffff;
-                        cursor: pointer;
+                        position:absolute;
+                        top:18px;
+                        right:18px;
+                        width:38px;
+                        height:38px;
+                        border:0;
+                        border-radius:50%;
+                        background:#ef1024;
+                        color:#fff;
+                        cursor:pointer;
                     "
                 >
 
@@ -1652,13 +2585,15 @@ function openStoryReader(story) {
 
                 <h2
                     style="
-                        padding-right: 50px;
-                        margin-bottom: 8px;
+                        padding-right:50px;
+                        margin-bottom:8px;
                     "
                 >
 
                     ${escapeHTML(
                         story.title
+                        ||
+                        "Untitled Story"
                     )}
 
                 </h2>
@@ -1666,12 +2601,15 @@ function openStoryReader(story) {
 
                 ${
                     story.author
-                        ? `
+
+                        ?
+
+                        `
 
                             <p
                                 style="
-                                    color: #ff1b2d;
-                                    margin-bottom: 24px;
+                                    color:#ff1b2d;
+                                    margin-bottom:24px;
                                 "
                             >
 
@@ -1682,21 +2620,25 @@ function openStoryReader(story) {
                             </p>
 
                         `
-                        : ""
+
+                        :
+
+                        ""
                 }
 
 
                 <div
                     style="
-                        white-space: pre-wrap;
-                        color: rgba(255,255,255,0.78);
-                        line-height: 1.9;
-                        font-size: 15px;
+                        white-space:pre-wrap;
+                        color:rgba(255,255,255,.78);
+                        line-height:1.9;
+                        font-size:15px;
                     "
                 >
 
                     ${escapeHTML(
-                        story.full_content ||
+                        story.full_content
+                        ||
                         "Story content is not available."
                     )}
 
@@ -1709,75 +2651,1251 @@ function openStoryReader(story) {
     `;
 
 
-    document.body.appendChild(
-        modal
-    );
-
-
-    const closeButton =
-        document.getElementById(
-            "closeStoryReader"
+    document.body
+        .appendChild(
+            modal
         );
 
 
-    closeButton.addEventListener(
-        "click",
-        () => {
+    modal
+        .querySelector(
+            "#closeStoryReader"
+        )
+        ?.addEventListener(
+            "click",
+            () => {
 
-            modal.remove();
+                modal.remove();
 
-        }
+            }
+        );
+
+
+    modal
+        .querySelector(
+            ".story-reader-overlay"
+        )
+        ?.addEventListener(
+            "click",
+            event => {
+
+                if (
+                    event.target
+                        .classList
+                        .contains(
+                            "story-reader-overlay"
+                        )
+                ) {
+
+                    modal.remove();
+
+                }
+
+            }
+        );
+
+}
+
+
+/* =====================================================
+   CREATE FEATURED SECTION
+
+   index.html e manually section add korte hobe na
+===================================================== */
+
+function createFeaturedSection() {
+
+    if (
+        document.getElementById(
+            "featured"
+        )
+    ) {
+
+        return;
+
+    }
+
+
+    const moviesSection =
+        document.getElementById(
+            "movies"
+        );
+
+
+    if (!moviesSection) {
+
+        return;
+
+    }
+
+
+    const section =
+        document.createElement(
+            "section"
+        );
+
+
+    section.id =
+        "featured";
+
+
+    section.className =
+        "featured-section";
+
+
+    section.innerHTML = `
+
+        <div
+            class="section-heading featured-heading"
+        >
+
+            <div
+                class="heading-left"
+            >
+
+                <span
+                    class="heading-line"
+                ></span>
+
+
+                <div>
+
+                    <h2>
+
+                        Featured
+
+                    </h2>
+
+
+                    <p>
+
+                        Top rated content
+
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div
+                class="featured-controls"
+            >
+
+                <button
+                    id="featuredPrev"
+                    type="button"
+                >
+
+                    <i
+                        class="fa-solid fa-chevron-left"
+                    ></i>
+
+                </button>
+
+
+                <button
+                    id="featuredNext"
+                    type="button"
+                >
+
+                    <i
+                        class="fa-solid fa-chevron-right"
+                    ></i>
+
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div
+            class="featured-viewport"
+            id="featuredViewport"
+        >
+
+            <div
+                class="featured-track"
+                id="featuredTrack"
+            ></div>
+
+        </div>
+
+    `;
+
+
+    moviesSection
+        .parentNode
+        .insertBefore(
+            section,
+            moviesSection
+        );
+
+}
+
+
+/* =====================================================
+   FEATURED SLIDER
+
+   Existing rating field use korbe.
+   8+ hole show korbe.
+===================================================== */
+
+function setupFeaturedSlider() {
+
+    const track =
+        document.getElementById(
+            "featuredTrack"
+        );
+
+
+    const viewport =
+        document.getElementById(
+            "featuredViewport"
+        );
+
+
+    const prev =
+        document.getElementById(
+            "featuredPrev"
+        );
+
+
+    const next =
+        document.getElementById(
+            "featuredNext"
+        );
+
+
+    if (!track) {
+
+        return;
+
+    }
+
+
+    featuredItems =
+        databaseContents
+            .filter(
+                item => {
+
+                    return (
+
+                        Number(
+                            item.rating
+                        )
+                        >=
+                        8
+
+                        &&
+
+                        (
+                            item.poster_url
+                            ||
+                            item.banner_url
+                        )
+
+                    );
+
+                }
+            )
+            .sort(
+                (
+                    a,
+                    b
+                ) =>
+
+                    Number(
+                        b.rating
+                    )
+                    -
+                    Number(
+                        a.rating
+                    )
+
+            );
+
+
+    if (
+        featuredItems.length ===
+        0
+    ) {
+
+        track.innerHTML = `
+
+            <div
+                class="database-loading"
+            >
+
+                No content with rating 8.0 or higher yet.
+
+            </div>
+
+        `;
+
+
+        return;
+
+    }
+
+
+    track.innerHTML =
+        featuredItems
+            .map(
+                item => {
+
+                    const image =
+                        item.poster_url
+                        ||
+                        item.banner_url
+                        ||
+                        "";
+
+
+                    return `
+
+                        <article
+                            class="featured-card"
+                            data-content-id="${item.id}"
+                        >
+
+                            <div
+                                class="featured-card-poster"
+                                style='background-image:url("${escapeCssUrl(
+                                    image
+                                )}")'
+                            >
+
+                                <span
+                                    class="featured-badge"
+                                >
+
+                                    FEATURED
+
+                                </span>
+
+
+                                <span
+                                    class="featured-rating"
+                                >
+
+                                    <i
+                                        class="fa-solid fa-star"
+                                    ></i>
+
+                                    ${escapeHTML(
+                                        item.rating
+                                    )}
+
+                                </span>
+
+
+                                ${hoverOverlay(
+                                    item,
+                                    getActionText(
+                                        item
+                                    )
+                                )}
+
+                            </div>
+
+
+                            <div
+                                class="featured-card-info"
+                            >
+
+                                <span
+                                    class="featured-type"
+                                >
+
+                                    ${escapeHTML(
+                                        formatType(
+                                            item.type
+                                        )
+                                    )}
+
+                                </span>
+
+
+                                <h3>
+
+                                    ${escapeHTML(
+                                        item.title
+                                        ||
+                                        "Untitled"
+                                    )}
+
+                                </h3>
+
+
+                                <p>
+
+                                    ${escapeHTML(
+                                        getFeaturedMeta(
+                                            item
+                                        )
+                                    )}
+
+                                </p>
+
+                            </div>
+
+                        </article>
+
+                    `;
+
+                }
+            )
+            .join("");
+
+
+    featuredIndex =
+        0;
+
+
+    updateFeaturedPosition();
+
+
+    startFeaturedAutoPlay();
+
+
+    if (next) {
+
+        next.addEventListener(
+            "click",
+            () => {
+
+                featuredGoNext();
+
+                startFeaturedAutoPlay();
+
+            }
+        );
+
+    }
+
+
+    if (prev) {
+
+        prev.addEventListener(
+            "click",
+            () => {
+
+                featuredGoPrev();
+
+                startFeaturedAutoPlay();
+
+            }
+        );
+
+    }
+
+
+    if (viewport) {
+
+        viewport.addEventListener(
+            "mouseenter",
+            stopFeaturedAutoPlay
+        );
+
+
+        viewport.addEventListener(
+            "mouseleave",
+            startFeaturedAutoPlay
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   FEATURED META
+===================================================== */
+
+function getFeaturedMeta(
+    item
+) {
+
+    if (
+        item.type ===
+        "series"
+        &&
+        item.season
+    ) {
+
+        return `Season ${item.season}`;
+
+    }
+
+
+    if (
+        [
+            "story",
+            "book"
+        ].includes(
+            item.type
+        )
+        &&
+        item.author
+    ) {
+
+        return item.author;
+
+    }
+
+
+    return (
+
+        item.year
+        ||
+        item.genre
+        ||
+        ""
+
     );
 
 }
 
 
 /* =====================================================
-   SEARCH OPEN
+   FEATURED RESPONSIVE COUNT
+===================================================== */
+
+function getFeaturedVisibleCount() {
+
+    if (
+        window.innerWidth
+        <=
+        760
+    ) {
+
+        return 2;
+
+    }
+
+
+    if (
+        window.innerWidth
+        <=
+        1000
+    ) {
+
+        return 4;
+
+    }
+
+
+    return 5;
+
+}
+
+
+/* =====================================================
+   FEATURED MAX
+===================================================== */
+
+function getFeaturedMaxIndex() {
+
+    return Math.max(
+
+        0,
+
+        featuredItems.length
+        -
+        getFeaturedVisibleCount()
+
+    );
+
+}
+
+
+/* =====================================================
+   FEATURED POSITION
+===================================================== */
+
+function updateFeaturedPosition() {
+
+    const track =
+        document.getElementById(
+            "featuredTrack"
+        );
+
+
+    const firstCard =
+        track
+            ?.querySelector(
+                ".featured-card"
+            );
+
+
+    if (
+        !track ||
+        !firstCard
+    ) {
+
+        return;
+
+    }
+
+
+    const gap =
+        parseFloat(
+            getComputedStyle(
+                track
+            ).gap
+            ||
+            "0"
+        )
+        ||
+        0;
+
+
+    const step =
+        firstCard
+            .getBoundingClientRect()
+            .width
+        +
+        gap;
+
+
+    featuredIndex =
+        Math.min(
+
+            featuredIndex,
+
+            getFeaturedMaxIndex()
+
+        );
+
+
+    track.style.transform =
+        `translateX(-${featuredIndex * step}px)`;
+
+}
+
+
+/* =====================================================
+   FEATURED NEXT
+===================================================== */
+
+function featuredGoNext() {
+
+    const max =
+        getFeaturedMaxIndex();
+
+
+    if (
+        max <= 0
+    ) {
+
+        return;
+
+    }
+
+
+    featuredIndex =
+        featuredIndex >= max
+
+            ?
+
+            0
+
+            :
+
+            featuredIndex + 1;
+
+
+    updateFeaturedPosition();
+
+}
+
+
+/* =====================================================
+   FEATURED PREVIOUS
+===================================================== */
+
+function featuredGoPrev() {
+
+    const max =
+        getFeaturedMaxIndex();
+
+
+    if (
+        max <= 0
+    ) {
+
+        return;
+
+    }
+
+
+    featuredIndex =
+        featuredIndex <= 0
+
+            ?
+
+            max
+
+            :
+
+            featuredIndex - 1;
+
+
+    updateFeaturedPosition();
+
+}
+
+
+/* =====================================================
+   FEATURED AUTO
+===================================================== */
+
+function startFeaturedAutoPlay() {
+
+    stopFeaturedAutoPlay();
+
+
+    featuredTimer =
+        setInterval(
+
+            featuredGoNext,
+
+            4000
+
+        );
+
+}
+
+
+function stopFeaturedAutoPlay() {
+
+    if (
+        featuredTimer
+    ) {
+
+        clearInterval(
+            featuredTimer
+        );
+
+    }
+
+
+    featuredTimer =
+        null;
+
+}
+
+
+window.addEventListener(
+    "resize",
+    updateFeaturedPosition
+);
+
+
+/* =====================================================
+   HERO IMAGE
+===================================================== */
+
+function getHeroImage(
+    item
+) {
+
+    if (!item) {
+
+        return "";
+
+    }
+
+
+    if (
+        [
+            "movie",
+            "natok",
+            "series",
+            "upcoming"
+        ].includes(
+            item.type
+        )
+    ) {
+
+        return (
+
+            item.banner_url
+            ||
+            item.poster_url
+            ||
+            ""
+
+        );
+
+    }
+
+
+    return (
+
+        item.poster_url
+        ||
+        item.banner_url
+        ||
+        ""
+
+    );
+
+}
+
+
+/* =====================================================
+   DYNAMIC HERO
+
+   Movie
+   Natok
+   Series
+   Upcoming
+   Story
+   Book
+   Tutorial
+   repeat
+===================================================== */
+
+function setupDynamicHero() {
+
+    if (!heroBackground) {
+
+        return;
+
+    }
+
+
+    heroSlides =
+        HERO_SEQUENCE
+            .map(
+                type => {
+
+                    return databaseContents
+                        .find(
+                            item =>
+
+                                item.type === type
+
+                                &&
+
+                                getHeroImage(
+                                    item
+                                )
+
+                        );
+
+                }
+            )
+            .filter(
+                Boolean
+            );
+
+
+    if (
+        heroSlides.length ===
+        0
+    ) {
+
+        heroBackground.style
+            .backgroundImage =
+
+            "linear-gradient(120deg,#11001f 0%,#2a075c 48%,#4d0c79 100%)";
+
+
+        return;
+
+    }
+
+
+    heroIndex =
+        0;
+
+
+    renderHeroDots();
+
+
+    showHeroSlide(
+        0,
+        false
+    );
+
+
+    if (
+        heroTimer
+    ) {
+
+        clearInterval(
+            heroTimer
+        );
+
+    }
+
+
+    heroTimer =
+        setInterval(
+            () => {
+
+                heroIndex =
+                    (
+                        heroIndex + 1
+                    )
+                    %
+                    heroSlides.length;
+
+
+                showHeroSlide(
+
+                    heroIndex,
+
+                    true
+
+                );
+
+            },
+            3600
+        );
+
+}
+
+
+/* =====================================================
+   SHOW HERO
+===================================================== */
+
+function showHeroSlide(
+    index,
+    animate = true
+) {
+
+    const item =
+        heroSlides[
+            index
+        ];
+
+
+    if (
+        !heroBackground ||
+        !item
+    ) {
+
+        return;
+
+    }
+
+
+    const image =
+        getHeroImage(
+            item
+        );
+
+
+    if (!image) {
+
+        return;
+
+    }
+
+
+    heroIndex =
+        index;
+
+
+    const apply =
+        () => {
+
+            heroBackground
+                .classList
+                .remove(
+                    "zoom"
+                );
+
+
+            heroBackground.style
+                .backgroundImage =
+
+                `url("${escapeCssUrl(
+                    image
+                )}")`;
+
+
+            heroBackground.style
+                .backgroundSize =
+                "cover";
+
+
+            heroBackground.style
+                .backgroundPosition =
+                "center";
+
+
+            heroBackground.style
+                .opacity =
+                "1";
+
+
+            void heroBackground
+                .offsetWidth;
+
+
+            requestAnimationFrame(
+                () => {
+
+                    requestAnimationFrame(
+                        () => {
+
+                            heroBackground
+                                .classList
+                                .add(
+                                    "zoom"
+                                );
+
+                        }
+                    );
+
+                }
+            );
+
+
+            updateHeroDots();
+
+        };
+
+
+    if (!animate) {
+
+        apply();
+
+        return;
+
+    }
+
+
+    heroBackground.style
+        .opacity =
+        "0";
+
+
+    setTimeout(
+
+        apply,
+
+        350
+
+    );
+
+}
+
+
+/* =====================================================
+   HERO DOTS
+===================================================== */
+
+function renderHeroDots() {
+
+    if (!heroDotsContainer) {
+
+        return;
+
+    }
+
+
+    heroDotsContainer.innerHTML =
+        heroSlides
+            .map(
+                (
+                    item,
+                    index
+                ) => `
+
+                    <button
+                        type="button"
+                        class="hero-dot ${
+                            index === 0
+                                ?
+                                "active"
+                                :
+                                ""
+                        }"
+                        data-hero-index="${index}"
+                    ></button>
+
+                `
+            )
+            .join("");
+
+
+    heroDotsContainer
+        .querySelectorAll(
+            ".hero-dot"
+        )
+        .forEach(
+            dot => {
+
+                dot.addEventListener(
+                    "click",
+                    () => {
+
+                        const index =
+                            Number(
+                                dot.dataset
+                                    .heroIndex
+                            );
+
+
+                        if (
+                            !Number.isFinite(
+                                index
+                            )
+                        ) {
+
+                            return;
+
+                        }
+
+
+                        showHeroSlide(
+                            index,
+                            true
+                        );
+
+
+                        if (
+                            heroTimer
+                        ) {
+
+                            clearInterval(
+                                heroTimer
+                            );
+
+                        }
+
+
+                        heroTimer =
+                            setInterval(
+                                () => {
+
+                                    heroIndex =
+                                        (
+                                            heroIndex + 1
+                                        )
+                                        %
+                                        heroSlides.length;
+
+
+                                    showHeroSlide(
+                                        heroIndex,
+                                        true
+                                    );
+
+                                },
+                                3600
+                            );
+
+                    }
+                );
+
+            }
+        );
+
+}
+
+
+/* =====================================================
+   UPDATE HERO DOT
+===================================================== */
+
+function updateHeroDots() {
+
+    if (!heroDotsContainer) {
+
+        return;
+
+    }
+
+
+    heroDotsContainer
+        .querySelectorAll(
+            ".hero-dot"
+        )
+        .forEach(
+            (
+                dot,
+                index
+            ) => {
+
+                dot.classList.toggle(
+
+                    "active",
+
+                    index ===
+                    heroIndex
+
+                );
+
+            }
+        );
+
+}
+
+
+/* =====================================================
+   SEARCH
 ===================================================== */
 
 function openSearch() {
 
     if (!searchBox) {
+
         return;
+
     }
 
 
-    searchBox.classList.add(
-        "active"
+    searchBox.classList
+        .add(
+            "active"
+        );
+
+
+    setTimeout(
+        () => {
+
+            if (
+                searchInput
+            ) {
+
+                searchInput.focus();
+
+            }
+
+        },
+        100
     );
-
-
-    setTimeout(() => {
-
-        if (searchInput) {
-
-            searchInput.focus();
-
-        }
-
-    }, 100);
 
 }
 
 
-/* =====================================================
-   SEARCH CLOSE
-===================================================== */
-
 function closeSearch() {
 
     if (!searchBox) {
+
         return;
+
     }
 
 
-    searchBox.classList.remove(
-        "active"
-    );
+    searchBox.classList
+        .remove(
+            "active"
+        );
 
 
-    if (searchInput) {
+    if (
+        searchInput
+    ) {
 
         searchInput.value =
             "";
@@ -1785,7 +3903,9 @@ function closeSearch() {
     }
 
 
-    if (searchResults) {
+    if (
+        searchResults
+    ) {
 
         searchResults.innerHTML =
             "";
@@ -1795,83 +3915,109 @@ function closeSearch() {
 }
 
 
-/* =====================================================
-   SEARCH BUTTON
-===================================================== */
+if (
+    searchToggle
+) {
 
-if (searchIconButton) {
+    searchToggle
+        .addEventListener(
+            "click",
+            event => {
 
-    searchIconButton.addEventListener(
-        "click",
-        event => {
-
-            event.stopPropagation();
+                event.stopPropagation();
 
 
-            if (
-                searchBox &&
-                searchBox.classList.contains(
-                    "active"
-                )
-            ) {
+                if (
+                    searchBox
+                    &&
+                    searchBox
+                        .classList
+                        .contains(
+                            "active"
+                        )
+                ) {
+
+                    closeSearch();
+
+                }
+
+                else {
+
+                    openSearch();
+
+                }
+
+            }
+        );
+
+}
+
+
+if (
+    searchClose
+) {
+
+    searchClose
+        .addEventListener(
+            "click",
+            event => {
+
+                event.stopPropagation();
 
                 closeSearch();
 
             }
+        );
 
-            else {
+}
 
-                openSearch();
+
+if (
+    searchInput
+) {
+
+    searchInput
+        .addEventListener(
+            "input",
+            event => {
+
+                performSearch(
+                    event.target
+                        .value
+                );
 
             }
-
-        }
-    );
+        );
 
 }
 
 
 /* =====================================================
-   SEARCH CLOSE BUTTON
+   SEARCH FUNCTION
 ===================================================== */
 
-if (searchClose) {
-
-    searchClose.addEventListener(
-        "click",
-        event => {
-
-            event.stopPropagation();
-
-            closeSearch();
-
-        }
-    );
-
-}
-
-
-/* =====================================================
-   PERFORM SEARCH
-===================================================== */
-
-function performSearch(keyword) {
+function performSearch(
+    keyword
+) {
 
     if (!searchResults) {
+
         return;
+
     }
 
 
-    const searchText =
+    const text =
         keyword
             .trim()
             .toLowerCase();
 
 
-    if (!searchText) {
+    if (!text) {
 
         searchResults.innerHTML =
             "";
+
 
         return;
 
@@ -1879,73 +4025,43 @@ function performSearch(keyword) {
 
 
     const results =
-        databaseContents.filter(
-            item => {
+        databaseContents
+            .filter(
+                item => {
+
+                    const data = [
+
+                        item.title,
+
+                        item.genre,
+
+                        item.author,
+
+                        formatType(
+                            item.type
+                        )
+
+                    ]
+                        .filter(
+                            Boolean
+                        )
+                        .join(
+                            " "
+                        )
+                        .toLowerCase();
 
 
-                const title =
-                    String(
-                        item.title ||
-                        ""
-                    )
-                    .toLowerCase();
+                    return data.includes(
+                        text
+                    );
 
-
-                const category =
-                    formatType(
-                        item.type
-                    )
-                    .toLowerCase();
-
-
-                const genre =
-                    String(
-                        item.genre ||
-                        ""
-                    )
-                    .toLowerCase();
-
-
-                const author =
-                    String(
-                        item.author ||
-                        ""
-                    )
-                    .toLowerCase();
-
-
-                return (
-
-                    title.includes(
-                        searchText
-                    )
-
-                    ||
-
-                    category.includes(
-                        searchText
-                    )
-
-                    ||
-
-                    genre.includes(
-                        searchText
-                    )
-
-                    ||
-
-                    author.includes(
-                        searchText
-                    )
-
-                );
-
-            }
-        );
+                }
+            );
 
 
     if (
-        results.length === 0
+        results.length ===
+        0
     ) {
 
         searchResults.innerHTML = `
@@ -1968,11 +4084,16 @@ function performSearch(keyword) {
                 <div>
 
                     <h4>
+
                         No result found
+
                     </h4>
 
+
                     <p>
+
                         Try another keyword
+
                     </p>
 
                 </div>
@@ -1993,9 +4114,8 @@ function performSearch(keyword) {
                 0,
                 8
             )
-            .map(item => {
-
-                return `
+            .map(
+                item => `
 
                     <div
                         class="search-result-item dynamic-search-result"
@@ -2003,7 +4123,6 @@ function performSearch(keyword) {
                             item.type
                         )}"
                     >
-
 
                         <div
                             class="search-result-icon"
@@ -2024,9 +4143,12 @@ function performSearch(keyword) {
 
                                 ${escapeHTML(
                                     item.title
+                                    ||
+                                    "Untitled"
                                 )}
 
                             </h4>
+
 
                             <p>
 
@@ -2042,30 +4164,9 @@ function performSearch(keyword) {
 
                     </div>
 
-                `;
-
-            })
+                `
+            )
             .join("");
-
-}
-
-
-/* =====================================================
-   SEARCH INPUT
-===================================================== */
-
-if (searchInput) {
-
-    searchInput.addEventListener(
-        "input",
-        event => {
-
-            performSearch(
-                event.target.value
-            );
-
-        }
-    );
 
 }
 
@@ -2074,58 +4175,63 @@ if (searchInput) {
    SEARCH RESULT CLICK
 ===================================================== */
 
-if (searchResults) {
+if (
+    searchResults
+) {
 
-    searchResults.addEventListener(
-        "click",
-        event => {
+    searchResults
+        .addEventListener(
+            "click",
+            event => {
 
-            const result =
-                event.target.closest(
-                    ".dynamic-search-result"
-                );
+                const result =
+                    event.target.closest(
+                        ".dynamic-search-result"
+                    );
 
 
-            if (!result) {
-                return;
+                if (!result) {
+
+                    return;
+
+                }
+
+
+                closeSearch();
+
+
+                const section =
+                    document.getElementById(
+
+                        TYPE_SECTIONS[
+                            result.dataset.type
+                        ]
+                        ||
+                        "home"
+
+                    );
+
+
+                if (
+                    section
+                ) {
+
+                    section.scrollIntoView(
+                        {
+
+                            behavior:
+                                "smooth",
+
+                            block:
+                                "start"
+
+                        }
+                    );
+
+                }
+
             }
-
-
-            const type =
-                result.dataset.type;
-
-
-            const sectionId =
-                getSectionFromType(
-                    type
-                );
-
-
-            const target =
-                document.getElementById(
-                    sectionId
-                );
-
-
-            closeSearch();
-
-
-            if (target) {
-
-                target.scrollIntoView({
-
-                    behavior:
-                        "smooth",
-
-                    block:
-                        "start"
-
-                });
-
-            }
-
-        }
-    );
+        );
 
 }
 
@@ -2139,7 +4245,9 @@ document.addEventListener(
     event => {
 
         if (!searchBox) {
+
             return;
+
         }
 
 
@@ -2149,16 +4257,18 @@ document.addEventListener(
             );
 
 
-        const clickedSearchButton =
-            searchIconButton &&
-            searchIconButton.contains(
+        const clickedButton =
+            searchToggle
+            &&
+            searchToggle.contains(
                 event.target
             );
 
 
         if (
-            !clickedInside &&
-            !clickedSearchButton
+            !clickedInside
+            &&
+            !clickedButton
         ) {
 
             closeSearch();
@@ -2175,126 +4285,126 @@ document.addEventListener(
 
 function closeMobileMenu() {
 
-    if (!mobileNav) {
-        return;
+    if (
+        mobileNav
+    ) {
+
+        mobileNav.classList
+            .remove(
+                "active"
+            );
+
     }
 
 
-    mobileNav.classList.remove(
-        "active"
-    );
-
-
-    if (mobileMenuButton) {
-
-        const icon =
-            mobileMenuButton.querySelector(
+    const icon =
+        mobileMenuButton
+            ?.querySelector(
                 "i"
             );
 
 
-        if (icon) {
+    if (
+        icon
+    ) {
 
-            icon.classList.remove(
+        icon.classList
+            .remove(
                 "fa-xmark"
             );
 
 
-            icon.classList.add(
+        icon.classList
+            .add(
                 "fa-bars"
             );
-
-        }
 
     }
 
 }
 
 
-if (mobileMenuButton) {
+if (
+    mobileMenuButton
+) {
 
-    mobileMenuButton.addEventListener(
-        "click",
-        event => {
+    mobileMenuButton
+        .addEventListener(
+            "click",
+            event => {
 
-            event.stopPropagation();
+                event.stopPropagation();
 
 
-            if (!mobileNav) {
-                return;
+                if (!mobileNav) {
+
+                    return;
+
+                }
+
+
+                mobileNav.classList
+                    .toggle(
+                        "active"
+                    );
+
+
+                const icon =
+                    mobileMenuButton
+                        .querySelector(
+                            "i"
+                        );
+
+
+                if (!icon) {
+
+                    return;
+
+                }
+
+
+                const active =
+                    mobileNav.classList
+                        .contains(
+                            "active"
+                        );
+
+
+                icon.classList.toggle(
+                    "fa-bars",
+                    !active
+                );
+
+
+                icon.classList.toggle(
+                    "fa-xmark",
+                    active
+                );
+
             }
-
-
-            mobileNav.classList.toggle(
-                "active"
-            );
-
-
-            const icon =
-                mobileMenuButton.querySelector(
-                    "i"
-                );
-
-
-            if (!icon) {
-                return;
-            }
-
-
-            if (
-                mobileNav.classList.contains(
-                    "active"
-                )
-            ) {
-
-                icon.classList.remove(
-                    "fa-bars"
-                );
-
-
-                icon.classList.add(
-                    "fa-xmark"
-                );
-
-            }
-
-            else {
-
-                icon.classList.remove(
-                    "fa-xmark"
-                );
-
-
-                icon.classList.add(
-                    "fa-bars"
-                );
-
-            }
-
-        }
-    );
+        );
 
 }
 
 
-/* =====================================================
-   MOBILE LINKS
-===================================================== */
-
-if (mobileNav) {
+if (
+    mobileNav
+) {
 
     mobileNav
         .querySelectorAll(
             "a"
         )
-        .forEach(link => {
+        .forEach(
+            link => {
 
-            link.addEventListener(
-                "click",
-                closeMobileMenu
-            );
+                link.addEventListener(
+                    "click",
+                    closeMobileMenu
+                );
 
-        });
+            }
+        );
 
 }
 
@@ -2307,21 +4417,84 @@ document
     .querySelectorAll(
         'a[href^="#"]'
     )
-    .forEach(link => {
+    .forEach(
+        link => {
 
-        link.addEventListener(
-            "click",
-            event => {
+            link.addEventListener(
+                "click",
+                event => {
 
-                const targetId =
-                    link.getAttribute(
-                        "href"
+                    const href =
+                        link.getAttribute(
+                            "href"
+                        );
+
+
+                    if (
+                        !href ||
+                        href === "#"
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    const target =
+                        document.querySelector(
+                            href
+                        );
+
+
+                    if (!target) {
+
+                        return;
+
+                    }
+
+
+                    event.preventDefault();
+
+
+                    target.scrollIntoView(
+                        {
+
+                            behavior:
+                                "smooth",
+
+                            block:
+                                "start"
+
+                        }
                     );
 
+                }
+            );
+
+        }
+    );
+
+
+/* =====================================================
+   ACTIVE NAV
+===================================================== */
+
+function updateActiveNav() {
+
+    let current =
+        "home";
+
+
+    document
+        .querySelectorAll(
+            "section[id]"
+        )
+        .forEach(
+            section => {
 
                 if (
-                    !targetId ||
-                    targetId === "#"
+                    section.id ===
+                    "featured"
                 ) {
 
                     return;
@@ -2329,103 +4502,60 @@ document
                 }
 
 
-                const target =
-                    document.querySelector(
-                        targetId
-                    );
+                const top =
+                    section.offsetTop
+                    -
+                    150;
 
 
-                if (!target) {
-                    return;
+                const bottom =
+                    top
+                    +
+                    section.offsetHeight;
+
+
+                if (
+                    window.scrollY
+                    >=
+                    top
+
+                    &&
+
+                    window.scrollY
+                    <
+                    bottom
+                ) {
+
+                    current =
+                        section.id;
+
                 }
-
-
-                event.preventDefault();
-
-
-                target.scrollIntoView({
-
-                    behavior:
-                        "smooth",
-
-                    block:
-                        "start"
-
-                });
 
             }
         );
 
-    });
 
+    document
+        .querySelectorAll(
+            ".nav-link"
+        )
+        .forEach(
+            link => {
 
-/* =====================================================
-   ACTIVE NAV
-===================================================== */
+                link.classList.toggle(
 
-const sections =
-    document.querySelectorAll(
-        "section[id]"
-    );
+                    "active",
 
+                    link.getAttribute(
+                        "href"
+                    )
+                    ===
+                    `#${current}`
 
-const navLinks =
-    document.querySelectorAll(
-        ".nav-link"
-    );
-
-
-function updateActiveNav() {
-
-    let currentSection =
-        "";
-
-
-    sections.forEach(
-        section => {
-
-            const sectionTop =
-                section.offsetTop -
-                150;
-
-
-            const sectionBottom =
-                sectionTop +
-                section.offsetHeight;
-
-
-            if (
-                window.scrollY >=
-                    sectionTop
-
-                &&
-
-                window.scrollY <
-                    sectionBottom
-            ) {
-
-                currentSection =
-                    section.id;
+                );
 
             }
-
-        }
-    );
-
-
-    navLinks.forEach(
-        link => {
-
-            link.classList.toggle(
-                "active",
-                link.getAttribute(
-                    "href"
-                ) ===
-                `#${currentSection}`
-            );
-
-        }
-    );
+        );
 
 }
 
@@ -2465,7 +4595,9 @@ document.addEventListener(
             );
 
 
-        if (modal) {
+        if (
+            modal
+        ) {
 
             modal.remove();
 
@@ -2476,132 +4608,105 @@ document.addEventListener(
 
 
 /* =====================================================
-   ERROR UI
+   ERROR
 ===================================================== */
 
 function showDatabaseError() {
 
-    const grids = [
+    [
 
         "moviesGrid",
+
         "natokGrid",
+
         "webseriesGrid",
+
         "upcomingGrid",
+
         "storiesGrid",
+
         "booksGrid",
+
         "tutorialGrid"
 
-    ];
+    ]
+        .forEach(
+            id => {
+
+                const grid =
+                    document.getElementById(
+                        id
+                    );
 
 
-    grids.forEach(id => {
+                if (
+                    grid
+                ) {
 
-        const grid =
-            document.getElementById(
-                id
-            );
+                    grid.innerHTML =
+                        emptyMessage(
+                            "Unable to load content."
+                        );
 
+                }
 
-        if (grid) {
-
-            grid.innerHTML =
-                emptyMessage(
-                    "Unable to load content."
-                );
-
-        }
-
-    });
+            }
+        );
 
 }
 
 
 /* =====================================================
-   FORMAT TYPE
+   HELPERS
 ===================================================== */
 
-function formatType(type) {
-
-    const typeNames = {
-
-        movie:
-            "Movie",
-
-        natok:
-            "Natok",
-
-        series:
-            "Web Series",
-
-        upcoming:
-            "Upcoming",
-
-        story:
-            "Story",
-
-        book:
-            "Book",
-
-        tutorial:
-            "Tutorial"
-
-    };
-
+function hasRating(
+    item
+) {
 
     return (
-        typeNames[type] ||
-        type ||
+
+        item
+        &&
+        item.rating
+        !==
+        null
+        &&
+        item.rating
+        !==
+        undefined
+        &&
+        item.rating
+        !==
         ""
+
     );
 
 }
 
 
-/* =====================================================
-   SECTION FROM TYPE
-===================================================== */
-
-function getSectionFromType(type) {
-
-    const sectionsMap = {
-
-        movie:
-            "movies",
-
-        natok:
-            "natok",
-
-        series:
-            "webseries",
-
-        upcoming:
-            "upcoming",
-
-        story:
-            "stories",
-
-        book:
-            "books",
-
-        tutorial:
-            "tutorial"
-
-    };
-
+function formatType(
+    type
+) {
 
     return (
-        sectionsMap[type] ||
-        "home"
+
+        TYPE_LABELS[
+            type
+        ]
+        ||
+        type
+        ||
+        ""
+
     );
 
 }
 
 
-/* =====================================================
-   TYPE ICON
-===================================================== */
-
-function getTypeIcon(type) {
+function getTypeIcon(
+    type
+) {
 
     const icons = {
 
@@ -2630,18 +4735,21 @@ function getTypeIcon(type) {
 
 
     return (
-        icons[type] ||
+
+        icons[
+            type
+        ]
+        ||
         "fa-solid fa-film"
+
     );
 
 }
 
 
-/* =====================================================
-   DATE FORMAT
-===================================================== */
-
-function formatDate(date) {
+function formatDate(
+    date
+) {
 
     if (!date) {
 
@@ -2655,25 +4763,27 @@ function formatDate(date) {
         return new Date(
             `${date}T00:00:00`
         )
-        .toLocaleDateString(
-            "en-US",
-            {
+            .toLocaleDateString(
+                "en-US",
+                {
 
-                year:
-                    "numeric",
+                    year:
+                        "numeric",
 
-                month:
-                    "short",
+                    month:
+                        "short",
 
-                day:
-                    "numeric"
+                    day:
+                        "numeric"
 
-            }
-        );
+                }
+            );
 
     }
 
-    catch (error) {
+    catch (
+        error
+    ) {
 
         return date;
 
@@ -2682,23 +4792,21 @@ function formatDate(date) {
 }
 
 
-/* =====================================================
-   EMPTY MESSAGE
-===================================================== */
-
-function emptyMessage(message) {
+function emptyMessage(
+    message
+) {
 
     return `
 
         <div
             style="
-                grid-column: 1 / -1;
-                padding: 35px 20px;
-                text-align: center;
-                color: rgba(255,255,255,0.42);
-                background: #101116;
-                border: 1px solid rgba(255,255,255,0.06);
-                border-radius: 12px;
+                grid-column:1/-1;
+                padding:35px 20px;
+                text-align:center;
+                color:rgba(255,255,255,.42);
+                background:#101116;
+                border:1px solid rgba(255,255,255,.06);
+                border-radius:12px;
             "
         >
 
@@ -2713,15 +4821,16 @@ function emptyMessage(message) {
 }
 
 
-/* =====================================================
-   ESCAPE HTML
-===================================================== */
-
-function escapeHTML(value) {
+function escapeHTML(
+    value
+) {
 
     if (
-        value === null ||
-        value === undefined
+        value ===
+        null
+        ||
+        value ===
+        undefined
     ) {
 
         return "";
@@ -2729,7 +4838,9 @@ function escapeHTML(value) {
     }
 
 
-    return String(value)
+    return String(
+        value
+    )
 
         .replaceAll(
             "&",
@@ -2759,11 +4870,9 @@ function escapeHTML(value) {
 }
 
 
-/* =====================================================
-   ESCAPE ATTRIBUTE
-===================================================== */
-
-function escapeAttribute(value) {
+function escapeAttribute(
+    value
+) {
 
     return escapeHTML(
         value
@@ -2772,23 +4881,68 @@ function escapeAttribute(value) {
 }
 
 
+function escapeCssUrl(
+    value
+) {
+
+    return String(
+        value
+        ||
+        ""
+    )
+
+        .replaceAll(
+            "\\",
+            "\\\\"
+        )
+
+        .replaceAll(
+            '"',
+            '\\"'
+        )
+
+        .replaceAll(
+            "\n",
+            ""
+        )
+
+        .replaceAll(
+            "\r",
+            ""
+        );
+
+}
+
+
 /* =====================================================
-   PAGE START
+   START WEBSITE
 ===================================================== */
 
 document.addEventListener(
     "DOMContentLoaded",
     async () => {
 
+        if (
+            heroBackground
+        ) {
+
+            heroBackground.style
+                .backgroundImage =
+
+                "linear-gradient(120deg,#11001f 0%,#2a075c 48%,#4d0c79 100%)";
+
+
+            heroBackground.style
+                .opacity =
+                "1";
+
+        }
+
+
         updateActiveNav();
 
 
         await loadWebsiteContents();
-
-
-        console.log(
-            "Cinema Mella website loaded."
-        );
 
     }
 );

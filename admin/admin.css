@@ -1153,3 +1153,86 @@ textarea {
     margin-left: 0;
     transition: opacity 0.3s ease, transform 0.3s ease;
 }
+/* =====================================================
+   ADMIN UPDATE: LOGO + CATEGORY MANAGEMENT
+===================================================== */
+
+/* Keep CINEMA and MELLA/HUB attached exactly like public logo */
+.admin-brand {
+    display: flex;
+    align-items: center;
+    gap: 0;
+}
+
+.admin-logo-cinema,
+.admin-brand .logo-changing {
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+}
+
+.admin-brand .logo-changing {
+    min-width: 55px;
+}
+
+.field-help {
+    color: rgba(255, 255, 255, 0.35);
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+.category-management-section {
+    background: #101116;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 14px;
+    padding: 25px;
+    margin-bottom: 28px;
+}
+
+.category-management-section[hidden] {
+    display: none !important;
+}
+
+.category-form {
+    padding-bottom: 28px;
+    margin-bottom: 28px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.category-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+}
+
+.category-list-title {
+    margin-bottom: 18px;
+}
+
+#categoryMessage {
+    margin-top: 15px;
+    min-height: 20px;
+    font-size: 13px;
+}
+
+.category-name-cell {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+}
+
+.category-name-cell i {
+    color: #ef1024;
+    font-size: 11px;
+}
+
+@media (max-width: 760px) {
+    .category-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .category-management-section {
+        padding: 18px;
+    }
+}
